@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+app-card {
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+
+  &.hovered {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+  }
+
+  &.pinned {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.35);
+  }
+}

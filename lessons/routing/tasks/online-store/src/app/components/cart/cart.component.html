@@ -1,0 +1,43 @@
+<section class="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+  <h1 class="text-2xl font-bold text-slate-900">Корзина</h1>
+
+  @if (cart.items().length === 0) {
+    <div class="mt-6 rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-500">
+      Корзина пуста.
+      <a routerLink="/catalog" class="font-medium text-indigo-600 hover:underline">Перейти в каталог</a>
+    </div>
+  } @else {
+    <ul class="mt-6 flex flex-col gap-3">
+      @for (item of cart.items(); track item.product.id) {
+        <li class="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4">
+              <span class="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-slate-100 text-3xl">
+                {{ item.product.emoji }}
+              </span>
+          <div class="flex-1">
+            <p class="font-semibold text-slate-900">{{ item.product.title }}</p>
+            <p class="text-sm text-slate-500">
+              {{ item.quantity }} × {{ item.product.price | number: '1.2-2' }} €
+            </p>
+          </div>
+          <button
+            type="button"
+            class="text-sm font-medium text-rose-600 hover:underline"
+            (click)="cart.remove(item.product.id)"
+          >
+            Удалить
+          </button>
+        </li>
+      }
+    </ul>
+
+    <div class="mt-6 flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4">
+      <span class="font-semibold text-slate-900">Итого: {{ cart.total() | number: '1.2-2' }} €</span>
+      <a
+        routerLink="/checkout"
+        class="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition hover:bg-indigo-700"
+      >
+        Оформить заказ
+      </a>
+    </div>
+  }
+</section>

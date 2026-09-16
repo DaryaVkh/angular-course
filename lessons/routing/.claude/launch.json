@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "angular-online-store",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "serve:angular-online-store", "--", "--port", "4201"],
+      "port": 4201
+    }
+  ]
+}
