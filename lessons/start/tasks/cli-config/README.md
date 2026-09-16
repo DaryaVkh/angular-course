@@ -5,7 +5,7 @@
 ### Как запускать
 
 Терминальная задача. Работаем в приложении `task-board`, созданном
-в [задаче 1](../first-app/README.md), плюс в конце заглядываем в этот репозиторий.
+в [задаче 1](https://github.com/DaryaVkh/angular-course-start-task).
 
 ```bash
 cd ~/angular-playground/task-board
