@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output } from '@angular/core';
 
 @Component({
   selector: 'app-card',
@@ -6,6 +6,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   template: `
     <ng-content select="[card-title]"></ng-content>
     <ng-content select="[card-message]"><div>Default message</div></ng-content>
+    <button (click)="closed.emit()">Закрыть</button>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -13,4 +14,5 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   },
 })
 export class CardComponent {
+  readonly closed = output<void>();
 }
