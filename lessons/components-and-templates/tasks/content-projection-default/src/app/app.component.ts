@@ -24,7 +24,12 @@ let nextCardId = 3;
     </div>
 
     @for (card of cards(); track card.id) {
-      <app-card [title]="card.title" [message]="card.message" />
+      <app-card>
+        <div card-title>{{ card.title }}</div>
+        @if (card.message) {
+          <div card-message>{{ card.message }}</div>
+        }
+      </app-card>
     }
 
     <section class="border-t border-grey pt-2 mt-2">
