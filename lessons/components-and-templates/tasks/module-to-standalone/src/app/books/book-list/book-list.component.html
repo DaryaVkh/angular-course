@@ -1,0 +1,22 @@
+<h2 class="mb-3 text-xl font-semibold">Книги</h2>
+
+<input
+  [(ngModel)]="search"
+  placeholder="Поиск по названию"
+  class="mb-4 w-full rounded-sm border border-gray-300 p-1" />
+
+<div class="flex flex-col gap-3">
+  @for (book of filteredBooks(); track book.id) {
+    <app-card
+      [title]="book.title"
+      [subtitle]="book.year.toString()"
+      appHighlight>
+      <p>{{ book.description | truncate: 50 }}</p>
+      <a [routerLink]="[book.id]" class="text-blue-600 underline">
+        Подробнее
+      </a>
+    </app-card>
+  } @empty {
+    <p class="text-gray-500">Ничего не найдено</p>
+  }
+</div>

@@ -1,0 +1,10 @@
+@if (book(); as book) {
+  <app-card [title]="book.title" [subtitle]="book.year.toString()">
+    <p>{{ book.description }}</p>
+  </app-card>
+} @else {
+  <p class="text-gray-500">Книга не найдена</p>
+}
+<a routerLink="/books" class="mt-3 inline-block text-blue-600 underline">
+  ← Ко всем книгам
+</a>
