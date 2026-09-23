@@ -1,6 +1,6 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component, HostListener,
   inject,
   OnDestroy,
   OnInit,
@@ -29,6 +29,11 @@ export class CardComponent implements OnInit, OnDestroy {
   readonly closed = output<void>();
   readonly pinned = signal<boolean>(false);
   readonly logService = inject(EventLogService);
+
+  @HostListener('keydown.escape')
+  onEscape() {
+    this.closed.emit();
+  }
 
   updatePinStatus(): void {
     this.pinned.update((x) => !x);
