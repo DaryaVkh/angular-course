@@ -2529,23 +2529,26 @@
     },
     "angular-module-to-standalone": {
       "projectType": "application",
-      "root": "lessons/standalone/tasks/module-to-standalone",
-      "sourceRoot": "lessons/standalone/tasks/module-to-standalone/src",
+      "root": "lessons/components-and-templates/tasks/module-to-standalone",
+      "sourceRoot": "lessons/components-and-templates/tasks/module-to-standalone/src",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/lessons/standalone/tasks/module-to-standalone",
-            "index": "lessons/standalone/tasks/module-to-standalone/src/index.html",
-            "main": "lessons/standalone/tasks/module-to-standalone/src/main.ts",
+            "outputPath": "dist/lessons/components-and-templates/tasks/module-to-standalone",
+            "index": "lessons/components-and-templates/tasks/module-to-standalone/src/index.html",
+            "browser": "lessons/components-and-templates/tasks/module-to-standalone/src/main.ts",
             "polyfills": ["zone.js"],
-            "tsConfig": "lessons/standalone/tasks/module-to-standalone/tsconfig.app.json",
+            "tsConfig": "lessons/components-and-templates/tasks/module-to-standalone/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
-              "lessons/standalone/tasks/module-to-standalone/src/favicon.ico",
-              "lessons/standalone/tasks/module-to-standalone/src/assets"
+              {
+                "glob": "**/*",
+                "input": "lessons/components-and-templates/tasks/module-to-standalone/public"
+              }
             ],
             "styles": [
-              "lessons/standalone/tasks/module-to-standalone/src/styles.scss"
+              "lessons/components-and-templates/tasks/module-to-standalone/src/styles.scss"
             ],
             "scripts": []
           },
@@ -2559,19 +2562,16 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
                 }
               ],
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"

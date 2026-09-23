@@ -407,3 +407,299 @@ name = '';
 | Переиспользование | ❌         | ✅          | ❌           |
 | Контекст          | ❌         | ✅          | ❌           |
 | Назначение        | projection | шаблон      | grouping     |
+
+---
+
+## Module vs Standalone
+
+Angular изначально строился вокруг концепции **NgModule** — модулей, которые объединяют компоненты, директивы, пайпы и сервисы в логические блоки. Начиная с **Angular 14** (экспериментально) и окончательно с **Angular 15+** (стабильно), а с **Angular 17** — как **дефолтный подход в CLI**, появилась альтернатива: **standalone-компоненты**, которые могут существовать без NgModule вообще.
+
+Понимание обеих концепций важно, потому что:
+- Огромное количество существующих проектов написано на модулях.
+- Новые проекты (Angular 17+) генерируются как standalone по умолчанию.
+- Часто приходится работать в гибридных проектах (миграция).
+
+### NgModule — классический подход
+
+#### Что такое NgModule
+
+`NgModule` — это класс с декоратором `@NgModule`, который группирует связанные части приложения и описывает, как Angular должен их компилировать и связывать друг с другом.
+
+```typescript
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HeaderComponent } from './header/header.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    HeaderComponent
+  ],
+  imports: [
+    BrowserModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+
+#### Ключевые метаданные
+
+| Свойство | Назначение |
+|---|---|
+| `declarations` | Компоненты, директивы и пайпы, принадлежащие этому модулю |
+| `imports` | Другие модули, чей публичный API (экспортированные сущности) нужен этому модулю |
+| `exports` | Что из `declarations`/`imports` доступно модулям, которые импортируют этот модуль |
+| `providers` | Сервисы, регистрируемые в DI на уровне модуля |
+| `bootstrap` | Корневой компонент, с которого начинается рендер (только в корневом модуле) |
+
+#### Типы модулей
+
+**Корневой модуль (`AppModule`)** — запускает приложение:
+
+```typescript
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));
+```
+
+Также является core-модулем, в котором определяются синглтон сервисы, guard-ы, интерсепторы.
+
+**Фичевые модули (Feature Modules)** — инкапсулируют функциональность:
+
+```typescript
+@NgModule({
+  declarations: [UserListComponent, UserCardComponent],
+  imports: [CommonModule, RouterModule.forChild(userRoutes)],
+  exports: [UserListComponent]
+})
+export class UserModule { }
+```
+
+**Shared-модули** — переиспользуемые компоненты/пайпы/директивы:
+
+```typescript
+@NgModule({
+  declarations: [HighlightDirective, TruncatePipe],
+  imports: [CommonModule],
+  exports: [HighlightDirective, TruncatePipe, CommonModule]
+})
+export class SharedModule { }
+```
+
+#### Ленивая загрузка модулей (Lazy Loading)
+
+```typescript
+const routes: Routes = [
+  {
+    path: 'users',
+    loadChildren: () => import('./user/user.module').then(m => m.UserModule)
+  }
+];
+```
+
+Это одно из главных преимуществ модульной системы — деление бандла по фичам.
+
+#### Проблемы модульного подхода
+
+- **Бойлерплейт**: даже маленький компонент требует создания/правки модуля.
+- **Скрытые зависимости**: чтобы понять, что доступно компоненту, нужно смотреть весь граф `imports`/`exports` модуля.
+- **Сложность для новичков**: непонятно, зачем нужен ещё один слой абстракции поверх компонентов.
+- **Циклические зависимости** между модулями иногда трудно отследить.
+
+---
+
+### Standalone-компоненты — новый подход
+
+#### Идея
+
+Standalone-компонент (директива, пайп) **сам объявляет свои зависимости** через свойство `imports` прямо в декораторе `@Component`, без необходимости в промежуточном `NgModule`.
+
+```typescript
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+
+@Component({
+  selector: 'app-user-card',
+  standalone: true, // с Angular 19 это значение по умолчанию, можно не писать
+  imports: [CommonModule, RouterLink],
+  template: `
+    <div class="card">
+      <h3>{{ user.name }}</h3>
+    </div>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class UserCardComponent {
+  readonly user = { id: 1, name: 'Анна' };
+}
+```
+
+Обратите внимание:
+- `standalone: true` — говорит Angular, что компонент не принадлежит никакому `NgModule`.
+- `imports: [...]` — сюда попадают **другие standalone-компоненты, директивы, пайпы или целые NgModule** (для обратной совместимости импортировать классический модуль тоже можно).
+
+#### Запуск standalone-приложения
+
+Вместо `bootstrapModule` используется `bootstrapApplication`:
+
+```typescript
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { routes } from './app/app.routes';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(routes),
+    provideHttpClient()
+  ]
+}).catch(err => console.error(err));
+```
+
+Здесь нет `AppModule` вообще. Приложение — это просто дерево standalone-компонентов, а глобальные сервисы настраиваются через функции `provideSomething()`.
+
+#### Standalone директивы и пайпы
+
+```typescript
+@Directive({
+  selector: '[appHighlight]',
+  standalone: true
+})
+export class HighlightDirective {
+  @HostBinding('style.backgroundColor') color = 'yellow';
+}
+
+@Pipe({
+  name: 'truncate',
+  standalone: true
+})
+export class TruncatePipe implements PipeTransform {
+  transform(value: string, limit = 20): string {
+    return value.length > limit ? value.slice(0, limit) + '…' : value;
+  }
+}
+```
+
+Их так же подключают через `imports` в компоненте, который их использует.
+
+#### Ленивая загрузка standalone-компонентов
+
+Вместо `loadChildren` с модулем — `loadComponent` с компонентом:
+
+```typescript
+const routes: Routes = [
+  {
+    path: 'users',
+    loadComponent: () => import('./users/user-list.component').then(c => c.UserListComponent)
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./admin/admin.routes').then(m => m.ADMIN_ROUTES)
+  }
+];
+```
+
+Файл с дочерними роутами (`admin.routes.ts`) — это просто массив `Routes`, без модуля:
+
+```typescript
+export const ADMIN_ROUTES: Routes = [
+  { path: '', component: AdminDashboardComponent },
+  { path: 'settings', component: AdminSettingsComponent }
+];
+```
+
+---
+
+### Совместное использование standalone и NgModule
+
+Angular спроектировал переход так, чтобы оба подхода были совместимы.
+
+#### Standalone-компонент внутри NgModule-приложения
+
+Можно импортировать standalone-компонент прямо в `imports` обычного модуля:
+
+```typescript
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    StandaloneWidgetComponent // standalone-компонент импортируется как модуль
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+
+#### NgModule внутри standalone-компонента
+
+Аналогично, старый модуль можно подключить в `imports` standalone-компонента:
+
+```typescript
+@Component({
+  standalone: true,
+  imports: [LegacyMaterialModule], // старый NgModule
+  selector: 'app-root',
+  template: `...`
+})
+export class AppComponent {}
+```
+
+Это ключевая возможность для **постепенной миграции**: не нужно переписывать всё приложение разом.
+
+---
+
+## 5. Сравнительная таблица
+
+| Аспект | NgModule | Standalone                                                           |
+|---|---|----------------------------------------------------------------------|
+| Точка входа | `bootstrapModule(AppModule)` | `bootstrapApplication(AppComponent)`                                 |
+| Объявление зависимостей | `declarations` в модуле | `imports` прямо в компоненте                                         |
+| Глобальные провайдеры | `providers` в `AppModule` | массив `providers` в `bootstrapApplication`, функции `provideSmth()` |
+| Ленивая загрузка | `loadChildren` → модуль | `loadComponent` (компонент) / `loadChildren` → массив `Routes`       |
+| Бойлерплейт | Больше (нужен файл модуля) | Меньше                                                               |
+| Явность зависимостей | Нужно смотреть модуль | Видно прямо в компоненте                                             |
+| CLI по умолчанию (Angular 17+) | Нет (нужно `--standalone=false`) | Да                                                                   |
+| Поддержка | Полная, актуальна | Полная, рекомендуемый путь развития                                  |
+
+---
+
+### Миграция существующего проекта
+
+Angular предоставляет автоматизированную схематику:
+
+```bash
+ng generate @angular/core:standalone
+```
+
+Она выполняется в несколько проходов:
+1. Конвертация компонентов/директив/пайпов в `standalone: true`.
+2. Удаление ставших ненужными `NgModule`.
+3. Замена `bootstrapModule` на `bootstrapApplication`.
+
+После автоматической миграции рекомендуется вручную пройтись по коду и заменить `CommonModule` точечными импортами (`NgIf`, `NgFor` и т.д., либо оставить `CommonModule` для простоты).
+
+---
+
+### Когда что использовать
+
+**Используйте standalone, если:**
+- Начинаете новый проект (Angular 17+ это дефолт).
+- Хотите минимизировать бойлерплейт и явно видеть зависимости каждого компонента.
+- Планируете гранулярный lazy-loading на уровне отдельных компонентов.
+
+**NgModule всё ещё уместен, если:**
+- Работаете в большом legacy-проекте, где миграция дорога.
+- Используете сторонние библиотеки, которые ещё построены вокруг `forRoot()/forChild()` паттернов модулей (хотя большинство актуальных версий популярных библиотек, включая Angular Material, уже поддерживают standalone).
+
+---
+
+### Итоги
+
+- **NgModule** — исторический, но всё ещё поддерживаемый механизм группировки функциональности через `declarations/imports/exports/providers`.
+- **Standalone** — современный подход, где каждый компонент, директива и пайп самодостаточны и явно объявляют свои зависимости через `imports`.
+- Оба подхода **полностью совместимы** между собой, что позволяет мигрировать постепенно.
+- С Angular 17 standalone — это путь по умолчанию для новых проектов, и Angular team рекомендует именно его для нового кода.

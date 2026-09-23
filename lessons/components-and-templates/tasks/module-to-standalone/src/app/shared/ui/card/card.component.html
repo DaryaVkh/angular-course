@@ -1,0 +1,7 @@
+<h3 class="text-lg font-semibold">{{ title() }}</h3>
+@if (subtitle()) {
+  <p class="text-sm text-gray-500">{{ subtitle() }}</p>
+}
+<div class="mt-2">
+  <ng-content />
+</div>

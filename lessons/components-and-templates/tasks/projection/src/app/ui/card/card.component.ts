@@ -1,5 +1,10 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+} from '@angular/core';
 import { randStudent, randTeacher } from '../../data-access/fake-http.service';
 import { StudentStore } from '../../data-access/student.store';
 import { TeacherStore } from '../../data-access/teacher.store';
@@ -8,34 +13,10 @@ import { ListItemComponent } from '../list-item/list-item.component';
 
 @Component({
   selector: 'app-card',
-  template: `
-    <div
-      class="flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4"
-      [class]="customClass()">
-      @if (type() === CardType.TEACHER) {
-        <img ngSrc="assets/img/teacher.png" width="200" height="200" />
-      }
-      @if (type() === CardType.STUDENT) {
-        <img ngSrc="assets/img/student.webp" width="200" height="200" />
-      }
-
-      <section>
-        @for (item of list(); track item) {
-          <app-list-item
-            [name]="item.firstName"
-            [id]="item.id"
-            [type]="type()"></app-list-item>
-        }
-      </section>
-
-      <button
-        class="rounded-sm border border-blue-500 bg-blue-300 p-2"
-        (click)="addNewItem()">
-        Add
-      </button>
-    </div>
-  `,
+  templateUrl: './card.component.html',
+  styleUrl: './card.component.scss',
   imports: [ListItemComponent, NgOptimizedImage],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent {
   private teacherStore = inject(TeacherStore);

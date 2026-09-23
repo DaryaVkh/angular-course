@@ -1,0 +1,9 @@
+<h2 class="mb-3 text-xl font-semibold">Авторы</h2>
+<div class="flex flex-col gap-3">
+  <app-card
+    *ngFor="let author of authors; trackBy: trackById"
+    [title]="author.name"
+    appHighlight="#dbeafe">
+    <p>{{ author.bio | truncate }}</p>
+  </app-card>
+</div>
