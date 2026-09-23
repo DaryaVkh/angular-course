@@ -1,4 +1,4 @@
-import { NgOptimizedImage } from '@angular/common';
+import { NgIf, NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,7 +15,7 @@ import { ListItemComponent } from '../list-item/list-item.component';
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
-  imports: [ListItemComponent, NgOptimizedImage],
+  imports: [ListItemComponent, NgOptimizedImage, NgIf],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent {

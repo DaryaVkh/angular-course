@@ -1,7 +1,5 @@
 # Projection
 
-> author: thomas-laforge
-
 ### Run Application
 
 ```bash
@@ -16,7 +14,7 @@ npm run serve:angular-projection
 
 Content projection в Angular - это мощная техника для создания компонентов с гибко настраиваемым внешним видом. Понимание и использование концепций ng-content и ngTemplateOutlet может значительно вам помочь создавать компоненты, предназначенные для повторного использования.
 
-[Здесь]() вы можете изучить все о ng-content, начиная с простых примеров и до более сложных.
+[Здесь](https://angular.dev/guide/components/content-projection) вы можете изучить все о ng-content, начиная с простых примеров и до более сложных.
 
 Документацию ngTemplateOutlet вместе с базовыми примерами можно найти [тут](https://angular.dev/api/common/NgTemplateOutlet).
 
@@ -32,10 +30,13 @@ Content projection в Angular - это мощная техника для соз
 
 ### Пункты задания
 
-- Провести рефакторинг CardComponent и ListItemComponent:
-  - Цикл @for должен оставаться внутри CardComponent, несмотря на возможное желание перенести его в ParentCardComponent
+- Проведите рефакторинг `CardComponent` и `ListItemComponent`:
   - CardComponent не должен содержать NgIf или NgSwitch.
-  - CSS: избегайте использования ::ng-deep. Ищите альтернативные способы стилизации с помощью CSS.
+  - CSS: уберите использование ::ng-deep и старайтесь его всегда избегать. Ищите альтернативные способы стилизации с помощью CSS.
+  - Перенести картинки в конкретные карточки (teacher/student/city), в `CardComponent` оставить только соответствующий картинке ng-content
+  - Вынести обработку addNewItem и delete в конкретные карточки, добавив в `CardComponent` и `ListItemComponent` соответствующие output-ы, которые обрабатывать уже в teacher/student/city card
+  - Убрать внедрение конкретных Store сервисов из `CardComponent` и `ListItemComponent`, они ничего не должны о них знать
+- Реализуйте `CityCardComponent`
 - В `CardComponent` добавьте template reference variable `#addButton` на кнопку "Add" и `@ViewChild('addButton')`. В `ngAfterViewInit` один раз навесьте класс `flash` на `nativeElement` кнопки (и снимите его через `setTimeout`, например 600мс) — при загрузке страницы кнопка "Add" должна один раз мигнуть синим.
 - Добавьте в `CardComponent` именованный слот `<ng-content select="[card-header]"></ng-content>` перед списком элементов и `@ContentChild` с тем же селектором. С помощью `[class.has-header]` на контейнере покажите отступ/разделитель, если заголовок был передан. Прокиньте заголовок (`<h3 card-header>Учителя</h3>` / `<h3 card-header>Студенты</h3>`) из `TeacherCardComponent` и `StudentCardComponent`, а для `CityCardComponent` слот оставьте пустым — карточка города не должна визуально сломаться.
 - (*) Уберите из `CardComponent` прямой импорт и использование `<app-list-item>`. Вместо этого пусть `TeacherCardComponent`, `StudentCardComponent` и `CityCardComponent` передают собственный `<ng-template let-item let-i="index">` с разметкой строки списка, а `CardComponent` получает его через `@ContentChild(TemplateRef)` и рендерит внутри своего `@for` через `<ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: item, index: i } as CardRowContext<T>">`. После этого `CardComponent` не должен знать ни о `ListItemComponent`, ни о структуре City/Student/Teacher — визуально список должен остаться прежним, но верстку строки теперь определяет каждая конкретная карточка.

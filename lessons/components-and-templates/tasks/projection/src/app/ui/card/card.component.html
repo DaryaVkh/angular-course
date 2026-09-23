@@ -1,12 +1,8 @@
 <div
   class="flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4"
   [class]="customClass()">
-  @if (type() === CardType.TEACHER) {
-    <img ngSrc="assets/img/teacher.png" width="200" height="200" />
-  }
-  @if (type() === CardType.STUDENT) {
-    <img ngSrc="assets/img/student.webp" width="200" height="200" />
-  }
+  <img *ngIf="type() === CardType.TEACHER" ngSrc="assets/img/teacher.png" width="200" height="200" priority />
+  <img *ngIf="type() === CardType.STUDENT" ngSrc="assets/img/student.webp" width="200" height="200" priority />
 
   <section>
     @for (item of list(); track item) {
