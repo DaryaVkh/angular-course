@@ -1,4 +1,8 @@
 <app-card
   [list]="teachers()"
-  [type]="cardType"
-  customClass="bg-light-red"></app-card>
+  [getName]="getName"
+  (addOne)="addTeacher()"
+  (deleteOne)="deleteOne($event)"
+  class="bg-light-red">
+  <img card-img ngSrc="assets/img/teacher.png" width="200" height="200" alt="Учитель" priority />
+</app-card>

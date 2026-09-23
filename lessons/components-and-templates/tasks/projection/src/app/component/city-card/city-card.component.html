@@ -1,1 +1,9 @@
-TODO City
+<app-card
+  [list]="cities()"
+  [getName]="getName"
+  (addOne)="addCity()"
+  (deleteOne)="deleteOne($event)"
+  class="bg-light-green"
+>
+  <img card-img ngSrc="assets/img/city.png" width="200" height="200" alt="Студент" priority />
+</app-card>
