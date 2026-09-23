@@ -1,19 +1,22 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  contentChild,
   ElementRef,
   input,
   output,
+  TemplateRef,
   viewChild,
 } from '@angular/core';
-import { ListItemComponent } from '../list-item/list-item.component';
+import { CardRowContext } from '../../model/card.model';
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
-  imports: [ListItemComponent],
+  imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4',
@@ -21,17 +24,17 @@ import { ListItemComponent } from '../list-item/list-item.component';
 })
 export class CardComponent<T extends { id: number }> implements AfterViewInit {
   readonly list = input<T[] | null>(null);
-  readonly getName = input.required<(item: T) => string>();
-
   readonly addOne = output<void>();
-  readonly deleteOne = output<number>();
 
-  readonly addButton = viewChild<ElementRef<HTMLButtonElement>>('addButton');
+  readonly addButton =
+    viewChild.required<ElementRef<HTMLButtonElement>>('addButton');
+  readonly listItemTemplate =
+    contentChild.required<TemplateRef<CardRowContext<T>>>(TemplateRef);
 
   ngAfterViewInit(): void {
-    this.addButton()?.nativeElement.classList.add('flash');
+    this.addButton().nativeElement.classList.add('flash');
     setTimeout(
-      () => this.addButton()?.nativeElement.classList.remove('flash'),
+      () => this.addButton().nativeElement.classList.remove('flash'),
       600,
     );
   }

@@ -2,10 +2,7 @@
 
 <section>
   @for (item of list(); track item) {
-    <app-list-item
-      [name]="getName()(item)"
-      (delete)="deleteOne.emit(item.id)"
-    />
+    <ng-container *ngTemplateOutlet="listItemTemplate(); context: {$implicit: item, index: $index}" />
   }
 </section>
 

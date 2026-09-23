@@ -13,12 +13,13 @@ import {
 } from '../../data-access/fake-http.service';
 import { City } from '../../model/city.model';
 import { CardComponent } from '../../ui/card/card.component';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-city-card',
   templateUrl: './city-card.component.html',
   styleUrl: './city-card.component.scss',
-  imports: [CardComponent, NgOptimizedImage],
+  imports: [CardComponent, NgOptimizedImage, ListItemComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CityCardComponent {
