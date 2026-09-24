@@ -2,9 +2,8 @@ import { Directive, input } from '@angular/core';
 
 @Directive({
   selector: '[appHighlight]',
-  standalone: false,
   host: {
-    '[style.backgroundColor]': 'hovered ? appHighlight() : null',
+    '[style.background-color]': 'hovered ? appHighlight() : null',
     '(mouseenter)': 'hovered = true',
     '(mouseleave)': 'hovered = false',
   },
