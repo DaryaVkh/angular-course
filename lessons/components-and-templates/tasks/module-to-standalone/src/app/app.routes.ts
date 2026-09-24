@@ -11,8 +11,11 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: 'authors',
-    loadChildren: () =>
-      import('./authors/authors.routes').then((m) => m.AUTHORS_ROUTES),
+    loadComponent: () =>
+      import('./authors/author-list/author-list.component').then(
+        (m) => m.AuthorListComponent,
+      ),
+    title: 'Авторы',
   },
   { path: '**', component: NotFoundComponent, title: 'Не найдено' },
 ];
