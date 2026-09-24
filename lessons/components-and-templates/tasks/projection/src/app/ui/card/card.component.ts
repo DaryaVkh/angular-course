@@ -11,6 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { CardRowContext } from '../../model/card.model';
+import { CardHeaderComponent } from './card-header.component';
 
 @Component({
   selector: 'app-card',
@@ -20,6 +21,7 @@ import { CardRowContext } from '../../model/card.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4',
+    '[class.hasHeader]': 'header()',
   },
 })
 export class CardComponent<T extends { id: number }> implements AfterViewInit {
@@ -28,8 +30,11 @@ export class CardComponent<T extends { id: number }> implements AfterViewInit {
 
   readonly addButton =
     viewChild.required<ElementRef<HTMLButtonElement>>('addButton');
+
   readonly listItemTemplate =
     contentChild.required<TemplateRef<CardRowContext<T>>>(TemplateRef);
+
+  readonly header = contentChild(CardHeaderComponent);
 
   ngAfterViewInit(): void {
     this.addButton().nativeElement.classList.add('flash');

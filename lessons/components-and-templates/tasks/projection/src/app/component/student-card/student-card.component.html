@@ -5,6 +5,8 @@
 >
   <img card-img ngSrc="assets/img/student.webp" width="200" height="200" alt="Студент" priority />
 
+  <card-header><h3>Студенты</h3></card-header>
+
   <ng-template let-item>
     <app-list-item [name]="getName(item)" (delete)="deleteOne(item.id)"></app-list-item>
   </ng-template>

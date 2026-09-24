@@ -13,6 +13,7 @@ import {
 } from '../../data-access/fake-http.service';
 import { StudentStore } from '../../data-access/student.store';
 import { Student } from '../../model/student.model';
+import { CardHeaderComponent } from '../../ui/card/card-header.component';
 import { CardComponent } from '../../ui/card/card.component';
 import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
@@ -20,7 +21,12 @@ import { ListItemComponent } from '../../ui/list-item/list-item.component';
   selector: 'app-student-card',
   templateUrl: './student-card.component.html',
   styleUrl: './student-card.component.scss',
-  imports: [CardComponent, NgOptimizedImage, ListItemComponent],
+  imports: [
+    CardComponent,
+    NgOptimizedImage,
+    ListItemComponent,
+    CardHeaderComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentCardComponent implements OnInit {

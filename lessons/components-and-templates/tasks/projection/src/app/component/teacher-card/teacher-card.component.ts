@@ -15,12 +15,18 @@ import { TeacherStore } from '../../data-access/teacher.store';
 import { Teacher } from '../../model/teacher.model';
 import { CardComponent } from '../../ui/card/card.component';
 import { ListItemComponent } from '../../ui/list-item/list-item.component';
+import { CardHeaderComponent } from '../../ui/card/card-header.component';
 
 @Component({
   selector: 'app-teacher-card',
   templateUrl: './teacher-card.component.html',
   styleUrl: './teacher-card.component.scss',
-  imports: [CardComponent, NgOptimizedImage, ListItemComponent],
+  imports: [
+    CardComponent,
+    NgOptimizedImage,
+    ListItemComponent,
+    CardHeaderComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeacherCardComponent implements OnInit {
