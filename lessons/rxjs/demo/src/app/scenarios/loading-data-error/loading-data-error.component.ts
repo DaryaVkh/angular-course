@@ -41,18 +41,31 @@ interface ViewState {
   message?: string;
 }
 
-const IMPERATIVE_CODE = `// Три состояния — три ручных set().
-load(): void {
+const IMPERATIVE_CODE = `// Честный паритет: retry(2, delay 500ms) + обработка fallback/error
+async loadWithRetry(id: number, maxRetries = 2, delayMs = 500): Promise<void> {
   this.state.set({ kind: 'loading' });
+  let attempts = 0;
 
-  this.transport.getItem(7).subscribe({
-    next: (item) => this.state.set({ kind: 'data', item }),
-    error: (err) => this.state.set({ kind: 'error', message: err.message }),
-  });
+  while (true) {
+    try {
+      attempts++;
+      const item = await firstValueFrom(this.transport.getItem(id));
+      this.state.set({ kind: 'data', item });
+      return;
+    } catch (err) {
+      if (attempts <= maxRetries) {
+        this.log(\`попытка \${attempts} упала, ждём \${delayMs}ms...\`);
+        await new Promise((res) => setTimeout(res, delayMs));
+      } else {
+        this.state.set({ kind: 'error', message: (err as Error).message });
+        return;
+      }
+    }
+  }
 }
 
-// Проблемы: состояния переключаются вручную,
-// нет retry, при ошибке поток просто умирает.`;
+// 20+ строк вложенных try/catch, async/await циклов и таймаутов
+// против лаконичной цепочки pipe(retry({ count: 2, delay: 500 }), catchError(...))`;
 
 const REACTIVE_CODE = `// Один поток ViewState: loading → data | error.
 // retry — повторить запрос, catchError — не уронить поток.
@@ -104,7 +117,7 @@ function toProfile(item: ItemPayload): ProfileView {
   imports: [CommonModule, SplitViewComponent],
   template: `
     <app-split-view
-      imperativeTitle="Императивно (state-машина вручную)"
+      imperativeTitle="Императивно (цикл retry + задержка)"
       reactiveTitle="Реактивно (startWith + retry + catchError)"
       [imperativeCode]="imperativeCode"
       [reactiveCode]="reactiveCode"
@@ -312,21 +325,48 @@ export class LoadingDataErrorComponent {
       });
   }
 
+  /**
+   * Честный императивный паритет: retry({ count: 2, delay: 500 }) вручную.
+   * Повторяем запрос до 2 раз при ошибках с паузой 500мс перед падением в error-состояние.
+   */
   protected impLoad(): void {
     this.impState.set({ kind: 'loading' });
-    this.log.push('imperative', 'event', 'imp load');
-    this.transport
-      .getItem(7, { failRate: 0.7, delayMs: 300 })
-      .subscribe({
-        next: (item) => {
-          this.impState.set({ kind: 'data', item });
-          this.log.push('imperative', 'next', item.name);
-        },
-        error: (err: Error) => {
-          this.impState.set({ kind: 'error', message: err.message });
-          this.log.push('imperative', 'error', err.message);
-        },
-      });
+    this.log.push('imperative', 'event', 'imp load (попытка 1)');
+
+    const maxRetries = 2;
+    const retryDelay = 500;
+    let attempts = 0;
+
+    const execute = () => {
+      attempts++;
+      this.transport
+        .getItem(7, { failRate: 0.7, delayMs: 300 })
+        .subscribe({
+          next: (item) => {
+            this.impState.set({ kind: 'data', item });
+            this.log.push('imperative', 'next', `${item.name} (успех на попытке ${attempts})`);
+          },
+          error: (err: Error) => {
+            if (attempts <= maxRetries) {
+              this.log.push(
+                'imperative',
+                'info',
+                `попытка ${attempts} не удалась (${err.message}), retry через ${retryDelay}ms...`,
+              );
+              setTimeout(execute, retryDelay);
+            } else {
+              this.impState.set({ kind: 'error', message: err.message });
+              this.log.push(
+                'imperative',
+                'error',
+                `все ${attempts} попытки исчерпаны: ${err.message}`,
+              );
+            }
+          },
+        });
+    };
+
+    execute();
   }
 }
 

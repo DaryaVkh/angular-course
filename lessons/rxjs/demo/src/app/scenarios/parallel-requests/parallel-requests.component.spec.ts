@@ -37,4 +37,17 @@ describe('ParallelRequestsComponent', () => {
     expect(fakeTransport.getItem).toHaveBeenCalledTimes(4);
     expect(component.reaReady()).toBe(4);
   });
+
+  it('impRunAll через Promise.all ожидает все элементы', async () => {
+    component.impRunAll();
+    expect(fakeTransport.getItem).toHaveBeenCalledTimes(4);
+    await Promise.resolve();
+    expect(component.impReady()).toBe(4);
+  });
+
+  it('impRunStream наполняет массив по мере готовности', () => {
+    component.impRunStream();
+    expect(fakeTransport.getItem).toHaveBeenCalledTimes(4);
+    expect(component.impReady()).toBe(4);
+  });
 });
