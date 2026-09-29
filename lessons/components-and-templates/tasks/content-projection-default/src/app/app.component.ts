@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { CardComponent } from './card.component';
 import { EventLogService } from './event-log.service';
 
@@ -18,13 +23,26 @@ let nextCardId = 3;
       <label class="flex flex-col gap-1">
         Наименование новой карточки
         <input
+          #titleInput
           placeholder="Наименование"
-          class="border border-grey rounded-sm p-1" />
+          class="border border-grey rounded-sm p-1"
+          (keydown.enter)="addCard(titleInput.value); titleInput.value = ''" />
       </label>
+      <button
+        type="button"
+        class="border border-grey rounded-sm p-1"
+        (click)="addCard(titleInput.value); titleInput.value = ''">
+        Добавить
+      </button>
     </div>
 
     @for (card of cards(); track card.id) {
-      <app-card [title]="card.title" [message]="card.message" />
+      <app-card (closed)="removeCard(card.id)">
+        <div card-title>{{ card.title }}</div>
+        @if (card.message) {
+          <div #cardMessage card-message>{{ card.message }}</div>
+        }
+      </app-card>
     }
 
     <section class="border-t border-grey pt-2 mt-2">
