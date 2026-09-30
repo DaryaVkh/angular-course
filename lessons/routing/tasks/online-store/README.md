@@ -55,7 +55,7 @@ npm run serve:angular-online-store
 - **`unsaved-changes.guard.ts`** (`canDeactivate`) — вызывает `component.hasUnsavedChanges()` (метод уже
   реализован в `CheckoutComponent`) и, если там `true`, показывает `window.confirm(...)`.
 - **`product.resolver.ts`** — достаёт `:id` из `route.paramMap`, грузит товар через
-  `productsService.getById(id)`. Если товар не найден — `router.navigate(['/catalog'])` и `of(null)`.
+  `productsService.getById(id)`. Если товар не найден — `router.navigate(['/catalog'])` и `null`. Подсказка: резолвер должен возвращать `return productsService.getById(id).pipe(map(product => { if (!product) {...} return product; }))`
 
 ### 3. Достаньте параметры и примените их
 
@@ -75,8 +75,8 @@ npm run serve:angular-online-store
 1. Открыть `/catalog` — должен редиректить `/` на `/catalog`, товары кликабельны.
 2. Открыть `/catalog/headphones-a1` — должна открыться карточка товара (не "Товар не найден").
 3. Открыть `/catalog/does-not-exist` — должен произойти редирект на `/catalog`.
-4. Положить товар в корзину → «Оформить заказ» без логина → должно перекинуть на `/login?returnUrl=/checkout`.
-5. Войти как `user` → должно вернуть обратно на `/checkout` (а не на `/catalog`).
+4. Положить товар в корзину → «Оформить заказ» без логина → должно перекинуть на `/login?returnUrl=/cart`.
+5. Войти как `user` → должно вернуть обратно на `/cart` (а не на `/catalog`).
 6. Заполнить форму заказа и попытаться уйти по любой ссылке — должен появиться `confirm(...)`.
 7. Отправить заказ — должен открыться `/order/<id>` с реальным номером, а кнопка «назад» не должна
    возвращать на форму чекаута.
