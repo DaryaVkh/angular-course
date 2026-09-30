@@ -6,6 +6,8 @@ export class EventLogService {
 
   log(message: string): void {
     const time = new Date().toLocaleTimeString();
-    this.entries.update((entries) => [`${time} — ${message}`, ...entries].slice(0, 20));
+    this.entries.update((entries) =>
+      [`${time} — ${message}`, ...entries].slice(0, 20),
+    );
   }
 }
