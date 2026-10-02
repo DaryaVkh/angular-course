@@ -11,8 +11,9 @@ export const routes: Routes = [
   },
   {
     path: 'authors',
-    loadChildren: () =>
-      import('./authors/authors.routes').then(m => m.AUTHORS_ROUTES),
+    title: 'Авторы',
+    loadComponent: () =>
+      import('./authors/author-list/author-list.component').then(m => m.AuthorListComponent),
   },
   { path: '**', component: NotFoundComponent, title: 'Не найдено' },
 ];
