@@ -8,10 +8,11 @@ import {
 } from '@angular/core';
 import { BooksService } from '../books.service';
 import { CardComponent } from '../../shared/ui/card/card.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-book-detail',
-  imports: [CardComponent],
+  imports: [CardComponent, RouterLink],
   templateUrl: './book-detail.component.html',
   styleUrl: './book-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

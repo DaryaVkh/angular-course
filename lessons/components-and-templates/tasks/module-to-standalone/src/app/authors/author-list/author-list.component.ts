@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Author } from '../author.model';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 import { CardComponent } from '../../shared/ui/card/card.component';
+import { HighlightDirective } from '../../shared/directives/highlight.directive';
 
 @Component({
   selector: 'app-author-list',
-  imports: [TruncatePipe, CardComponent],
+  imports: [TruncatePipe, CardComponent, HighlightDirective],
   templateUrl: './author-list.component.html',
   styleUrl: './author-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
