@@ -6,9 +6,11 @@ import {
   signal,
 } from '@angular/core';
 import { BooksService } from '../books.service';
+import { CardComponent } from '../../shared/ui/card/card.component';
 
 @Component({
   selector: 'app-book-list',
+  imports: [CardComponent],
   templateUrl: './book-list.component.html',
   styleUrl: './book-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

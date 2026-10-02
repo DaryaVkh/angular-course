@@ -7,9 +7,11 @@ import {
   numberAttribute,
 } from '@angular/core';
 import { BooksService } from '../books.service';
+import { CardComponent } from '../../shared/ui/card/card.component';
 
 @Component({
   selector: 'app-book-detail',
+  imports: [CardComponent],
   templateUrl: './book-detail.component.html',
   styleUrl: './book-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
