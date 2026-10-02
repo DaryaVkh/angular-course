@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CardComponent } from '../shared/ui/card/card.component';
 
 @Component({
   selector: 'app-home',
-  standalone: false,
+  imports: [CardComponent, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
