@@ -10,7 +10,6 @@ import { BooksService } from '../books.service';
 
 @Component({
   selector: 'app-book-detail',
-  standalone: false,
   templateUrl: './book-detail.component.html',
   styleUrl: './book-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

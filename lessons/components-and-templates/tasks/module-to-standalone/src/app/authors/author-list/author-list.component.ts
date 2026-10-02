@@ -3,7 +3,6 @@ import { Author } from '../author.model';
 
 @Component({
   selector: 'app-author-list',
-  standalone: false,
   templateUrl: './author-list.component.html',
   styleUrl: './author-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
