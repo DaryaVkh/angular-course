@@ -32,10 +32,10 @@ Standalone-компоненты появились в Angular 14, стали с�
 [X] Сделайте все компоненты, директивы и пайпы standalone (уберите `standalone: false`). Каждый компонент должен сам импортировать то, что использует в шаблоне: `CardComponent`, `HighlightDirective`, `TruncatePipe`, `RouterLink`, `RouterLinkActive`, `RouterOutlet`, `FormsModule` и т.д.
 [X] Удалите `SharedModule`, `CoreModule`, `HomeModule`. Подумайте, что делать с `CommonModule`, который реэкспортировал `SharedModule`: какие из его частей реально нужны.
 [X] Замените `AppModule` на `bootstrapApplication(AppComponent, appConfig)`. Вынесите провайдеры в `app.config.ts` (`provideZoneChangeDetection`, `provideRouter`).
-- Замените `AppRoutingModule` на массив `routes` в `app.routes.ts` и `provideRouter(routes, withComponentInputBinding())` — вместо `bindToComponentInputs: true`.
-- Замените `BooksRoutingModule`/`AuthorsRoutingModule` на файлы `books.routes.ts`/`authors.routes.ts`, а `loadChildren` в корневом роутинге — на загрузку массива маршрутов (`import('./books/books.routes').then(m => m.BOOKS_ROUTES)`).
-- `BooksService` сейчас предоставляется в `BooksModule`. Сохраните его область видимости: перенесите его в `providers` родительского маршрута `books` (а не в `providedIn: 'root'`). Проверьте, что сервис по-прежнему создаётся только при переходе в раздел книг.
-- (*) Для маршрута `authors` используйте `loadComponent` вместо `loadChildren`, раз в разделе всего одна страница.
+[X] Замените `AppRoutingModule` на массив `routes` в `app.routes.ts` и `provideRouter(routes, withComponentInputBinding())` — вместо `bindToComponentInputs: true`.
+[X] Замените `BooksRoutingModule`/`AuthorsRoutingModule` на файлы `books.routes.ts`/`authors.routes.ts`, а `loadChildren` в корневом роутинге — на загрузку массива маршрутов (`import('./books/books.routes').then(m => m.BOOKS_ROUTES)`).
+[] `BooksService` сейчас предоставляется в `BooksModule`. Сохраните его область видимости: перенесите его в `providers` родительского маршрута `books` (а не в `providedIn: 'root'`). Проверьте, что сервис по-прежнему создаётся только при переходе в раздел книг.
+[] (*) Для маршрута `authors` используйте `loadComponent` вместо `loadChildren`, раз в разделе всего одна страница.
 
 ## Проверка
 
