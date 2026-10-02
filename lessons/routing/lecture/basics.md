@@ -356,16 +356,16 @@ const routes: Routes = [
         component: UserListComponent,
       },
       {
-        path: ':id',
-        component: UserCardComponent,
-      },
-      {
         path: 'create',
         component: UserFormComponent,
       },
       {
         path: 'update/:id',
         component: UserFormComponent,
+      },
+      {
+        path: ':id',
+        component: UserCardComponent,
       },
     ],
   },
