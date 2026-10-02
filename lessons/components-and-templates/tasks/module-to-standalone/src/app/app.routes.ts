@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NotFoundComponent } from './core/not-found/not-found.component';
 import { HomeComponent } from './home/home.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', component: HomeComponent, title: 'Главная' },
   {
     path: 'books',
@@ -17,9 +17,3 @@ const routes: Routes = [
   },
   { path: '**', component: NotFoundComponent, title: 'Не найдено' },
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes, { bindToComponentInputs: true })],
-  exports: [RouterModule],
-})
-export class AppRoutingModule {}
