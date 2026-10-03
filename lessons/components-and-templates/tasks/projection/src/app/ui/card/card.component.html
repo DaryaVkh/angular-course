@@ -1,15 +1,11 @@
 <div class="flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4" [class]="customClass()">
   <ng-content select="[card-img]"/>
   <ng-content select="[card-header]"/>
-  <ng-content />
   <section [class.has-header]="!!header">
     @for (item of list(); track item) {
-    <app-list-item 
-      [name]="item.firstName" 
-      [id]="item.id" 
-      [type]="type()"
-      (delete)="delete.emit($event)">
-    </app-list-item>
+       <ng-container
+        [ngTemplateOutlet]="rowTpl ?? null"
+        [ngTemplateOutletContext]="{ $implicit: item, index: $index }" />
     }
   </section>
 

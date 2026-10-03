@@ -12,12 +12,13 @@ import { CardType } from '../../model/card.model';
 import { CardComponent } from '../../ui/card/card.component';
 import { CityStore } from '../../data-access/city.store';
 import { NgOptimizedImage } from '@angular/common';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-city-card',
   templateUrl: './city-card.component.html',
   styleUrl: './city-card.component.scss',
-  imports: [CardComponent, NgOptimizedImage],
+  imports: [CardComponent, NgOptimizedImage, ListItemComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CityCardComponent implements OnInit {

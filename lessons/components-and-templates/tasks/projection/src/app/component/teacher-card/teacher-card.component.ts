@@ -12,12 +12,13 @@ import { CardType } from '../../model/card.model';
 import { CardComponent } from '../../ui/card/card.component';
 import { NgOptimizedImage } from '@angular/common';
 import { CardHeaderDirective } from '../../ui/card-header/card-header.directive';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-teacher-card',
   templateUrl: './teacher-card.component.html',
   styleUrl: './teacher-card.component.scss',
-  imports: [CardComponent, NgOptimizedImage, CardHeaderDirective],
+  imports: [CardComponent, NgOptimizedImage, CardHeaderDirective, ListItemComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeacherCardComponent implements OnInit {
