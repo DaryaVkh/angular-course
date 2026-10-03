@@ -1,7 +1,8 @@
 <div class="flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4" [class]="customClass()">
+  <ng-content select="[card-img]"/>
+  <ng-content select="[card-header]"/>
   <ng-content />
-
-  <section>
+  <section [class.has-header]="!!header">
     @for (item of list(); track item) {
     <app-list-item 
       [name]="item.firstName" 

@@ -11,12 +11,13 @@ import { StudentStore } from '../../data-access/student.store';
 import { CardType } from '../../model/card.model';
 import { CardComponent } from '../../ui/card/card.component';
 import { NgOptimizedImage } from '@angular/common';
+import { CardHeaderDirective } from '../../ui/card-header/card-header.directive';
 
 @Component({
   selector: 'app-student-card',
   templateUrl: './student-card.component.html',
   styleUrl: './student-card.component.scss',
-  imports: [CardComponent, NgOptimizedImage],
+  imports: [CardComponent, NgOptimizedImage, CardHeaderDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentCardComponent implements OnInit {

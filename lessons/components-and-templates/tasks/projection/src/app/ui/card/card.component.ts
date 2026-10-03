@@ -1,7 +1,9 @@
 import {
+  AfterContentInit,
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ContentChild,
   ElementRef,
   input,
   output,
@@ -9,6 +11,7 @@ import {
 } from '@angular/core';
 import { CardType } from '../../model/card.model';
 import { ListItemComponent } from '../list-item/list-item.component';
+import { CardHeaderDirective } from '../card-header/card-header.directive';
 
 @Component({
   selector: 'app-card',
@@ -26,6 +29,9 @@ export class CardComponent implements AfterViewInit {
   readonly delete = output<number>();
 
   CardType = CardType;
+
+  @ContentChild(CardHeaderDirective)
+  header?: CardHeaderDirective;
 
   @ViewChild("addButton")
   addButton!: ElementRef<HTMLButtonElement>;
