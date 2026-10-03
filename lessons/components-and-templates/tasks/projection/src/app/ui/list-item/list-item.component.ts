@@ -16,8 +16,6 @@ import { CardType } from '../../model/card.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListItemComponent {
-  private teacherStore = inject(TeacherStore);
-  private studentStore = inject(StudentStore);
 
   readonly id = input.required<number>();
   readonly name = input.required<string>();
