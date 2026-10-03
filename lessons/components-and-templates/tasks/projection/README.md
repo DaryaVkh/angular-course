@@ -30,13 +30,13 @@ Content projection в Angular - это мощная техника для соз
 
 ### Пункты задания
 
-[] Проведите рефакторинг `CardComponent` и `ListItemComponent`:
-  [X] CardComponent не должен содержать NgIf или NgSwitch.
-  [X] CSS: уберите использование ::ng-deep и старайтесь его всегда избегать. Ищите альтернативные способы стилизации с помощью CSS.
-  [X] Перенести картинки в конкретные карточки (teacher/student/city), в `CardComponent` оставить только соответствующий картинке ng-content
-  [X] Вынести обработку addNewItem и delete в конкретные карточки, добавив в `CardComponent` и `ListItemComponent` соответствующие output-ы, которые обрабатывать уже в teacher/student/city card
-  [X] Убрать внедрение конкретных Store сервисов из `CardComponent` и `ListItemComponent`, они ничего не должны о них знать
-[X] Реализуйте `CityCardComponent`
-[] В `CardComponent` добавьте template reference variable `#addButton` на кнопку "Add" и `@ViewChild('addButton')`. В `ngAfterViewInit` один раз навесьте класс `flash` на `nativeElement` кнопки (и снимите его через `setTimeout`, например 600мс) — при загрузке страницы кнопка "Add" должна один раз мигнуть синим.
-[] Добавьте в `CardComponent` именованный слот `<ng-content select="[card-header]"></ng-content>` перед списком элементов и `@ContentChild` с тем же селектором. С помощью `[class.has-header]` на контейнере покажите отступ/разделитель, если заголовок был передан. Прокиньте заголовок (`<h3 card-header>Учителя</h3>` / `<h3 card-header>Студенты</h3>`) из `TeacherCardComponent` и `StudentCardComponent`, а для `CityCardComponent` слот оставьте пустым — карточка города не должна визуально сломаться.
-[] (*) Уберите из `CardComponent` прямой импорт и использование `<app-list-item>`. Вместо этого пусть `TeacherCardComponent`, `StudentCardComponent` и `CityCardComponent` передают собственный `<ng-template let-item let-i="index">` с разметкой строки списка, а `CardComponent` получает его через `@ContentChild(TemplateRef)` и рендерит внутри своего `@for` через `<ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: item, index: i } as CardRowContext<T>">`. После этого `CardComponent` не должен знать ни о `ListItemComponent`, ни о структуре City/Student/Teacher — визуально список должен остаться прежним, но верстку строки теперь определяет каждая конкретная карточка.
+- (V) Проведите рефакторинг `CardComponent` и `ListItemComponent`:
+  - (V) CardComponent не должен содержать NgIf или NgSwitch.
+  - (V) CSS: уберите использование ::ng-deep и старайтесь его всегда избегать. Ищите альтернативные способы стилизации с помощью CSS.
+  - (V) Перенести картинки в конкретные карточки (teacher/student/city), в `CardComponent` оставить только соответствующий картинке ng-content
+  - (V) Вынести обработку addNewItem и delete в конкретные карточки, добавив в `CardComponent` и `ListItemComponent` соответствующие output-ы, которые обрабатывать уже в teacher/student/city card
+  - (V) Убрать внедрение конкретных Store сервисов из `CardComponent` и `ListItemComponent`, они ничего не должны о них знать
+- (V) Реализуйте `CityCardComponent`
+- () В `CardComponent` добавьте template reference variable `#addButton` на кнопку "Add" и `@ViewChild('addButton')`. В `ngAfterViewInit` один раз навесьте класс `flash` на `nativeElement` кнопки (и снимите его через `setTimeout`, например 600мс) — при загрузке страницы кнопка "Add" должна один раз мигнуть синим.
+- () Добавьте в `CardComponent` именованный слот `<ng-content select="[card-header]"></ng-content>` перед списком элементов и `@ContentChild` с тем же селектором. С помощью `[class.has-header]` на контейнере покажите отступ/разделитель, если заголовок был передан. Прокиньте заголовок (`<h3 card-header>Учителя</h3>` / `<h3 card-header>Студенты</h3>`) из `TeacherCardComponent` и `StudentCardComponent`, а для `CityCardComponent` слот оставьте пустым — карточка города не должна визуально сломаться.
+- () (*) Уберите из `CardComponent` прямой импорт и использование `<app-list-item>`. Вместо этого пусть `TeacherCardComponent`, `StudentCardComponent` и `CityCardComponent` передают собственный `<ng-template let-item let-i="index">` с разметкой строки списка, а `CardComponent` получает его через `@ContentChild(TemplateRef)` и рендерит внутри своего `@for` через `<ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: item, index: i } as CardRowContext<T>">`. После этого `CardComponent` не должен знать ни о `ListItemComponent`, ни о структуре City/Student/Teacher — визуально список должен остаться прежним, но верстку строки теперь определяет каждая конкретная карточка.
