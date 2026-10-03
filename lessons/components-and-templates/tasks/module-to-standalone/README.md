@@ -29,13 +29,13 @@ Standalone-компоненты появились в Angular 14, стали с�
 
 ## Пункты задания:
 
-[X] Сделайте все компоненты, директивы и пайпы standalone (уберите `standalone: false`). Каждый компонент должен сам импортировать то, что использует в шаблоне: `CardComponent`, `HighlightDirective`, `TruncatePipe`, `RouterLink`, `RouterLinkActive`, `RouterOutlet`, `FormsModule` и т.д.
-[X] Удалите `SharedModule`, `CoreModule`, `HomeModule`. Подумайте, что делать с `CommonModule`, который реэкспортировал `SharedModule`: какие из его частей реально нужны.
-[X] Замените `AppModule` на `bootstrapApplication(AppComponent, appConfig)`. Вынесите провайдеры в `app.config.ts` (`provideZoneChangeDetection`, `provideRouter`).
-[X] Замените `AppRoutingModule` на массив `routes` в `app.routes.ts` и `provideRouter(routes, withComponentInputBinding())` — вместо `bindToComponentInputs: true`.
-[X] Замените `BooksRoutingModule`/`AuthorsRoutingModule` на файлы `books.routes.ts`/`authors.routes.ts`, а `loadChildren` в корневом роутинге — на загрузку массива маршрутов (`import('./books/books.routes').then(m => m.BOOKS_ROUTES)`).
-[X] `BooksService` сейчас предоставляется в `BooksModule`. Сохраните его область видимости: перенесите его в `providers` родительского маршрута `books` (а не в `providedIn: 'root'`). Проверьте, что сервис по-прежнему создаётся только при переходе в раздел книг.
-[X] (*) Для маршрута `authors` используйте `loadComponent` вместо `loadChildren`, раз в разделе всего одна страница.
+- [x] Сделайте все компоненты, директивы и пайпы standalone (уберите `standalone: false`). Каждый компонент должен сам импортировать то, что использует в шаблоне: `CardComponent`, `HighlightDirective`, `TruncatePipe`, `RouterLink`, `RouterLinkActive`, `RouterOutlet`, `FormsModule` и т.д.
+- [x] Удалите `SharedModule`, `CoreModule`, `HomeModule`. Подумайте, что делать с `CommonModule`, который реэкспортировал `SharedModule`: какие из его частей реально нужны.
+- [x] Замените `AppModule` на `bootstrapApplication(AppComponent, appConfig)`. Вынесите провайдеры в `app.config.ts` (`provideZoneChangeDetection`, `provideRouter`).
+- [x] Замените `AppRoutingModule` на массив `routes` в `app.routes.ts` и `provideRouter(routes, withComponentInputBinding())` — вместо `bindToComponentInputs: true`.
+- [x] Замените `BooksRoutingModule`/`AuthorsRoutingModule` на файлы `books.routes.ts`/`authors.routes.ts`, а `loadChildren` в корневом роутинге — на загрузку массива маршрутов (`import('./books/books.routes').then(m => m.BOOKS_ROUTES)`).
+- [x] `BooksService` сейчас предоставляется в `BooksModule`. Сохраните его область видимости: перенесите его в `providers` родительского маршрута `books` (а не в `providedIn: 'root'`). Проверьте, что сервис по-прежнему создаётся только при переходе в раздел книг.
+- [x] (*) Для маршрута `authors` используйте `loadComponent` вместо `loadChildren`, раз в разделе всего одна страница.
 
 ## Проверка
 
