@@ -7,6 +7,6 @@ import { AuthService } from '../../services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-dashboard.component.html',
 })
-export class AdminDashboardComponent {
+export default class AdminDashboardComponent {
   protected readonly auth = inject(AuthService);
 }
