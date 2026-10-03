@@ -34,7 +34,7 @@ Content projection в Angular - это мощная техника для соз
   [X] CardComponent не должен содержать NgIf или NgSwitch.
   [X] CSS: уберите использование ::ng-deep и старайтесь его всегда избегать. Ищите альтернативные способы стилизации с помощью CSS.
   [X] Перенести картинки в конкретные карточки (teacher/student/city), в `CardComponent` оставить только соответствующий картинке ng-content
-  [] Вынести обработку addNewItem и delete в конкретные карточки, добавив в `CardComponent` и `ListItemComponent` соответствующие output-ы, которые обрабатывать уже в teacher/student/city card
+  [X] Вынести обработку addNewItem и delete в конкретные карточки, добавив в `CardComponent` и `ListItemComponent` соответствующие output-ы, которые обрабатывать уже в teacher/student/city card
   [] Убрать внедрение конкретных Store сервисов из `CardComponent` и `ListItemComponent`, они ничего не должны о них знать
 [] Реализуйте `CityCardComponent`
 [] В `CardComponent` добавьте template reference variable `#addButton` на кнопку "Add" и `@ViewChild('addButton')`. В `ngAfterViewInit` один раз навесьте класс `flash` на `nativeElement` кнопки (и снимите его через `setTimeout`, например 600мс) — при загрузке страницы кнопка "Add" должна один раз мигнуть синим.

@@ -3,6 +3,7 @@ import {
   Component,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { StudentStore } from '../../data-access/student.store';
 import { TeacherStore } from '../../data-access/teacher.store';
@@ -22,12 +23,5 @@ export class ListItemComponent {
   readonly name = input.required<string>();
   readonly type = input.required<CardType>();
 
-  delete(id: number) {
-    const type = this.type();
-    if (type === CardType.TEACHER) {
-      this.teacherStore.deleteOne(id);
-    } else if (type === CardType.STUDENT) {
-      this.studentStore.deleteOne(id);
-    }
-  }
+  readonly delete = output<number>();
 }

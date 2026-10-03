@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FakeHttpService } from '../../data-access/fake-http.service';
+import { FakeHttpService, randomCity } from '../../data-access/fake-http.service';
 import { CardType } from '../../model/card.model';
 import { CardComponent } from '../../ui/card/card.component';
 import { CityStore } from '../../data-access/city.store';
@@ -19,7 +19,7 @@ import { NgOptimizedImage } from '@angular/common';
   styleUrl: './city-card.component.scss',
   imports: [CardComponent, NgOptimizedImage],
   changeDetection: ChangeDetectionStrategy.OnPush,
-}) 
+})
 export class CityCardComponent implements OnInit {
   private http = inject(FakeHttpService);
   private store = inject(CityStore);
@@ -32,6 +32,14 @@ export class CityCardComponent implements OnInit {
     this.http.fetchCities$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((t) => this.store.addAll(t));
+  }
+
+  onAdd() {
+    this.store.addOne(randomCity());
+  }
+
+  onDelete(id: number) {
+    this.store.deleteOne(id);
   }
 }
 

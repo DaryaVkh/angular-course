@@ -1,15 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  inject,
   input,
+  output,
 } from '@angular/core';
-import { randStudent, randTeacher, randomCity } from '../../data-access/fake-http.service';
-import { StudentStore } from '../../data-access/student.store';
-import { TeacherStore } from '../../data-access/teacher.store';
 import { CardType } from '../../model/card.model';
 import { ListItemComponent } from '../list-item/list-item.component';
-import { CityStore } from '../../data-access/city.store';
 
 @Component({
   selector: 'app-card',
@@ -19,24 +15,12 @@ import { CityStore } from '../../data-access/city.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent {
-  private teacherStore = inject(TeacherStore);
-  private studentStore = inject(StudentStore);
-  private cityStore = inject(CityStore);
-
   readonly list = input<any[] | null>(null);
   readonly type = input.required<CardType>();
   readonly customClass = input('');
 
-  CardType = CardType;
+  readonly add = output<void>();
+  readonly delete = output<number>();
 
-  addNewItem() {
-    const type = this.type();
-    if (type === CardType.TEACHER) {
-      this.teacherStore.addOne(randTeacher());
-    } else if (type === CardType.STUDENT) {
-      this.studentStore.addOne(randStudent());
-    } else if (type === CardType.CITY) {
-      this.cityStore.addOne(randomCity());
-    }
-  }
+  CardType = CardType;
 }

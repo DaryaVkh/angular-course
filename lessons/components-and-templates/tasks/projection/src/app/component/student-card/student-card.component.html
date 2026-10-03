@@ -1,6 +1,8 @@
 <app-card
   [list]="students()"
   [type]="cardType"
-  customClass="bg-light-green">
+  customClass="bg-light-green"
+  (add)="onAdd()"
+  (delete)="onDelete($event)">
   <img ngSrc="assets/img/student.webp" width="200" height="200" priority />
 </app-card>
