@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+.bg-light-red {
+  background-color: rgba(250, 0, 0, 0.1);
+}
+.bg-light-green {
+  background-color: rgba(0, 250, 0, 0.1);
+}
+
 /*
  * Дополнительное задание 2 (ViewChild/ContentChild/ng-template) в tasks/projection.
  * Классы ниже станут видны, как только вы примените их в CardComponent.
