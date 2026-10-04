@@ -4,7 +4,7 @@
   (add)="onAdd()"
   (delete)="onDelete($event)">
   <img card-img ngSrc="assets/img/student.webp" width="200" height="200" priority />
-  <h3 card-header>Студенты</h3>
+  <h3 card-header #cardHeader>Студенты</h3>
   <ng-template let-student let-i="index">
     <app-list-item
       [name]="student.firstName"

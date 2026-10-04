@@ -9,7 +9,6 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { CardHeaderDirective } from '../card-header/card-header.directive';
 import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
@@ -26,10 +25,10 @@ export class CardComponent implements AfterViewInit {
   readonly add = output<void>();
   readonly delete = output<number>();
 
-  @ContentChild(CardHeaderDirective)
-  header?: CardHeaderDirective;
+  @ContentChild('cardHeader')
+  header?: ElementRef<HTMLElement>;
 
-  @ViewChild("addButton")
+  @ViewChild('addButton')
   addButton!: ElementRef<HTMLButtonElement>;
 
   @ContentChild(TemplateRef)
