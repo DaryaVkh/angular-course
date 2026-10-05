@@ -1,39 +1,60 @@
-import { NgIf, NgOptimizedImage } from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  inject,
+  ContentChild,
+  ElementRef,
   input,
+  OnDestroy,
+  output,
+  ViewChild,
 } from '@angular/core';
-import { randStudent, randTeacher } from '../../data-access/fake-http.service';
-import { StudentStore } from '../../data-access/student.store';
-import { TeacherStore } from '../../data-access/teacher.store';
 import { CardType } from '../../model/card.model';
 import { ListItemComponent } from '../list-item/list-item.component';
+import { ListItem } from '../../model/list-item';
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
-  imports: [ListItemComponent, NgOptimizedImage, NgIf],
+  imports: [ListItemComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CardComponent {
-  private teacherStore = inject(TeacherStore);
-  private studentStore = inject(StudentStore);
+export class CardComponent implements AfterViewInit, OnDestroy {
+  public readonly addNew = output<void>();
+  public readonly delete = output<number>();
 
-  readonly list = input<any[] | null>(null);
+  @ViewChild('addButton')
+  addButton!: ElementRef<HTMLButtonElement>;
+
+  @ContentChild('header')
+  header?: ElementRef<HTMLElement>;
+
+  get hasHeader(): boolean {
+    return !!this.header;
+  }
+
+  readonly list = input<ListItem[] | null>(null);
   readonly type = input.required<CardType>();
-  readonly customClass = input('');
 
-  CardType = CardType;
+  private flashTimer?: ReturnType<typeof setTimeout>;
 
   addNewItem() {
-    const type = this.type();
-    if (type === CardType.TEACHER) {
-      this.teacherStore.addOne(randTeacher());
-    } else if (type === CardType.STUDENT) {
-      this.studentStore.addOne(randStudent());
-    }
+    this.addNew.emit();
+  }
+
+  deleteItem(id: number) {
+    this.delete.emit(id);
+  }
+
+  ngAfterViewInit() : void {
+    this.addButton.nativeElement.classList.add('flash');
+    this.flashTimer = setTimeout(() => {
+      this.addButton.nativeElement.classList.remove('flash');
+    }, 600);
+  }
+
+  ngOnDestroy() : void {
+    clearTimeout(this.flashTimer)
   }
 }

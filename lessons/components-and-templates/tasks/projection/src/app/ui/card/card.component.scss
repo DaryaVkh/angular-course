@@ -1,0 +1,17 @@
+div {
+  background-color: var(--card-bg, white);
+}
+
+@keyframes flash {
+  50% {
+    background-color: #2563eb;
+  }
+}
+
+.has-header {
+  border-bottom-width: 4px;
+}
+
+button.flash {
+  animation: flash 600ms ease-in-out;
+}
