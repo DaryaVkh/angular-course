@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  width: fit-content;
+  background-color: var(--card-bg, transparent);
+}
+
+.has-header {
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgb(209 213 219);
+}
+
+.add-button.flash {
+  animation: card-add-flash 0.6s ease-out;
+}
+
+@keyframes card-add-flash {
+  0% {
+    background-color: rgb(37, 99, 235);
+    box-shadow: 0 0 0 6px rgb(37, 99, 235);
+  }
+
+  100% {
+    background-color: rgb(147, 197, 253);
+    box-shadow: 0 0 0 0 rgb(37, 99, 235);
+  }
+}

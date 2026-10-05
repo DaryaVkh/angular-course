@@ -1,4 +1,21 @@
 <app-card
   [list]="students()"
-  [type]="cardType"
-  customClass="bg-light-green" />
+  (addItem)="addStudent()"
+  style="--card-bg: rgba(0, 250, 0, 0.1)">
+  <img
+    card-img
+    ngSrc="assets/img/student.webp"
+    width="200"
+    height="200"
+    priority
+    alt="Студент" />
+
+  <h3 card-header>Студенты</h3>
+
+  <ng-template let-student>
+    <app-list-item
+      [id]="student.id"
+      [name]="student.firstName"
+      (delete)="deleteStudent($event)" />
+  </ng-template>
+</app-card>
