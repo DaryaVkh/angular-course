@@ -1,7 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Book } from './book.model';
 
-// Сервис намеренно НЕ providedIn: 'root' — он предоставляется в BooksModule.
 @Injectable()
 export class BooksService {
   private readonly books = signal<Book[]>([
