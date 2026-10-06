@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Author } from '../author.model';
+import { CardComponent } from '../../shared/ui/card/card.component';
+import { HighlightDirective } from '../../shared/directives/highlight.directive';
+import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 
 @Component({
   selector: 'app-author-list',
-  standalone: false,
+  imports: [CardComponent, HighlightDirective, TruncatePipe],
   templateUrl: './author-list.component.html',
   styleUrl: './author-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,8 +29,4 @@ export class AuthorListComponent {
       bio: 'Братья-соавторы, классики советской научной фантастики: «Трудно быть богом», «Понедельник начинается в субботу».',
     },
   ];
-
-  protected trackById(_: number, author: Author): number {
-    return author.id;
-  }
 }

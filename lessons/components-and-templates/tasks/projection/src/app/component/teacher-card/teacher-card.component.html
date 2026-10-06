@@ -1,4 +1,20 @@
 <app-card
   [list]="teachers()"
-  [type]="cardType"
-  customClass="bg-light-red"></app-card>
+  (addItem)="addTeacher()">
+  <h3 #cardHeader card-header>Учителя</h3>
+  <img
+    card-image
+    ngSrc="assets/img/teacher.png"
+    width="200"
+    height="200"
+    priority
+    alt="Учитель с доской, на которой изображен корень из двух"/>
+
+  <ng-template let-item let-i="index">
+    <app-list-item
+      [name]="item.firstName"
+      [id]="item.id"
+      (deleteItem)="deleteTeacher($event)">
+    </app-list-item>
+  </ng-template>
+</app-card>
