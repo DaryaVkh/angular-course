@@ -1,0 +1,22 @@
+﻿import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { NotFoundComponent } from './core/not-found/not-found.component';
+
+export const routes: Routes = [
+  { path: '', component: HomeComponent, title: 'Главная' },
+  {
+    path: 'books',
+    loadChildren: () =>
+      import('./books/books.routes').then(
+        (m) => m.BOOKS_ROUTES),
+  },
+  {
+    path: 'authors',
+    title: 'Авторы',
+    loadComponent: () =>
+      import('./authors/author-list/author-list.component').then(
+        (m) => m.AuthorListComponent,
+      ),
+  },
+  { path: '**', component: NotFoundComponent, title: 'Не найдено' },
+];
