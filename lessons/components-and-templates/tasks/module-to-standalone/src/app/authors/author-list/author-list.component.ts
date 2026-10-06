@@ -1,9 +1,13 @@
+import { NgFor } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { HighlightDirective } from '../../shared/directives/highlight.directive';
+import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { CardComponent } from '../../shared/ui/card/card.component';
 import { Author } from '../author.model';
 
 @Component({
   selector: 'app-author-list',
-  standalone: false,
+  imports: [CardComponent, HighlightDirective, TruncatePipe, NgFor],
   templateUrl: './author-list.component.html',
   styleUrl: './author-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
