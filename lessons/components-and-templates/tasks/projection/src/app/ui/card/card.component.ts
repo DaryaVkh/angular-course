@@ -6,16 +6,17 @@ import {
   ElementRef,
   input,
   output,
+  TemplateRef,
   viewChild,
 } from '@angular/core';
 import { CardType } from '../../model/card.model';
-import { ListItemComponent } from '../list-item/list-item.component';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
-  imports: [ListItemComponent],
+  imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent implements AfterViewInit {
@@ -24,7 +25,6 @@ export class CardComponent implements AfterViewInit {
   readonly customClass = input('');
 
   readonly addItem = output();
-  readonly deleteItem = output<number>();
 
   readonly cardHeader = contentChild('[card-header]');
 
@@ -34,9 +34,7 @@ export class CardComponent implements AfterViewInit {
     this.addItem.emit();
   }
 
-  onDeleteItem(id: number) {
-    this.deleteItem.emit(id);
-  }
+  readonly rowTpl = contentChild<TemplateRef<any>>(TemplateRef);
 
   readonly addButton = viewChild<ElementRef>('addButton');
 

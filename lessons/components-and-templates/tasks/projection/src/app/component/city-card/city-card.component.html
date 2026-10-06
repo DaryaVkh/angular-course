@@ -3,7 +3,15 @@
   [list]="cities()"
   [type]="cardType"
   (addItem)="addCity()"
-  (deleteItem)="deleteCity($event)"
   customClass="bg-light-red">
   <img ngSrc="assets/img/city.png" width="200" height="200" priority />
+
+  <ng-template let-item let-i="index">
+    <div class="border-grey-300 flex justify-between border px-2 py-1">
+      {{ item.name }}
+      <button (click)="deleteCity(item.id)">
+        <img class="h-5" src="assets/svg/trash.svg" />
+      </button>
+    </div>
+  </ng-template>
 </app-card>

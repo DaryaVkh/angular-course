@@ -7,12 +7,13 @@
   <ng-content select="[card-header]"></ng-content> 
 
   <section>
-    @for (item of list(); track item) {
-      <app-list-item
-        [name]="item.firstName"
-        [id]="item.id"
-        [type]="type()"
-        (deleteItem)="onDeleteItem($event)"></app-list-item>
+    @for (item of list(); track item; let i = $index) {
+      <ng-container
+        *ngTemplateOutlet="
+          rowTpl();
+          context: { $implicit: item, index: i }
+        "
+      ></ng-container>
     }
   </section>
 

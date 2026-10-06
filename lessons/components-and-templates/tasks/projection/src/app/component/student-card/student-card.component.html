@@ -2,8 +2,15 @@
   [list]="students()"
   [type]="cardType"
   (addItem)="addStudent()"
-  (deleteItem)="deleteStudent($event)"
   customClass="bg-light-green">
   <img ngSrc="assets/img/student.webp" width="200" height="200" priority />
   <h3 card-header>Студенты</h3>
+  <ng-template let-item let-i="index">
+    <div class="border-grey-300 flex justify-between border px-2 py-1">
+      {{ item.firstName }}
+      <button (click)="deleteStudent(item.id)">
+        <img class="h-5" src="assets/svg/trash.svg" />
+      </button>
+    </div>
+  </ng-template>
 </app-card>
