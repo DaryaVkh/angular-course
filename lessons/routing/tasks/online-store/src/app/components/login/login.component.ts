@@ -18,6 +18,11 @@ export class LoginComponent {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
 
+  private returnUrl = <string | null>(null);
+  ngOnInit() {
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+  }
+
   protected submit(event: Event): void {
     event.preventDefault();
     this.loading.set(true);
@@ -32,7 +37,11 @@ export class LoginComponent {
         // this.route.snapshot.queryParamMap и, если он есть, перейдите по
         // нему вместо /catalog (важно: страница
         // логина не осталась в истории браузера).
-        this.router.navigate(['/catalog'], { replaceUrl: true });
+        if (this.returnUrl) {
+          this.router.navigateByUrl(this.returnUrl, { replaceUrl: true });
+        } else {
+          this.router.navigate(['/catalog'], { replaceUrl: true });
+        }
       },
       error: () => {
         this.loading.set(false);
