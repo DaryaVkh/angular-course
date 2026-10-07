@@ -18,7 +18,7 @@ export class LoginComponent {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  private returnUrl = <string | null>(null);
+  private returnUrl: string | null = null;
   ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
   }
