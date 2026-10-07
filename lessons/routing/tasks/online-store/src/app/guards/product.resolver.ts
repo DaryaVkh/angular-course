@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { ResolveFn, Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Product } from '../models/product.model';
 import { ProductsService } from '../services/products.service';
 
@@ -10,8 +10,21 @@ import { ProductsService } from '../services/products.service';
  * - Если товар не найден — вызвать router.navigate(['/catalog']) и вернуть of(null).
  * - Если найден — вернуть Observable<Product>.
  */
-export const productResolver: ResolveFn<Product | null> = (route): Observable<Product | null> => {
+export const productResolver: ResolveFn<Product | null> = (
+  route,
+): Observable<Product | null> => {
   const productsService = inject(ProductsService);
   const router = inject(Router);
-  return of(null);
+
+  const id = route.params['id'];
+
+  return productsService.getById(id).pipe(
+    map((product) => {
+      if (!product) {
+        router.navigate(['/catalog']);
+        return null;
+      }
+      return product;
+    }),
+  );
 };
