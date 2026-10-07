@@ -23,16 +23,16 @@ export class CatalogComponent {
   protected readonly categories = ALL_CATEGORIES;
   protected readonly categoryLabels = CATEGORY_LABELS;
 
-  /**
-   * TODO: сейчас категория всегда null, поэтому фильтр по факту не работает —
-   * какую бы ссылку вы ни нажали, список товаров не меняется.
-   *
-   * Замените `null as ProductCategory | null` на чтение query parameter
-   * `category` из this.route.queryParamMap
-   */
   protected readonly activeCategory = toSignal(
-    this.route.queryParamMap.pipe(map(() => null as ProductCategory | null)),
-    { initialValue: null },
+    this.route.queryParamMap.pipe(
+      map((qp) => {
+        const raw = qp.get('category');
+        return raw && (ALL_CATEGORIES as readonly string[]).includes(raw)
+          ? (raw as ProductCategory)
+          : null;
+      }),
+    ),
+    { initialValue: null as ProductCategory | null },
   );
 
   protected readonly products = toSignal(
