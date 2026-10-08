@@ -1,4 +1,16 @@
 <app-card
   [list]="teachers()"
   [type]="cardType"
-  customClass="bg-light-red"></app-card>
+  (addItem)="addTeacher()"
+  customClass="bg-light-red">
+  <img ngSrc="assets/img/teacher.png" width="200" height="200" priority />
+  <h3 card-header>Учителя</h3>
+  <ng-template let-item let-i="index">
+    <div class="border-grey-300 flex justify-between border px-2 py-1">
+      {{ item.firstName }}
+      <button (click)="deleteTeacher(item.id)">
+        <img class="h-5" src="assets/svg/trash.svg" />
+      </button>
+    </div>
+  </ng-template>
+</app-card>

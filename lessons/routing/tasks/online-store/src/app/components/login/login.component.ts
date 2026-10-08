@@ -32,7 +32,9 @@ export class LoginComponent {
         // this.route.snapshot.queryParamMap и, если он есть, перейдите по
         // нему вместо /catalog (важно: страница
         // логина не осталась в истории браузера).
-        this.router.navigate(['/catalog'], { replaceUrl: true });
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+
+        this.router.navigate([returnUrl || '/catalog'], { replaceUrl: true });
       },
       error: () => {
         this.loading.set(false);

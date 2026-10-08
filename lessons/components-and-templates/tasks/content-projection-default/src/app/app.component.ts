@@ -18,13 +18,24 @@ let nextCardId = 3;
       <label class="flex flex-col gap-1">
         Наименование новой карточки
         <input
+          #cardInput
+          (keydown.enter)="addCard(cardInput.value); cardInput.value = ''"
           placeholder="Наименование"
           class="border border-grey rounded-sm p-1" />
       </label>
     </div>
 
     @for (card of cards(); track card.id) {
-      <app-card [title]="card.title" [message]="card.message" />
+      <app-card (closed)="removeCard(card.id)">
+        <ng-template #cardTitle>
+          <p>{{ card.title }}</p>
+        </ng-template>
+        @if (card.message) {
+          <ng-template #cardMessage>
+            <p>{{ card.message }}</p>
+          </ng-template>
+        }
+      </app-card>
     }
 
     <section class="border-t border-grey pt-2 mt-2">
