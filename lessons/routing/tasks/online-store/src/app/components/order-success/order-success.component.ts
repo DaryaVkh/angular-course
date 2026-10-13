@@ -12,11 +12,7 @@ import { map } from 'rxjs';
 export class OrderSuccessComponent {
   private readonly route = inject(ActivatedRoute);
 
-  /**
-   * TODO: сейчас orderId всегда '—'. Замените заглушку на реальное чтение
-   * параметра маршрута `orderId` (см. route `order/:orderId`)
-   */
-  protected readonly orderId = toSignal(this.route.paramMap.pipe(map(() => '—')), {
+  protected readonly orderId = toSignal(this.route.paramMap.pipe(map((params) => params.get('orderId') ?? '-')), {
     initialValue: '—',
   });
 }
