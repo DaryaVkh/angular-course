@@ -20,6 +20,7 @@ export const productResolver: ResolveFn<Product | null> = (route): Observable<Pr
     router.navigate(['/catalog']);
     return of(null);
   }
+
   return productsService.getById(id).pipe(
     map((product) => {
       if (!product) {
