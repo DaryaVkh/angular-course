@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HeavyComputationPipe } from './heavy-computation-pipe';
+import { HeavyComputationPipe } from './heavy-computation.pipe';
 
 @Component({
   selector: 'app-root',

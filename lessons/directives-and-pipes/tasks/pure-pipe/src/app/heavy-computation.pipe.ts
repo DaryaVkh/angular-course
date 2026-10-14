@@ -1,12 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'heavyComputation'
+  name: 'heavyComputation',
 })
 export class HeavyComputationPipe implements PipeTransform {
-
-  transform(value: string, index: number): unknown {
+  transform(value: string, index: number): string {
     return `${value} - ${index}`;
   }
-
 }
