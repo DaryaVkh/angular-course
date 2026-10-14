@@ -1,0 +1,10 @@
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'computation'
+})
+export class ComputationPipe implements PipeTransform {
+  transform(name: string, index: number): string {
+    return `${name} - ${index}`;
+  }
+}
