@@ -1,22 +1,22 @@
 import { Component } from '@angular/core';
 import { PersonUtils } from './person.utils';
+import { UtilityFnPipe } from './utility-fn-pipe';
 
 @Component({
   selector: 'app-root',
   template: `
     @for (activity of activities; track activity.name) {
       {{ activity.name }} :
-      @for (
-        person of persons;
+      @for (person of persons;
         track person.name;
         let index = $index;
-        let isFirst = $first
-      ) {
-        {{ showName(person.name, index) }}
-        {{ isAllowed(person.age, isFirst, activity.minimumAge) }}
+        let isFirst = $first) {
+        {{ 'showName' | utilityFn: person.name : index }}
+        {{ 'isAllowed' | utilityFn: person.age : isFirst : activity.minimumAge }}
       }
     }
   `,
+  imports: [UtilityFnPipe],
 })
 export class AppComponent {
   persons = [
