@@ -1,9 +1,9 @@
 ﻿import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'mapNameWithIndexPipe',
+  name: 'mapNameWithIndex',
 })
-export class MapNameWithIndexPipePipe implements PipeTransform {
+export class MapNameWithIndex implements PipeTransform {
   transform(name: string, index: number) : string {
     return `${name} - ${index}`;
   }

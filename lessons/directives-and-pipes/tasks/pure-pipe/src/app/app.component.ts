@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { MapNameWithIndexPipePipe } from './map-name-with-index-pipe';
+import { MapNameWithIndex } from './map-name-with-index-pipe';
 
 @Component({
   selector: 'app-root',
-  imports: [MapNameWithIndexPipePipe],
+  imports: [MapNameWithIndex],
   template: `
     @for (person of persons; track person) {
-      {{ person | mapNameWithIndexPipe : $index }}
+      {{ person | mapNameWithIndex : $index }}
     }
   `,
 })
