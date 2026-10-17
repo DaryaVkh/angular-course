@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
+import { WrapFnPipe } from './pipe/wrap-fn-pipe';
 
 @Component({
   selector: 'app-root',
+  imports: [WrapFnPipe],
   template: `
     @for (person of persons; track person.name) {
-      {{ showName(person.name, $index) }}
-      {{ isAllowed(person.age, $first) }}
+      {{ person.name | wrapFn: showName: $index }}
+      {{ person.age | wrapFn: isAllowed: $first }}
     }
   `,
 })
