@@ -15,3 +15,6 @@ export const PersonUtils = {
   showName,
   isAllowed,
 };
+
+export type PUtil = typeof PersonUtils;
+
