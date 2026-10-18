@@ -1,6 +1,7 @@
 import { TableComponent } from '@angular-challenges/shared/ui';
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Directive } from '@angular/core';
+import { CurrencyCodeDirective } from './currency-code.directive';
 import { CurrencyPipe } from './currency.pipe';
 import { CurrencyService } from './currency.service';
 import { Product, products } from './product.model';
@@ -22,7 +23,13 @@ export class ProductDirective {
 }
 
 @Component({
-  imports: [TableComponent, CurrencyPipe, AsyncPipe, ProductDirective],
+  imports: [
+    TableComponent,
+    CurrencyPipe,
+    AsyncPipe,
+    ProductDirective,
+    CurrencyCodeDirective,
+  ],
   providers: [CurrencyService],
   selector: 'app-root',
   template: `
@@ -37,7 +44,7 @@ export class ProductDirective {
         </tr>
       </ng-template>
       <ng-template #body product let-product>
-        <tr>
+        <tr [currencyCode]="product.currencyCode">
           <td>{{ product.name }}</td>
           <td>{{ product.priceA | currency | async }}</td>
           <td>{{ product.priceB | currency | async }}</td>
