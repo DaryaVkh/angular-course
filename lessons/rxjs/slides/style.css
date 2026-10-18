@@ -1,0 +1,248 @@
+/* Палитра и типографика из презентации Comet RxJS */
+:root {
+  --comet-bg-dark: #151614;
+  --comet-bg-dark-elev: #1e201d;
+  --comet-bg-light: #f2f1ec;
+  --comet-bg-light-end: #ece5dc;
+  --comet-card-bg: rgba(255, 255, 255, 0.88);
+  --comet-card-border: #dcdad2;
+  --comet-code-bg: #ebe9e2;
+
+  --comet-text: #171614;
+  --comet-text-muted: #6e6c65;
+  --comet-text-light: #f7f6f2;
+  --comet-text-light-muted: #9f9d96;
+
+  --comet-teal: #01696f;
+  --comet-teal-light: #4f98a3;
+  --comet-teal-pill: #e3ece8;
+
+  --comet-green: #437a22;
+  --comet-green-light: #6daa45;
+  --comet-green-pill: #e2ede6;
+
+  --comet-orange: #da7101;
+  --comet-orange-pill: #f7ebd9;
+
+  --comet-red: #a13544;
+  --comet-red-pill: #f5e1e4;
+
+  --comet-blue: #006494;
+
+  --font-main: 'Product Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+}
+
+.slidev-layout {
+  font-family: var(--font-main) !important;
+  color: var(--comet-text);
+  background: linear-gradient(135deg, #e8eeeb 0%, #f2f1ec 50%, #efe6db 100%);
+  padding: 2.1rem 3rem 3.2rem 3rem !important;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Тёмный вариант (обложка и разделители разделов) */
+.slidev-layout.comet-dark {
+  color: var(--comet-text-light);
+  background:
+    radial-gradient(ellipse at 78% 18%, rgba(165, 95, 42, 0.34) 0%, transparent 55%),
+    radial-gradient(ellipse at 18% 80%, rgba(1, 105, 111, 0.28) 0%, transparent 55%),
+    linear-gradient(135deg, #131615 0%, #171614 52%, #241914 100%);
+}
+
+.slidev-layout.comet-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, transparent 42%, rgba(218, 113, 1, 0.08) 42.5%, rgba(161, 53, 68, 0.07) 72%, transparent 72.5%);
+  pointer-events: none;
+}
+
+/* Заголовки слайдов */
+.slidev-layout h1 {
+  font-family: var(--font-main) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+  line-height: 1.12 !important;
+  margin-bottom: 0.45rem !important;
+  color: inherit;
+}
+
+.slidev-layout h2 {
+  font-family: var(--font-main) !important;
+  font-weight: 700 !important;
+  font-size: 2.05rem !important;
+  letter-spacing: -0.02em;
+  line-height: 1.15 !important;
+  margin: 0.25rem 0 0.35rem 0 !important;
+  color: inherit;
+}
+
+.slidev-layout p {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  line-height: 1.45;
+}
+
+code, pre, .font-mono {
+  font-family: var(--font-mono) !important;
+}
+
+/* Бейдж раздела в левом верхнем углу */
+.comet-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--comet-teal-pill);
+  color: var(--comet-teal);
+  width: fit-content;
+  margin-bottom: 0.35rem;
+}
+
+.comet-dark .comet-pill {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--comet-teal-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comet-pill--quest {
+  background: rgba(218, 113, 1, 0.15);
+  color: #b85d00;
+  border: 1px solid rgba(218, 113, 1, 0.3);
+}
+
+/* Подзаголовок слайда */
+.comet-subtitle {
+  font-size: 1.02rem;
+  color: var(--comet-text-muted);
+  margin-bottom: 0.9rem !important;
+  font-weight: 400;
+}
+
+.comet-dark .comet-subtitle {
+  color: var(--comet-text-light-muted);
+}
+
+/* Карточки в стиле Comet */
+.comet-card {
+  background: var(--comet-card-bg);
+  border: 1px solid var(--comet-card-border);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 2px 8px rgba(23, 22, 20, 0.03);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comet-card--interactive:hover {
+  transform: translateY(-2px);
+  border-color: var(--comet-teal-light);
+  box-shadow: 0 6px 16px rgba(1, 105, 111, 0.08);
+}
+
+.comet-card--code {
+  background: var(--comet-code-bg);
+  border: 1px solid #dad7ce;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  line-height: 1.42;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.slidev-layout pre {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.comet-card--green {
+  background: var(--comet-green-pill);
+  border-color: rgba(67, 122, 34, 0.28);
+}
+
+.comet-card--dark {
+  background: rgba(30, 32, 29, 0.88);
+  border: 1px solid #3a372f;
+  color: var(--comet-text-light);
+}
+
+/* Нижняя плашка с ключевым выводом (Takeaway bar) */
+.comet-takeaway {
+  margin-top: auto;
+  background: var(--comet-green-pill);
+  border: 1px solid rgba(67, 122, 34, 0.24);
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--comet-text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.comet-dark .comet-takeaway {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--comet-text-light);
+}
+
+/* Сетки */
+.comet-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.comet-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.comet-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+/* Цветовые заголовки внутри карточек */
+.title-red { color: var(--comet-red); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.35rem; }
+.title-orange { color: var(--comet-orange); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.35rem; }
+.title-teal { color: var(--comet-teal); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.35rem; }
+.title-green { color: var(--comet-green); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.35rem; }
+.title-blue { color: var(--comet-blue); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.35rem; }
+
+/* Shiki / Code блоки внутри карточек */
+.slidev-layout pre.shiki {
+  background: var(--comet-code-bg) !important;
+  border: 1px solid #dad7ce;
+  border-radius: 10px;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.8rem !important;
+  line-height: 1.48 !important;
+}
+
+.slidev-layout.comet-dark pre.shiki {
+  background: #1e201d !important;
+  border-color: #3a372f;
+}

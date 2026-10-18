@@ -32,4 +32,24 @@ describe('FastNavigationComponent', () => {
     item$.next({ id: 3, name: 'C', tag: 'new' });
     expect(component.reaItem()?.id).toBe(3);
   });
+
+  it('impGoTo отменяет предыдущую подписку при новом переходе', () => {
+    const firstSubject = new Subject<{ id: number; name: string; tag: string }>();
+    const secondSubject = new Subject<{ id: number; name: string; tag: string }>();
+
+    const fakeTransport = TestBed.inject(TRANSPORT) as unknown as { getItem: jest.Mock };
+    fakeTransport.getItem
+      .mockReturnValueOnce(firstSubject)
+      .mockReturnValueOnce(secondSubject);
+
+    component.impGoTo(1);
+    expect(firstSubject.observed).toBe(true);
+
+    component.impGoTo(2);
+    expect(firstSubject.observed).toBe(false); // отписан!
+    expect(secondSubject.observed).toBe(true);
+
+    secondSubject.next({ id: 2, name: 'Item 2', tag: 'hot' });
+    expect(component.impItem()?.id).toBe(2);
+  });
 });

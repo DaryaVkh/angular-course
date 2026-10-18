@@ -5,12 +5,14 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  OnDestroy,
   ViewChild,
   inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
+  Subscription,
   fromEvent,
   of,
   debounceTime,
@@ -40,24 +42,42 @@ export const LIVE_SEARCH_META: ScenarioMeta = {
     'Поиск по вводу: ждём паузу, убираем дубли, отменяем устаревшие запросы.',
 };
 
-const IMPERATIVE_CODE = `// На каждый символ — новый запрос.
-// Ручной счётчик seq имитирует AbortController:
-// если ввод изменился — старый ответ игнорируем.
-private impSeq = 0;
+const IMPERATIVE_CODE = `// Честный паритет с RxJS без операторов:
+// 1. Ручной таймер debounce (300 мс)
+// 2. Проверка дубликата поисковой строки (distinct)
+// 3. Отмена предыдущей подписки/запроса (эквивалент switchMap)
+
+private impTimer: ReturnType<typeof setTimeout> | null = null;
+private impLastTerm = '';
+private impSub: Subscription | null = null;
 
 onInput(value: string): void {
-  const mySeq = ++this.impSeq;
+  if (this.impTimer) {
+    clearTimeout(this.impTimer);
+  }
 
-  this.transport.search({ term: value }).subscribe((result) => {
-    if (mySeq !== this.impSeq) {
-      return; // ответ устарел — отбрасываем
+  this.impTimer = setTimeout(() => {
+    const term = value.trim();
+    if (term === this.impLastTerm) {
+      return; // distinctUntilChanged вручную
     }
-    this.result.set(result);
-  });
+    this.impLastTerm = term;
+
+    // switchMap вручную: отменяем предыдущий запрос
+    this.impSub?.unsubscribe();
+    this.loading.set(true);
+
+    this.impSub = this.transport.search({ term }).subscribe({
+      next: (result) => {
+        this.books.set(result);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }, 300);
 }
 
-// Проблемы: запрос на каждый символ, гонка ответов,
-// ручная координация «актуальности».`;
+// 25+ строк бойлерплейта и 3 мутабельных поля вместо одного pipe()`;
 
 const REACTIVE_CODE = `// debounceTime — ждём паузу в вводе.
 // distinctUntilChanged — не ищем то же самое дважды.
@@ -284,7 +304,7 @@ function toBooks(result: SearchResult): ReadonlyArray<BookView> {
     `,
   ],
 })
-export class LiveSearchComponent implements AfterViewInit {
+export class LiveSearchComponent implements AfterViewInit, OnDestroy {
   protected readonly imperativeCode = IMPERATIVE_CODE;
   protected readonly reactiveCode = REACTIVE_CODE;
 
@@ -300,8 +320,13 @@ export class LiveSearchComponent implements AfterViewInit {
   protected readonly impLoading = signal(false);
   protected readonly reaLoading = signal(false);
 
-  // Императивный «seq» — имитация AbortController: помнит, какой запрос актуален.
-  private impSeq = 0;
+  // Честный императивный паритет:
+  // 1. Ручной таймер debounce (300 мс)
+  // 2. Хранение последнего значения для отсечения дублей (distinctUntilChanged)
+  // 3. Отмена предыдущей подписки/запроса (switchMap)
+  private impTimer: ReturnType<typeof setTimeout> | null = null;
+  private impLastTerm = '';
+  private impSub: Subscription | null = null;
 
   ngAfterViewInit(): void {
     // ============ REACTIVE ============
@@ -334,38 +359,57 @@ export class LiveSearchComponent implements AfterViewInit {
   }
 
   /**
-   * Императивный обработчик: руками запускаем запрос и помним его seq.
-   * Если ввод успел измениться — старый ответ просто игнорируем.
+   * Императивный обработчик: честный паритет с debounceTime + distinctUntilChanged + switchMap.
+   * Сбрасываем таймер при каждом вводе, проверяем дубликаты, отменяем активную подписку.
    */
   protected onImpInput(value: string): void {
-    const mySeq = ++this.impSeq;
-    this.log.push('imperative', 'event', `input "${value}" (#${mySeq})`);
-    this.impLoading.set(true);
+    if (this.impTimer) {
+      clearTimeout(this.impTimer);
+    }
 
-    this.transport
-      .search({ term: value }, { failRate: 0.3 })
-      .pipe(
-        catchError((err: Error) => {
-          if (mySeq === this.impSeq) {
+    this.log.push('imperative', 'event', `input "${value}" (ожидание debounce 300ms)`);
+
+    this.impTimer = setTimeout(() => {
+      const term = value.trim();
+      if (term === this.impLastTerm) {
+        this.log.push('imperative', 'info', `distinct: "${term}" уже был запрошен, пропуск`);
+        return;
+      }
+      this.impLastTerm = term;
+
+      // switchMap вручную: отменяем предыдущий незавершённый запрос
+      if (this.impSub) {
+        this.impSub.unsubscribe();
+        this.log.push('imperative', 'cancelled', 'отмена предыдущего запроса (switchMap вручную)');
+      }
+
+      this.impLoading.set(true);
+      this.log.push('imperative', 'event', `отправка search("${term}")`);
+
+      this.impSub = this.transport
+        .search({ term }, { failRate: 0.3 })
+        .pipe(
+          catchError((err: Error) => {
             this.log.push('imperative', 'error', err.message);
             this.impBooks.set([]);
             this.impLoading.set(false);
-          } else {
-            this.log.push('imperative', 'cancelled', `ошибка устаревшего #${mySeq}`);
+            return of(null);
+          }),
+        )
+        .subscribe((result) => {
+          this.impLoading.set(false);
+          if (result) {
+            this.log.push('imperative', 'next', `${result.term}: ${result.items.length} items`);
+            this.impBooks.set(toBooks(result));
           }
-          return of(null);
-        }),
-      )
-      .subscribe((result) => {
-        if (mySeq !== this.impSeq) {
-          this.log.push('imperative', 'cancelled', `ответ #${mySeq} устарел`);
-          return;
-        }
-        this.impLoading.set(false);
-        if (result) {
-          this.log.push('imperative', 'next', `${result.term}: ${result.items.length} items`);
-          this.impBooks.set(toBooks(result));
-        }
-      });
+        });
+    }, 300);
+  }
+
+  ngOnDestroy(): void {
+    if (this.impTimer) {
+      clearTimeout(this.impTimer);
+    }
+    this.impSub?.unsubscribe();
   }
 }
