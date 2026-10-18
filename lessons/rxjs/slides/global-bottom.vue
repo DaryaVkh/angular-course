@@ -17,23 +17,23 @@ const currentPage = computed(() => nav.currentPage.value || 1);
 const currentSectionTitle = computed(() => {
   const p = currentPage.value;
   if (p <= 1) return '';
-  if (p <= 8) return 'ДОБРО ПОЖАЛОВАТЬ В RX';
-  if (p <= 14) return 'БАЗОВЫЕ ЭЛЕМЕНТЫ';
-  if (p <= 19) return 'ОПЕРАТОРЫ СОЗДАНИЯ';
-  if (p <= 26) return 'ЦЕПОЧКА PIPE И ОПЕРАТОРЫ';
-  if (p <= 31) return 'ПОТОКИ ВНУТРИ ПОТОКОВ';
-  if (p <= 38) return 'ОБЪЕДИНЕНИЕ ПОТОКОВ';
-  if (p <= 42) return 'ОШИБКИ И ЗАВЕРШЕНИЕ';
-  if (p <= 46) return 'SUBJECT И КЕШ';
-  if (p <= 50) return 'СОСТОЯНИЕ И ЭФФЕКТЫ';
-  if (p <= 54) return 'RXJS В ANGULAR';
-  if (p <= 59) return 'ПРАКТИЧЕСКИЕ ПРОЕКТЫ';
+  if (p <= 9) return 'ДОБРО ПОЖАЛОВАТЬ В RX';
+  if (p <= 15) return 'БАЗОВЫЕ ЭЛЕМЕНТЫ';
+  if (p <= 20) return 'ОПЕРАТОРЫ СОЗДАНИЯ';
+  if (p <= 27) return 'ЦЕПОЧКА PIPE И ОПЕРАТОРЫ';
+  if (p <= 32) return 'ПОТОКИ ВНУТРИ ПОТОКОВ';
+  if (p <= 39) return 'ОБЪЕДИНЕНИЕ ПОТОКОВ';
+  if (p <= 43) return 'ОШИБКИ И ЗАВЕРШЕНИЕ';
+  if (p <= 47) return 'МНОГОАДРЕСНЫЕ ПОТОКИ И КЕШ';
+  if (p <= 51) return 'СОСТОЯНИЕ И ЭФФЕКТЫ';
+  if (p <= 55) return 'RXJS В ANGULAR';
+  if (p <= 60) return 'ПРАКТИЧЕСКИЕ РЕЦЕПТЫ';
   return 'ИТОГИ';
 });
 
 const isDarkSlide = computed(() => {
   const p = currentPage.value;
-  return [1, 2, 9, 15, 20, 27, 32, 39, 43, 47, 51, 55, 61].includes(p);
+  return [1, 2, 10, 16, 21, 28, 33, 40, 44, 48, 52, 56, 62].includes(p);
 });
 
 function goToSlide(slideIndex: number) {

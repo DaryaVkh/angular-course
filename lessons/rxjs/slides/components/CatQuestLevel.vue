@@ -12,13 +12,6 @@ interface CardOption {
   label: string;
   desc: string;
   whyWrong?: string;
-  wrongOut?: SimMarble[];
-}
-
-interface SimMarble {
-  val: string;
-  kind: 'event' | 'next' | 'cancel' | 'error';
-  color: string;
 }
 
 interface MissionConfig {
@@ -29,10 +22,8 @@ interface MissionConfig {
   initialMood: 'sleeping' | 'tangled' | 'working' | 'error' | 'idle';
   catProblemText: string;
   catSuccessText: string;
-  sourceLabel: string;
-  sourceMarbles: SimMarble[];
-  expectedLabel: string;
-  expectedMarbles: SimMarble[];
+  scenarioBefore: string;
+  scenarioAfter: string;
   codePrefix: string;
   codeSuffix: string;
   joinWith: string;
@@ -40,235 +31,179 @@ interface MissionConfig {
   slotsCount: number;
   correctCardIds: string[];
   wrongOrderMsg?: string;
-  hint: string;
 }
 
 const MISSIONS: Record<number, MissionConfig> = {
   1: {
     id: 1,
-    code: 'ЗАДАНИЕ 1 · РАЗДЕЛ 1',
-    title: 'Почему поток ничего не делает?',
-    subtitle: 'Мы создали поток feed$ через of(), но миска пуста. Выберите карточку, которая запустит поток.',
+    code: 'КВИЗ 1 · ЗАПУСК ПОТОКА',
+    title: 'Котик ждёт обед, но миска пуста',
+    subtitle: 'Мы приготовили три рыбки в потоке feed$, но котик ничего не получил. Как накормить кота?',
     initialMood: 'sleeping',
-    catProblemText: 'Поток feed$ объявлен в коде, но данные по нему ещё не пошли — никто не подписался.',
-    catSuccessText: 'Поток запущен! Вызов subscribe() запустил передачу данных, и все 3 порции попали в миску.',
-    sourceLabel: 'feed$ = of("🐟 1", "🐟 2", "🐟 3")',
-    sourceMarbles: [
-      { val: '🐟 1', kind: 'event', color: '#01696f' },
-      { val: '🐟 2', kind: 'event', color: '#01696f' },
-      { val: '🐟 3', kind: 'event', color: '#01696f' },
-    ],
-    expectedLabel: 'Миска (все 3 порции доставлены)',
-    expectedMarbles: [
-      { val: '🐟 1', kind: 'next', color: '#437a22' },
-      { val: '🐟 2', kind: 'next', color: '#437a22' },
-      { val: '🐟 3', kind: 'next', color: '#437a22' },
-    ],
-    codePrefix: `const feed$ = of('🐟 1', '🐟 2', '🐟 3');\nfeed$.`,
+    catProblemText: 'Мы просто описали поток в коде, но ещё не нажали кнопку «Пуск». Пока никто не подписался, рыбки лежат на кухне.',
+    catSuccessText: 'Ура, кот сыт! Метод subscribe() запустил поток, и все три рыбки прилетели в миску.',
+    scenarioBefore: '🥣 В миске пусто (поток спит)',
+    scenarioAfter: '🐟 🐟 🐟 — все три порции в миске',
+    codePrefix: `const feed$ = of('🐟', '🐟', '🐟');\nfeed$.`,
     codeSuffix: `;`,
     joinWith: '',
     cards: [
       {
-        id: 'subscribe(feedCat)',
-        label: 'subscribe(feedCat)',
-        desc: 'Подписаться на поток и передать обработчик',
+        id: 'pipe(eat)',
+        label: 'pipe(eat)',
+        desc: 'Настроить цепочку правил для потока',
+        whyWrong:
+          'pipe() только собирает правила обработки, но сам поток не включает. Котик всё ещё ждёт обед.',
       },
       {
-        id: 'pipe(feedCat)',
-        label: 'pipe(feedCat)',
-        desc: 'Собрать цепочку операторов',
-        whyWrong:
-          'Не решает проблему: метод pipe() только соединяет операторы в цепочку, но сам по себе поток не запускает. Без subscribe() данные не пойдут.',
-        wrongOut: [{ val: 'тишина (поток не запущен)', kind: 'cancel', color: '#8c8980' }],
+        id: 'subscribe(eat)',
+        label: 'subscribe(eat)',
+        desc: 'Подписаться на поток и получать рыбки',
       },
       {
-        id: 'then(feedCat)',
-        label: 'then(feedCat)',
-        desc: 'Дождаться ответа как в Promise',
+        id: 'then(eat)',
+        label: 'then(eat)',
+        desc: 'Подождать результат, как в Promise',
         whyWrong:
-          'Не решает проблему: у Observable нет метода then() — он есть только у Promise. Для запуска потока используется subscribe().',
-        wrongOut: [{ val: 'TypeError: feed$.then is not a function', kind: 'error', color: '#a13544' }],
+          'Метод then() бывает у Promise, а у потоков RxJS его нет. Здесь нужен subscribe().',
       },
       {
-        id: 'map(feedCat)',
-        label: 'map(feedCat)',
-        desc: 'Преобразовать каждое значение',
+        id: 'map(eat)',
+        label: 'map(eat)',
+        desc: 'Изменить каждую рыбку по дороге',
         whyWrong:
-          'Не решает проблему: map() — это оператор изменения данных внутри pipe(). Он не запускает поток без вызова subscribe().',
-        wrongOut: [{ val: 'тишина (нет подписки)', kind: 'cancel', color: '#8c8980' }],
+          'map() меняет значения внутри pipe(), но без подписки поток даже не стартует.',
       },
     ],
     slotsCount: 1,
-    correctCardIds: ['subscribe(feedCat)'],
-    hint: 'Объявление of(...) похоже на объявление функции. Чтобы поток начал выдавать значения, вызовите .subscribe(feedCat).',
+    correctCardIds: ['subscribe(eat)'],
   },
 
   2: {
     id: 2,
-    code: 'ЗАДАНИЕ 2 · РАЗДЕЛ 2',
-    title: 'Подписчик подключился позже и пропустил данные',
-    subtitle: 'Датчик уже выставил температуру 22°C. Какой источник сразу отдаст текущее значение новому подписчику?',
+    code: 'КВИЗ 2 · НАЧАЛЬНОЕ СОСТОЯНИЕ',
+    title: 'Термометр в домике кота показывает прочерк',
+    subtitle: 'В комнате уже +22°C. Какой поток сразу покажет эту температуру, как только мы откроем приложение?',
     initialMood: 'tangled',
-    catProblemText: 'С обычным Subject экран не узнает текущую температуру 22°C, пока датчик не пришлёт новое значение.',
-    catSuccessText: 'Отлично! BehaviorSubject(22) сохранил текущую температуру и сразу отдал 22°C при подписке.',
-    sourceLabel: 'Датчик: старт 22°C → затем 24°C',
-    sourceMarbles: [
-      { val: '22°C (старт)', kind: 'event', color: '#01696f' },
-      { val: '24°C', kind: 'event', color: '#006494' },
-    ],
-    expectedLabel: 'Экран термостата (сразу 22°C, затем 24°C)',
-    expectedMarbles: [
-      { val: '22°C', kind: 'next', color: '#437a22' },
-      { val: '24°C', kind: 'next', color: '#437a22' },
-    ],
+    catProblemText: 'Обычный Subject молчит, пока температура не изменится. А нам нужно видеть текущие +22°C сразу при входе.',
+    catSuccessText: 'Точно! BehaviorSubject(22) хранит текущую температуру и сразу отдаёт её каждому новому экрану.',
+    scenarioBefore: '🌡️ На экране пусто до следующего замера',
+    scenarioAfter: '🌡️ Сразу показывает +22°C, затем +24°C',
     codePrefix: `const temp$ = new `,
-    codeSuffix: `;\ntemp$.subscribe(render); // сразу получит 22°C\ntemp$.next(24);`,
+    codeSuffix: `;\ntemp$.subscribe(showOnScreen);`,
     joinWith: '',
     cards: [
       {
-        id: 'BehaviorSubject(22)',
-        label: 'BehaviorSubject(22)',
-        desc: 'Хранит последнее значение и сразу отдаёт при подписке',
-      },
-      {
         id: 'Subject()',
         label: 'Subject()',
-        desc: 'Передаёт только события после момента подписки',
+        desc: 'Передаёт только новые события после подписки',
         whyWrong:
-          'Не решает проблему: обычный Subject не помнит прошлых значений. Подписчик пропустит начальные 22°C и увидит только 24°C.',
-        wrongOut: [
-          { val: '22°C пропущено!', kind: 'error', color: '#da7101' },
-          { val: '24°C', kind: 'next', color: '#437a22' },
-        ],
+          'Обычный Subject не помнит прошлое значение. Экран останется пустым, пока датчик не пришлёт новую цифру.',
       },
       {
-        id: 'Observable()',
-        label: 'Observable()',
-        desc: 'Базовый поток без хранения состояния',
-        whyWrong:
-          'Не решает проблему: у базового Observable нет метода .next(24) снаружи и он не хранит текущее значение.',
-        wrongOut: [{ val: 'Ошибка: нет метода temp$.next()', kind: 'error', color: '#a13544' }],
+        id: 'BehaviorSubject(22)',
+        label: 'BehaviorSubject(22)',
+        desc: 'Хранит текущее значение и отдаёт его сразу',
       },
       {
         id: 'of(22)',
         label: 'of(22)',
-        desc: 'Создать поток из числа 22 и сразу завершиться',
+        desc: 'Выдать число 22 один раз и закрыться',
         whyWrong:
-          'Не решает проблему: of(22) отдаст 22 и тут же закроется (complete). Отправить в него следующее значение 24°C через .next() нельзя.',
-        wrongOut: [
-          { val: '22°C', kind: 'next', color: '#437a22' },
-          { val: 'поток закрыт (нет .next)', kind: 'error', color: '#a13544' },
-        ],
+          'of(22) сразу завершится, и мы не сможем отправлять в него новые замеры через .next(24).',
+      },
+      {
+        id: 'Observable()',
+        label: 'Observable()',
+        desc: 'Базовый поток без метода next снаружи',
+        whyWrong:
+          'У обычного Observable нет метода .next() снаружи и он не хранит состояние.',
       },
     ],
     slotsCount: 1,
     correctCardIds: ['BehaviorSubject(22)'],
-    hint: 'Если новому подписчику нужно сразу получить текущее состояние, используйте BehaviorSubject с начальным значением.',
   },
 
   3: {
     id: 3,
-    code: 'ЗАДАНИЕ 3 · РАЗДЕЛ 3',
-    title: 'Распаковать массив и взять первые 3 порции',
-    subtitle: 'В массиве 5 элементов. Нужно выдать их в поток по одному и остановиться после первых трёх.',
+    code: 'КВИЗ 3 · СОЗДАНИЕ И ЛИМИТ',
+    title: 'Выдать коту только 3 вкусняшки по одной',
+    subtitle: 'В пачке лежит массив из 5 кусочков. Нужно доставать их по одному и остановиться после третьего.',
     initialMood: 'tangled',
-    catProblemText: 'Если передать массив в of(), прилетит весь массив разом, а без ограничения попадутся кость и брокколи.',
-    catSuccessText: 'Верно! from(items) выдал элементы по одному, а take(3) вовремя завершил поток.',
-    sourceLabel: 'items = ["🐟", "🍤", "🥩", "🦴", "🥦"]',
-    sourceMarbles: [{ val: '["🐟", "🍤", "🥩", "🦴", "🥦"]', kind: 'event', color: '#da7101' }],
-    expectedLabel: 'Поток выдаёт 3 элемента по одному и завершается',
-    expectedMarbles: [
-      { val: '🐟', kind: 'next', color: '#437a22' },
-      { val: '🍤', kind: 'next', color: '#437a22' },
-      { val: '🥩', kind: 'next', color: '#437a22' },
-    ],
+    catProblemText: 'Если кинуть пачку через of(), в миску упадёт вся коробка целиком. А без лимита кот съест лишнее.',
+    catSuccessText: 'Отлично! from(items) достаёт кусочки по одному, а take(3) вовремя закрывает пачку.',
+    scenarioBefore: '📦 Вся пачка из 5 штук высыпалась разом',
+    scenarioAfter: '🐟 → 🍤 → 🥩 (ровно 3 штуки по очереди)',
     codePrefix: `const items = ['🐟', '🍤', '🥩', '🦴', '🥦'];\n`,
-    codeSuffix: `.subscribe(eatOneByOne);`,
+    codeSuffix: `.subscribe(giveTreat);`,
     joinWith: '.',
     cards: [
       {
-        id: 'from(items)',
-        label: 'from(items)',
-        desc: 'Выдать каждый элемент массива отдельным значением',
-      },
-      {
-        id: 'pipe(take(3))',
-        label: 'pipe(take(3))',
-        desc: 'Взять первые 3 значения и закрыть поток',
-      },
-      {
         id: 'of(items)',
         label: 'of(items)',
-        desc: 'Выдать весь массив как одно значение',
+        desc: 'Отправить весь массив одним куском',
         whyWrong:
-          'Не решает проблему: of(items) не разбирает массив на части, а отправляет его целиком за один вызов next([🐟, 🍤, ...]).',
-        wrongOut: [{ val: '[Весь массив одним куском]', kind: 'error', color: '#a13544' }],
+          'of(items) не разбирает массив на элементы, а кидает весь список за один раз.',
+      },
+      {
+        id: 'from(items)',
+        label: 'from(items)',
+        desc: 'Доставать элементы из массива по одному',
       },
       {
         id: 'pipe(filter(3))',
         label: 'pipe(filter(3))',
-        desc: 'Отфильтровать значения по условию',
+        desc: 'Проверять каждый элемент условием',
         whyWrong:
-          'Не решает проблему: filter() ждёт функцию-проверку для каждого элемента и не умеет отсчитывать первые 3 события.',
-        wrongOut: [{ val: 'Ошибка: filter ждёт функцию-условие', kind: 'error', color: '#a13544' }],
+          'filter() ждёт функцию-проверку и не умеет отсчитывать первые 3 элемента.',
+      },
+      {
+        id: 'pipe(take(3))',
+        label: 'pipe(take(3))',
+        desc: 'Взять первые 3 штуки и закрыть поток',
       },
     ],
     slotsCount: 2,
     correctCardIds: ['from(items)', 'pipe(take(3))'],
     wrongOrderMsg:
-      'Порядок карточек перепутан: сначала нужно создать поток из массива через from(items), а затем ограничить его через .pipe(take(3)).',
-    hint: 'Сначала превратите массив в поток отдельных элементов через from(items), затем возьмите 3 штуки с помощью pipe(take(3)).',
+      'Сначала нужно создать поток из массива через from(items), а вторым шагом ограничить его через pipe(take(3)).',
   },
 
   4: {
     id: 4,
-    code: 'ЗАДАНИЕ 4 · РАЗДЕЛ 4',
-    title: 'Собрать цепочку операторов в правильном порядке',
-    subtitle: 'Сначала уберите повторы подряд и лишние кости ("🦴"), а затем преобразуйте данные.',
+    code: 'КВИЗ 4 · КОНВЕЙЕР PIPE()',
+    title: 'Очистить ленту от дублей и костей перед сервировкой',
+    subtitle: 'Соберите 3 шага по порядку: убрать повторы подряд → выкинуть кости 🦴 → украсить блюдо ✨.',
     initialMood: 'working',
-    catProblemText: 'Если преобразовывать данные до фильтрации, мы тратим силы впустую и пропускаем мусор на экран.',
-    catSuccessText: 'Чистая цепочка! Сначала убрали повторы и кости, и только для нужных элементов вызвали map().',
-    sourceLabel: '"🐟" → "🐟" → "🦴" → "🍤"',
-    sourceMarbles: [
-      { val: '🐟', kind: 'event', color: '#01696f' },
-      { val: '🐟 (дубль)', kind: 'event', color: '#da7101' },
-      { val: '🦴', kind: 'event', color: '#a13544' },
-      { val: '🍤', kind: 'event', color: '#01696f' },
-    ],
-    expectedLabel: 'только "✨🐟" и "✨🍤"',
-    expectedMarbles: [
-      { val: '✨🐟', kind: 'next', color: '#437a22' },
-      { val: '✨🍤', kind: 'next', color: '#437a22' },
-    ],
-    codePrefix: `belt$.pipe(`,
-    codeSuffix: `).subscribe(serveCat);`,
-    joinWith: ', ',
+    catProblemText: 'Если сначала украшать всё подряд через map(), то кость 🦴 превратится в ✨🦴 и проскочит мимо фильтра!',
+    catSuccessText: 'Идеальный порядок! Сначала убрали дубли и кости, и только хорошие порции украсили в map().',
+    scenarioBefore: '🐟 → 🐟 → 🦴 → 🍤',
+    scenarioAfter: '✨🐟 → ✨🍤 (без дублей и костей)',
+    codePrefix: `belt$.pipe(\n  `,
+    codeSuffix: `\n).subscribe(serve);`,
+    joinWith: ',\n  ',
     cards: [
-      {
-        id: 'distinctUntilChanged()',
-        label: 'distinctUntilChanged()',
-        desc: 'Отсеять идущие подряд одинаковые значения',
-      },
       {
         id: "filter(x => x !== '🦴')",
         label: "filter(x => x !== '🦴')",
-        desc: 'Пропустить дальше только съедобные порции',
+        desc: 'Пропустить дальше только съедобное',
       },
       {
-        id: "map(x => '✨' + x)",
-        label: "map(x => '✨' + x)",
-        desc: 'Преобразовать прошедшее значение в новое',
+        id: 'distinctUntilChanged()',
+        label: 'distinctUntilChanged()',
+        desc: 'Убрать идущие подряд одинаковые порции',
       },
       {
         id: "tap(x => '✨' + x)",
         label: "tap(x => '✨' + x)",
-        desc: 'Выполнить побочное действие (например, лог)',
+        desc: 'Просто посмотреть на элемент без изменений',
         whyWrong:
-          'Не решает проблему: tap() не меняет данные в потоке — возвращённое из него значение просто игнорируется. Для преобразования нужен map().',
-        wrongOut: [
-          { val: '🐟 (без ✨)', kind: 'error', color: '#da7101' },
-          { val: '🍤 (без ✨)', kind: 'error', color: '#da7101' },
-        ],
+          'tap() не меняет значения в потоке — то, что вы из него вернули, просто игнорируется.',
+      },
+      {
+        id: "map(x => '✨' + x)",
+        label: "map(x => '✨' + x)",
+        desc: 'Украсить порцию перед подачей на стол',
       },
     ],
     slotsCount: 3,
@@ -278,491 +213,372 @@ const MISSIONS: Record<number, MissionConfig> = {
       "map(x => '✨' + x)",
     ],
     wrongOrderMsg:
-      'Порядок операторов нарушен: если поставить map() раньше filter() или distinctUntilChanged(), то "🦴" сначала превратится в "✨🦴" и пройдёт сквозь фильтр!',
-    hint: 'Поставьте операторы в порядке: 1) distinctUntilChanged() → 2) filter(x => x !== "🦴") → 3) map(x => "✨" + x).',
+      'Проверьте порядок: сначала убираем повторы (distinctUntilChanged), затем фильтруем кости (filter), и только в конце вызываем map.',
   },
 
   5: {
     id: 5,
-    code: 'ЗАДАНИЕ 5 · РАЗДЕЛ 5',
-    title: 'Поиск без гонки и кнопка оплаты без дублей',
-    subtitle: 'Выберите оператор для живого поиска (слот 1) и оператор для кнопки «Оплатить» (слот 2).',
+    code: 'КВИЗ 5 · УПРАВЛЕНИЕ ЗАПРОСАМИ',
+    title: 'Два сценария: строка поиска и кнопка «Оплатить»',
+    subtitle: 'В первый слот выберите оператор для живого поиска, а во второй — для защиты кнопки оплаты от двойного клика.',
     initialMood: 'tangled',
-    catProblemText: 'В поиске старый медленный ответ перезаписывает новый, а двойной клик по кнопке списывает оплату дважды!',
-    catSuccessText: 'Отлично! switchMap отменяет устаревшие запросы поиска, а exhaustMap защищает кнопку оплаты от повторных кликов.',
-    sourceLabel: '1) Поиск: "rx" → "rxjs"   |   2) Оплата: клик 1 → клик 2',
-    sourceMarbles: [
-      { val: 'поиск "rx"', kind: 'event', color: '#01696f' },
-      { val: 'поиск "rxjs"', kind: 'event', color: '#006494' },
-      { val: 'оплата #1', kind: 'event', color: '#da7101' },
-      { val: 'оплата #2', kind: 'event', color: '#da7101' },
-    ],
-    expectedLabel: 'Старый поиск отменён, второй клик оплаты проигнорирован',
-    expectedMarbles: [
-      { val: 'rx отменён ✕', kind: 'cancel', color: '#a13544' },
-      { val: 'ответ "rxjs"', kind: 'next', color: '#437a22' },
-      { val: 'оплата #1 ок', kind: 'next', color: '#437a22' },
-    ],
-    codePrefix: `// Слот 1 — для поиска, Слот 2 — для оплаты:\n`,
+    catProblemText: 'В поиске нужно отменять старый запрос при вводе новой буквы, а при оплате — блокировать случайный второй клик.',
+    catSuccessText: 'В точку! switchMap отменяет устаревшие поиски, а exhaustMap игнорирует повторные клики, пока идёт оплата.',
+    scenarioBefore: 'Гонка ответов в поиске и двойное списание денег',
+    scenarioAfter: 'Поиск показывает свежий ответ, заказ оплачен 1 раз',
+    codePrefix: `// 1. Живой поиск, 2. Кнопка оплаты:\n`,
     codeSuffix: ``,
     joinWith: '\n',
     cards: [
       {
-        id: 'search$: switchMap',
-        label: '1) Поиск → switchMap',
-        desc: 'Отменяет предыдущий запрос, когда ввели новый текст',
-      },
-      {
-        id: 'pay$: exhaustMap',
-        label: '2) Оплата → exhaustMap',
-        desc: 'Игнорирует новые клики, пока текущий запрос не завершился',
-      },
-      {
-        id: 'mergeMap (параллельно)',
-        label: 'mergeMap (параллельно)',
-        desc: 'Запускает все запросы параллельно без отмены',
+        id: 'mergeMap(req)',
+        label: 'mergeMap(req)',
+        desc: 'Запускать все запросы параллельно без ограничений',
         whyWrong:
-          'Не решает проблему: mergeMap не отменяет старый поиск (возникает гонка ответов) и не блокирует повторный клик оплаты (деньги спишутся дважды).',
-        wrongOut: [
-          { val: 'Гонка ответов в поиске!', kind: 'error', color: '#a13544' },
-          { val: 'Двойное списание оплаты!', kind: 'error', color: '#a13544' },
-        ],
+          'mergeMap не отменяет старый поиск и не блокирует повторный клик по кнопке оплаты — деньги спишутся дважды.',
       },
       {
-        id: 'concatMap (очередь)',
-        label: 'concatMap (по очереди)',
-        desc: 'Ставит все события в очередь друг за другом',
+        id: 'switchMap(req)',
+        label: 'switchMap(req)',
+        desc: 'Отменять предыдущий запрос, когда пришло новое событие',
+      },
+      {
+        id: 'concatMap(req)',
+        label: 'concatMap(req)',
+        desc: 'Ставить каждый клик в строгую очередь друг за другом',
         whyWrong:
-          'Не решает проблему: concatMap не отбрасывает второй клик по кнопке оплаты, а бережно ставит его в очередь и списывает деньги второй раз сразу после первого запроса.',
-        wrongOut: [{ val: 'Второй клик выполнился из очереди!', kind: 'error', color: '#a13544' }],
+          'concatMap поставит второй клик по кнопке оплаты в очередь и спишет деньги второй раз сразу после первого запроса.',
+      },
+      {
+        id: 'exhaustMap(req)',
+        label: 'exhaustMap(req)',
+        desc: 'Игнорировать новые события, пока текущий запрос не завершился',
       },
     ],
     slotsCount: 2,
-    correctCardIds: ['search$: switchMap', 'pay$: exhaustMap'],
+    correctCardIds: ['switchMap(req)', 'exhaustMap(req)'],
     wrongOrderMsg:
-      'Поменяйте местами: в первый слот поставьте switchMap для поиска, а во второй — exhaustMap для оплаты.',
-    hint: 'Для живого поиска важна актуальность (switchMap отменяет старый запрос), а для кнопки оплаты — защита от повторов (exhaustMap игнорирует клики, пока занят).',
+      'Поменяйте карточки местами: в первом слоте должен быть оператор для поиска (switchMap), а во втором — для кнопки оплаты (exhaustMap).',
   },
 
   6: {
     id: 6,
-    code: 'ЗАДАНИЕ 6 · РАЗДЕЛ 6',
-    title: 'Сначала кеш, потом сервер + старт фильтров',
-    subtitle: 'Слот 1: показать cache$, а после него server$. Слот 2: разбудить combineLatest при старте.',
+    code: 'КВИЗ 6 · ОБЪЕДИНЕНИЕ ПОТОКОВ',
+    title: 'Сначала данные из кеша, а следом — с сервера',
+    subtitle: 'В первый слот выберите поочерёдный запуск cache$ и server$, а во второй — стартовое значение для фильтра.',
     initialMood: 'tangled',
-    catProblemText: 'С merge() медленный кеш или быстрый ответ могут перепутаться, а combineLatest ждёт первый ввод в фильтр.',
-    catSuccessText: 'Верно! concat(cache$, server$) гарантирует порядок, а startWith("") сразу запускает combineLatest.',
-    sourceLabel: '1) cache$ затем server$   |   2) filter.valueChanges в combineLatest',
-    sourceMarbles: [
-      { val: 'cache$', kind: 'event', color: '#01696f' },
-      { val: 'server$', kind: 'event', color: '#006494' },
-      { val: 'filter (молчит)', kind: 'cancel', color: '#da7101' },
-    ],
-    expectedLabel: 'Строго Cache → Server, и каталог грузится сразу при старте',
-    expectedMarbles: [
-      { val: 'Cache Data', kind: 'next', color: '#437a22' },
-      { val: 'Server Data', kind: 'next', color: '#437a22' },
-      { val: '["", page=1]', kind: 'next', color: '#437a22' },
-    ],
-    codePrefix: `const data$ = `,
-    codeSuffix: `; // и фильтр с начальным значением`,
-    joinWith: ' + ',
+    catProblemText: 'Нам важно соблюсти строгую очередь «сначала кеш, потом сервер» и сделать так, чтобы combineLatest не ждал ручного ввода.',
+    catSuccessText: 'Верно! concat(cache$, server$) запускает потоки строго по очереди, а startWith("") сразу будит фильтр.',
+    scenarioBefore: 'Экран ждёт ввода пользователя и путает порядок ответов',
+    scenarioAfter: 'Мгновенно показан кеш → затем сервер, фильтр работает со старта',
+    codePrefix: `// 1. Очередь потоков, 2. Старт фильтра:\n`,
+    codeSuffix: ``,
+    joinWith: '\n',
     cards: [
-      {
-        id: 'concat(cache$, server$)',
-        label: '1) concat(cache$, server$)',
-        desc: 'Подписаться на server$ строго после завершения cache$',
-      },
-      {
-        id: "startWith('')",
-        label: "2) startWith('')",
-        desc: 'Сразу выдать пустую строку при подписке на фильтр',
-      },
       {
         id: 'merge(cache$, server$)',
         label: 'merge(cache$, server$)',
-        desc: 'Запустить оба потока одновременно без гарантии порядка',
+        desc: 'Запустить оба потока одновременно наперегонки',
         whyWrong:
-          'Не решает проблему: merge() запускает оба источника параллельно — если cache$ асинхронный и чуть задержится, он перезапишет свежие данные с сервера!',
-        wrongOut: [{ val: 'Порядок нарушен: кеш поверх сервера!', kind: 'error', color: '#a13544' }],
+          'merge() не гарантирует порядок: если чтение кеша чуть задержится, старый кеш затрёт свежий ответ сервера.',
       },
       {
-        id: 'forkJoin([filter$, page$])',
-        label: 'forkJoin([filter$, page$])',
-        desc: 'Ждать полного завершения (complete) всех потоков',
+        id: 'concat(cache$, server$)',
+        label: 'concat(cache$, server$)',
+        desc: 'Подписаться на второй поток строго после завершения первого',
+      },
+      {
+        id: "startWith('')",
+        label: "startWith('')",
+        desc: 'Выдать начальную пустую строку сразу при подписке',
+      },
+      {
+        id: 'forkJoin([cache$, server$])',
+        label: 'forkJoin([cache$, server$])',
+        desc: 'Ждать завершения всех потоков перед первым выводом',
         whyWrong:
-          'Не решает проблему: forkJoin ждёт complete от каждого источника, но живая форма фильтра никогда не завершается.',
-        wrongOut: [{ val: 'Вечное ожидание complete...', kind: 'error', color: '#a13544' }],
+          'forkJoin будет ждать медленный сервер и не покажет быстрый кеш заранее.',
       },
     ],
     slotsCount: 2,
     correctCardIds: ['concat(cache$, server$)', "startWith('')"],
     wrongOrderMsg:
-      'В первый слот выберите concat(cache$, server$), а во второй — startWith("").',
-    hint: 'Для строгой очереди «сначала кеш, затем сервер» нужен concat(cache$, server$), а для первого значения формы в combineLatest — startWith("").',
+      'В первый слот поставьте объединение cache$ и server$ (concat), а во второй — начальное значение фильтра (startWith).',
   },
 
   7: {
     id: 7,
-    code: 'ЗАДАНИЕ 7 · РАЗДЕЛ 6',
-    title: 'Клик сохранения + текущая роль пользователя',
-    subtitle: 'Сохранение должно срабатывать ТОЛЬКО при клике по кнопке, но брать актуальную роль из потока role$.',
+    code: 'КВИЗ 7 · ГЛАВНЫЙ И ФОНОВЫЙ ПОТОК',
+    title: 'Отправлять форму только по клику кнопки «Сохранить»',
+    subtitle: 'В фоне меняется поток роли пользователя role$. Как брать текущую роль, но сохранять только в момент клика?',
     initialMood: 'tangled',
-    catProblemText: 'С combineLatest сохранение случайно запускается каждый раз, когда в фоне меняется роль пользователя!',
-    catSuccessText: 'Точно! withLatestFrom(role$) срабатывает только по клику кнопки, подглядывая в текущую роль.',
-    sourceLabel: 'saveClick$ (главный) + role$ ("user" → "admin")',
-    sourceMarbles: [
-      { val: 'role: "admin"', kind: 'event', color: '#006494' },
-      { val: 'saveClick', kind: 'event', color: '#01696f' },
-    ],
-    expectedLabel: 'Запрос уходит только в момент клика: "Save as admin"',
-    expectedMarbles: [{ val: 'Save as admin', kind: 'next', color: '#437a22' }],
+    catProblemText: 'Если взять combineLatest, то форма начнёт сама сохраняться при каждой фоновой смене роли без ведома пользователя!',
+    catSuccessText: 'Точно! withLatestFrom(role$) реагирует только на клик кнопки и просто подсматривает текущую роль.',
+    scenarioBefore: 'Ложные сохранения при каждом изменении role$',
+    scenarioAfter: 'Запрос уходит строго по клику кнопки',
     codePrefix: `saveClick$.pipe(\n  `,
-    codeSuffix: `,\n  map(([, role]) => 'Save as ' + role)\n)`,
+    codeSuffix: `,\n  map(([click, role]) => save(role))\n)`,
     joinWith: '',
     cards: [
       {
-        id: 'withLatestFrom(role$)',
-        label: 'withLatestFrom(role$)',
-        desc: 'Срабатывать только от saveClick$, беря последнее значение role$',
-      },
-      {
         id: 'combineLatest([role$])',
         label: 'combineLatest([role$])',
-        desc: 'Срабатывать при изменении любого из потоков',
+        desc: 'Срабатывать при любом изменении в любом из потоков',
         whyWrong:
-          'Не решает проблему: в combineLatest все потоки равны — любая фоновая смена role$ будет сама по себе вызывать сохранение без клика пользователя!',
-        wrongOut: [{ val: 'Ложное сохранение без клика!', kind: 'error', color: '#a13544' }],
+          'В combineLatest оба потока главные: как только в фоне обновится роль, форма сохранится сама без клика!',
+      },
+      {
+        id: 'withLatestFrom(role$)',
+        label: 'withLatestFrom(role$)',
+        desc: 'Ждать события от главного потока и брать последнее значение второго',
       },
       {
         id: 'merge(role$)',
         label: 'merge(role$)',
-        desc: 'Слить клики и роли в одну общую дорожку по очереди',
+        desc: 'Свалить события кликов и смены ролей в одну общую кучу',
         whyWrong:
-          'Не решает проблему: merge() просто смешивает события разных типов в один поток вместо того, чтобы соединить клик с текущей ролью.',
-        wrongOut: [{ val: 'В потоке смешались строки и клики', kind: 'error', color: '#a13544' }],
+          'merge() просто смешивает события по очереди, а нам нужно соединить клик с текущей ролью.',
       },
       {
         id: 'forkJoin([role$])',
         label: 'forkJoin([role$])',
-        desc: 'Дождаться завершения обоих потоков',
+        desc: 'Ждать полного закрытия обоих потоков',
         whyWrong:
-          'Не решает проблему: поток кликов по кнопке saveClick$ не завершается, поэтому forkJoin никогда не выдаст результат.',
-        wrongOut: [{ val: 'Тишина — потоки не завершены', kind: 'error', color: '#da7101' }],
+          'Кнопка сохранения не закрывается после первого клика, поэтому forkJoin вообще ничего не выдаст.',
       },
     ],
     slotsCount: 1,
     correctCardIds: ['withLatestFrom(role$)'],
-    hint: 'Когда есть главное событие (клик) и вспомогательное состояние (роль), используйте withLatestFrom(role$).',
   },
 
   8: {
     id: 8,
-    code: 'ЗАДАНИЕ 8 · РАЗДЕЛ 7',
-    title: 'Почему после одной ошибки перестаёт работать поиск?',
-    subtitle: 'Запрос "bad" упал с ошибкой — и после этого поиск перестал реагировать на новый ввод "next"!',
+    code: 'КВИЗ 8 · ЗАЩИТА ОТ ОШИБОК',
+    title: 'После одной ошибки сети строка поиска перестала работать',
+    subtitle: 'Сервер один раз ответил ошибкой 500, и теперь поле поиска вообще не реагирует на новый ввод текста. Как починить?',
     initialMood: 'error',
-    catProblemText: 'catchError стоит снаружи switchMap: ошибка закрыла весь внешний поток поиска навсегда!',
-    catSuccessText: 'Исправлено! catchError внутри switchMap гасит ошибку только одного запроса, а поиск продолжает жить.',
-    sourceLabel: 'Ввод по очереди: "ok" → "bad" (500 Error) → "next"',
-    sourceMarbles: [
-      { val: '"ok"', kind: 'event', color: '#01696f' },
-      { val: '"bad" (ошибка)', kind: 'error', color: '#a13544' },
-      { val: '"next"', kind: 'event', color: '#01696f' },
-    ],
-    expectedLabel: 'Поток переживает ошибку "bad" и обрабатывает "next"',
-    expectedMarbles: [
-      { val: 'Result: ok', kind: 'next', color: '#437a22' },
-      { val: 'Fallback: bad', kind: 'next', color: '#da7101' },
-      { val: 'Result: next', kind: 'next', color: '#437a22' },
-    ],
-    codePrefix: `query$.pipe(\n  `,
+    catProblemText: 'По правилам RxJS ошибка убивает тот поток, в котором произошла. Если ошибка вылетела наружу, закрывается весь поток ввода!',
+    catSuccessText: 'Спасено! Когда catchError стоит внутри switchMap, он гасит сбой конкретного HTTP-запроса, а строка поиска продолжает жить.',
+    scenarioBefore: 'Одна ошибка 500 навсегда ломает поиск',
+    scenarioAfter: 'Сбой обработан, поиск работает дальше',
+    codePrefix: `searchText$.pipe(\n  `,
     codeSuffix: `\n)`,
     joinWith: '',
     cards: [
       {
-        id: 'switchMap(q => api(q).pipe(catchError(...)))',
-        label: 'catchError ВНУТРИ switchMap',
-        desc: 'Ловить ошибку на внутреннем запросе api(q).pipe(catchError(...))',
+        id: 'switchMap(q => api(q)), catchError(() => of([]))',
+        label: 'catchError снаружи switchMap',
+        desc: 'Ловить ошибку в общем пайпе после switchMap',
+        whyWrong:
+          'Если ошибка вышла из switchMap во внешний поток searchText$, то весь поиск завершится и больше не оживёт.',
       },
       {
-        id: 'switchMap(q => api(q)), catchError(...)',
-        label: 'catchError СНАРУЖИ switchMap',
-        desc: 'Поставить catchError следующей строкой после switchMap',
-        whyWrong:
-          'Не решает проблему: когда ошибка долетает до внешнего pipe(), сам поток query$ переходит в состояние завершённого. На следующий ввод "next" он уже не среагирует!',
-        wrongOut: [
-          { val: 'Result: ok', kind: 'next', color: '#437a22' },
-          { val: 'Fallback: bad', kind: 'next', color: '#da7101' },
-          { val: 'поиск мёртв ("next" потерян) ✕', kind: 'error', color: '#a13544' },
-        ],
+        id: 'switchMap(q => api(q).pipe(catchError(() => of([]))))',
+        label: 'catchError внутри switchMap',
+        desc: 'Ловить ошибку прямо на внутреннем запросе api(q)',
       },
       {
         id: 'tap({ error: console.error })',
         label: 'tap({ error: console.error })',
-        desc: 'Записать ошибку в консоль через tap',
+        desc: 'Вывести ошибку в консоль',
         whyWrong:
-          'Не решает проблему: tap() только логирует ошибку, но не перехватывает её — поток поиска всё равно аварийно закроется.',
-        wrongOut: [{ val: 'Uncaught Error — поток закрыт ✕', kind: 'error', color: '#a13544' }],
+          'tap() только печатает ошибку в консоль, но не останавливает падение потока.',
       },
       {
-        id: 'finalize(() => reset())',
-        label: 'finalize(() => reset())',
-        desc: 'Выполнить код уборки при закрытии потока',
+        id: 'finalize(() => stopSpinner())',
+        label: 'finalize(() => stopSpinner())',
+        desc: 'Выключить спиннер при закрытии потока',
         whyWrong:
-          'Не решает проблему: finalize() выполняется уже тогда, когда поток закрывается, но не спасает поток от падения при ошибке.',
-        wrongOut: [{ val: 'Поток закрылся с ошибкой ✕', kind: 'error', color: '#a13544' }],
+          'finalize() приберётся после падения, но не спасёт поток от закрытия при ошибке.',
       },
     ],
     slotsCount: 1,
-    correctCardIds: ['switchMap(q => api(q).pipe(catchError(...)))'],
-    hint: 'Всегда ставьте catchError внутрь switchMap на сам HTTP-запрос, чтобы ошибка одного запроса не закрывала внешний поток событий.',
+    correctCardIds: ['switchMap(q => api(q).pipe(catchError(() => of([]))))'],
   },
 
   9: {
     id: 9,
-    code: 'ЗАДАНИЕ 9 · РАЗДЕЛ 8',
-    title: 'История последних 2 событий и общий кеш запроса',
-    subtitle: 'Слот 1: отдать новому подписчику 2 последних значения из истории. Слот 2: закешировать HTTP-ответ.',
+    code: 'КВИЗ 9 · КЕШИРОВАНИЕ ЗАПРОСОВ',
+    title: 'Три компонента запрашивают один и тот же конфиг',
+    subtitle: 'Шапка, меню и подвал подписались на config$. Как сделать так, чтобы в сеть ушёл только 1 запрос, а ответ сохранился в кеше?',
     initialMood: 'tangled',
-    catProblemText: 'BehaviorSubject помнит только 1 значение (а нужно 2), а обычный share() не хранит ответ для поздних подписчиков!',
-    catSuccessText: 'Отлично! ReplaySubject(2) выдал 2 последних шага истории, а shareReplay(1) сохранил HTTP-ответ в кеше.',
-    sourceLabel: 'История: 1 → 2 → 3 → [подписка] → 4',
-    sourceMarbles: [
-      { val: '1', kind: 'event', color: '#8c8980' },
-      { val: '2', kind: 'event', color: '#01696f' },
-      { val: '3', kind: 'event', color: '#01696f' },
-      { val: '4', kind: 'event', color: '#006494' },
-    ],
-    expectedLabel: 'Подписчик получает из буфера 2 и 3, затем новое 4',
-    expectedMarbles: [
-      { val: '2 (из буфера)', kind: 'next', color: '#437a22' },
-      { val: '3 (из буфера)', kind: 'next', color: '#437a22' },
-      { val: '4', kind: 'next', color: '#437a22' },
-    ],
-    codePrefix: `const history$ = new `,
-    codeSuffix: `;\n// и кеш запроса для новых подписчиков`,
-    joinWith: '  |  ',
-    cards: [
-      {
-        id: 'ReplaySubject(2)',
-        label: '1) ReplaySubject(2)',
-        desc: 'Хранит буфер из 2 последних значений для новых подписчиков',
-      },
-      {
-        id: 'shareReplay({ bufferSize: 1, refCount: true })',
-        label: '2) shareReplay(1)',
-        desc: 'Один общий запрос + сохранение ответа для поздних подписок',
-      },
-      {
-        id: 'BehaviorSubject(0)',
-        label: 'BehaviorSubject(0)',
-        desc: 'Хранит только одно самое последнее значение',
-        whyWrong:
-          'Не решает проблему: BehaviorSubject хранит только 1 текущее значение (3), а значение 2 будет потеряно.',
-        wrongOut: [{ val: 'Только 3 (значение 2 потеряно!)', kind: 'error', color: '#da7101' }],
-      },
-      {
-        id: 'share()',
-        label: 'share()',
-        desc: 'Делит живой поток, но без запоминания прошлых ответов',
-        whyWrong:
-          'Не решает проблему: обычный share() не запоминает последнее значение — если второй компонент подпишется после завершения HTTP-запроса, всё начнётся заново.',
-        wrongOut: [{ val: 'Повторный HTTP-запрос для позднего подписчика!', kind: 'error', color: '#a13544' }],
-      },
-    ],
-    slotsCount: 2,
-    correctCardIds: [
-      'ReplaySubject(2)',
-      'shareReplay({ bufferSize: 1, refCount: true })',
-    ],
-    wrongOrderMsg:
-      'В первый слот поставьте ReplaySubject(2) для истории, а во второй — shareReplay для кеширования.',
-    hint: 'ReplaySubject(2) хранит ровно 2 последних события, а shareReplay({ bufferSize: 1, refCount: true }) кеширует последний ответ.',
-  },
-
-  10: {
-    id: 10,
-    code: 'ЗАДАНИЕ 10 · РАЗДЕЛ 9',
-    title: 'Накопление состояния (scan) и очередь эффектов',
-    subtitle: 'Слот 1: посчитать текущую сумму изменений (+1, +1, -1). Слот 2: отправить сохранения на сервер строго по очереди.',
-    initialMood: 'working',
-    catProblemText: 'Обычный map() не помнит прошлую сумму, а параллельное сохранение через mergeMap путает порядок версий!',
-    catSuccessText: 'Собрано! scan() накапливает состояние на каждом шаге, а concatMap сохраняет изменения строго по очереди.',
-    sourceLabel: 'Изменения: +1 → +1 → -1 → +1 (старт с 0)',
-    sourceMarbles: [
-      { val: '+1', kind: 'event', color: '#01696f' },
-      { val: '+1', kind: 'event', color: '#01696f' },
-      { val: '-1', kind: 'event', color: '#da7101' },
-      { val: '+1', kind: 'event', color: '#01696f' },
-    ],
-    expectedLabel: 'Счётчик выдаёт промежуточную сумму на каждый шаг: 1 → 2 → 1 → 2',
-    expectedMarbles: [
-      { val: '1', kind: 'next', color: '#437a22' },
-      { val: '2', kind: 'next', color: '#437a22' },
-      { val: '1', kind: 'next', color: '#437a22' },
-      { val: '2', kind: 'next', color: '#437a22' },
-    ],
-    codePrefix: `const count$ = changes$.pipe(`,
-    codeSuffix: `);`,
-    joinWith: '  |  ',
-    cards: [
-      {
-        id: 'scan((acc, x) => acc + x, 0)',
-        label: '1) scan((acc, x) => acc + x, 0)',
-        desc: 'Накапливает значение и сразу отдаёт результат на каждом шаге',
-      },
-      {
-        id: 'concatMap(a => api.save(a))',
-        label: '2) concatMap (для сохранений)',
-        desc: 'Выполняет запросы сохранения строго по очереди',
-      },
-      {
-        id: 'map(x => x + 1)',
-        label: 'map(x => x + 1)',
-        desc: 'Преобразует только текущее число без памяти о прошлых',
-        whyWrong:
-          'Не решает проблему: у map() нет аккумулятора — он не помнит предыдущее состояние счётчика.',
-        wrongOut: [{ val: 'Нет памяти о прошлой сумме!', kind: 'error', color: '#a13544' }],
-      },
-      {
-        id: 'switchMap(a => api.save(a))',
-        label: 'switchMap (для сохранений)',
-        desc: 'Отменяет предыдущий запрос при новом событии',
-        whyWrong:
-          'Не решает проблему: для сохранения данных switchMap опасен — новое действие отменит предыдущий POST-запрос на полпути!',
-        wrongOut: [{ val: 'Предыдущее сохранение отменено на полпути!', kind: 'error', color: '#a13544' }],
-      },
-    ],
-    slotsCount: 2,
-    correctCardIds: [
-      'scan((acc, x) => acc + x, 0)',
-      'concatMap(a => api.save(a))',
-    ],
-    wrongOrderMsg:
-      'В первый слот выберите scan(...) для накопления состояния, а во второй — concatMap(...) для очереди сохранений.',
-    hint: 'Для накопления состояния во времени нужен scan((acc, x) => acc + x, 0), а для последовательного сохранения в эффектах — concatMap.',
-  },
-
-  11: {
-    id: 11,
-    code: 'ЗАДАНИЕ 11 · РАЗДЕЛ 10',
-    title: 'Безопасная отписка внутри ngOnInit в Angular',
-    subtitle: 'Подписка создаётся внутри ngOnInit(). Как отписаться при удалении компонента без ошибки NG0203?',
-    initialMood: 'tangled',
-    catProblemText: 'Вызов takeUntilDestroyed() без аргументов внутри ngOnInit() падает с ошибкой NG0203!',
-    catSuccessText: 'Чисто! Мы передали this.destroyRef явно — теперь подписка аккуратно закроется вместе с компонентом.',
-    sourceLabel: 'player.track$ внутри ngOnInit()',
-    sourceMarbles: [
-      { val: '♪ Трек 1', kind: 'event', color: '#01696f' },
-      { val: '♪ Трек 2', kind: 'event', color: '#01696f' },
-      { val: 'удаление компонента', kind: 'cancel', color: '#a13544' },
-    ],
-    expectedLabel: 'Автоматическая отписка при удалении компонента',
-    expectedMarbles: [
-      { val: '♪ Трек 1', kind: 'next', color: '#437a22' },
-      { val: '♪ Трек 2', kind: 'next', color: '#437a22' },
-      { val: 'отписано |', kind: 'cancel', color: '#437a22' },
-    ],
-    codePrefix: `ngOnInit() {\n  this.player.track$.pipe(`,
-    codeSuffix: `).subscribe(renderTrack);\n}`,
+    catProblemText: 'По умолчанию каждый вызов subscribe() запускает новый HTTP-запрос. А обычный share() сбрасывается после завершения запроса.',
+    catSuccessText: 'Красота! shareReplay(1) делает один запрос на всех и бережно хранит полученный ответ для тех, кто подпишется позже.',
+    scenarioBefore: '3 подписки = 3 одинаковых запроса в сеть',
+    scenarioAfter: '1 запрос в сеть, остальные берут ответ из кеша',
+    codePrefix: `config$ = this.http.get('/api/config').pipe(\n  `,
+    codeSuffix: `\n);`,
     joinWith: '',
     cards: [
       {
-        id: 'takeUntilDestroyed(this.destroyRef)',
-        label: 'takeUntilDestroyed(this.destroyRef)',
-        desc: 'Явно передать ссылку на DestroyRef компонента',
+        id: 'share()',
+        label: 'share()',
+        desc: 'Делить поток, пока запрос выполняется, без хранения ответа',
+        whyWrong:
+          'HTTP-запрос завершается мгновенно. Кто подпишется на секунду позже — с обычным share() запустит новый запрос.',
       },
       {
-        id: 'takeUntilDestroyed()',
-        label: 'takeUntilDestroyed()',
-        desc: 'Вызвать без аргументов внутри ngOnInit()',
+        id: 'shareReplay({ bufferSize: 1, refCount: true })',
+        label: 'shareReplay({ bufferSize: 1, refCount: true })',
+        desc: 'Выполнить запрос 1 раз и раздавать сохранённый ответ всем подписчикам',
+      },
+      {
+        id: 'distinctUntilChanged()',
+        label: 'distinctUntilChanged()',
+        desc: 'Отсеивать одинаковые значения подряд',
         whyWrong:
-          'Не решает проблему: без аргументов takeUntilDestroyed() работает только в конструкторе или при инициализации поля. В ngOnInit() нужно явно передать this.destroyRef.',
-        wrongOut: [{ val: 'Ошибка NG0203: вне контекста inject()', kind: 'error', color: '#a13544' }],
+          'distinctUntilChanged фильтрует значения внутри одной подписки, но не объединяет разные подписки между собой.',
       },
       {
         id: 'take(1)',
         label: 'take(1)',
-        desc: 'Получить первое значение и сразу завершить поток',
+        desc: 'Взять только первое значение и закрыться',
         whyWrong:
-          'Не решает проблему: take(1) отключит плеер сразу после первого трека, хотя компонент ещё открыт на экране.',
-        wrongOut: [
-          { val: '♪ Трек 1', kind: 'next', color: '#437a22' },
-          { val: 'плеер остановился слишком рано!', kind: 'error', color: '#da7101' },
-        ],
+          'take(1) не кеширует ответ между разными компонентами — каждый компонент всё равно вызовет свой HTTP-запрос.',
+      },
+    ],
+    slotsCount: 1,
+    correctCardIds: ['shareReplay({ bufferSize: 1, refCount: true })'],
+  },
+
+  10: {
+    id: 10,
+    code: 'КВИЗ 10 · СОСТОЯНИЕ И ЭФФЕКТЫ',
+    title: 'Счётчик корзины и поочерёдное сохранение на сервер',
+    subtitle: 'Слот 1: накапливать сумму товаров после каждого клика. Слот 2: отправлять сохранения на сервер строго по очереди.',
+    initialMood: 'working',
+    catProblemText: 'Обычный map() не помнит прошлую сумму корзины, а switchMap отменит предыдущее сохранение на полпути.',
+    catSuccessText: 'Собрано! scan() помнит и обновляет сумму на каждом шаге, а concatMap аккуратно сохраняет изменения по очереди.',
+    scenarioBefore: 'Сумма не копится, сохранения перебивают друг друга',
+    scenarioAfter: 'Корзина считает итог, запросы идут строго по очереди',
+    codePrefix: `// 1. Накопление суммы, 2. Очередь сохранений:\n`,
+    codeSuffix: ``,
+    joinWith: '\n',
+    cards: [
+      {
+        id: 'map(price => price)',
+        label: 'map(price => price)',
+        desc: 'Преобразовать текущее число без памяти о прошлых шагах',
+        whyWrong:
+          'У map() нет памяти о предыдущем состоянии — он не может складывать товары в общую сумму.',
       },
       {
-        id: 'shareReplay(1)',
-        label: 'shareReplay(1)',
-        desc: 'Раздавать последнее значение подписчикам',
+        id: 'scan((sum, price) => sum + price, 0)',
+        label: 'scan((sum, price) => sum + price, 0)',
+        desc: 'Прибавлять новое значение к накопленной сумме и сразу отдавать итог',
+      },
+      {
+        id: 'switchMap(item => api.save(item))',
+        label: 'switchMap(item => api.save(item))',
+        desc: 'Отменять прошлое сохранение при новом действии',
         whyWrong:
-          'Не решает проблему: shareReplay(1) не отписывает компонент при его удалении — подписка останется висеть в памяти.',
-        wrongOut: [{ val: 'Утечка памяти после закрытия экрана!', kind: 'error', color: '#a13544' }],
+          'В сохранении данных отменять предыдущий запрос нельзя — часть изменений просто потеряется.',
+      },
+      {
+        id: 'concatMap(item => api.save(item))',
+        label: 'concatMap(item => api.save(item))',
+        desc: 'Ждать завершения текущего сохранения перед отправкой следующего',
+      },
+    ],
+    slotsCount: 2,
+    correctCardIds: [
+      'scan((sum, price) => sum + price, 0)',
+      'concatMap(item => api.save(item))',
+    ],
+    wrongOrderMsg:
+      'В первый слот поставьте оператор накопления суммы (scan), а во второй — оператор очереди сохранений (concatMap).',
+  },
+
+  11: {
+    id: 11,
+    code: 'КВИЗ 11 · RXJS В ANGULAR',
+    title: 'Автоматическая отписка внутри метода ngOnInit()',
+    subtitle: 'Мы подписываемся на плеер внутри ngOnInit(). Как привязать отписку к удалению компонента и не получить ошибку NG0203?',
+    initialMood: 'tangled',
+    catProblemText: 'Внутри ngOnInit() Angular уже не даёт вызвать takeUntilDestroyed() с пустыми скобками — нужна ссылка на DestroyRef.',
+    catSuccessText: 'Чисто! Передали this.destroyRef — теперь при закрытии компонента подписка остановится сама.',
+    scenarioBefore: 'Ошибка NG0203 или забытая в памяти подписка',
+    scenarioAfter: 'Безопасная авто-отписка при удалении компонента',
+    codePrefix: `ngOnInit() {\n  this.player.track$.pipe(\n    `,
+    codeSuffix: `\n  ).subscribe(play);\n}`,
+    joinWith: '',
+    cards: [
+      {
+        id: 'takeUntilDestroyed()',
+        label: 'takeUntilDestroyed()',
+        desc: 'Вызвать без аргументов прямо внутри ngOnInit()',
+        whyWrong:
+          'Без аргументов этот оператор работает только в конструкторе. В ngOnInit() он упадёт с ошибкой NG0203.',
+      },
+      {
+        id: 'takeUntilDestroyed(this.destroyRef)',
+        label: 'takeUntilDestroyed(this.destroyRef)',
+        desc: 'Передать сохранённый в поле класса this.destroyRef',
+      },
+      {
+        id: 'take(1)',
+        label: 'take(1)',
+        desc: 'Остановить поток сразу после первой песни',
+        whyWrong:
+          'take(1) отключит плеер после первого же трека, хотя пользователь никуда не уходил со страницы.',
+      },
+      {
+        id: 'share()',
+        label: 'share()',
+        desc: 'Сделать поток общим для нескольких подписчиков',
+        whyWrong:
+          'share() не отписывает компонент при уходе со страницы.',
       },
     ],
     slotsCount: 1,
     correctCardIds: ['takeUntilDestroyed(this.destroyRef)'],
-    hint: 'В методе ngOnInit() контекст внедрения зависимостей уже недоступен автоматически — передайте сохранённый this.destroyRef в takeUntilDestroyed(this.destroyRef).',
   },
 
   12: {
     id: 12,
-    code: 'ЗАДАНИЕ 12 · ФИНАЛЬНЫЙ ЭКЗАМЕН',
-    title: 'Соберите свой оператор liveSearch',
-    subtitle: 'Соберите 3 шага: пауза и отсев повторов → switchMap → retry и catchError внутри.',
+    code: 'КВИЗ 12 · ФИНАЛЬНАЯ СБОРКА',
+    title: 'Соберите надёжный живой поиск из 3 частей',
+    subtitle: 'Разложите шаги по порядку: 1) пауза и отсев дублей → 2) переключение запроса → 3) повтор и защита от падения внутри.',
     initialMood: 'error',
-    catProblemText: 'Объедините подавление шума при вводе, отмену старых запросов и защиту от сбоев сети.',
-    catSuccessText: 'Поздравляем! Оператор liveSearch готов к реальной работе: ждёт паузу, не дублирует запросы и не умирает при сбое.',
-    sourceLabel: '"r" → "rx" (успех) → "bad" (сбой → retry → fallback)',
-    sourceMarbles: [
-      { val: '"r" (шум)', kind: 'event', color: '#8c8980' },
-      { val: '"rx"', kind: 'event', color: '#01696f' },
-      { val: '"bad"', kind: 'error', color: '#a13544' },
-    ],
-    expectedLabel: 'Result: rx → retry(1) → Fallback: bad',
-    expectedMarbles: [
-      { val: 'Result: rx', kind: 'next', color: '#437a22' },
-      { val: 'retry(1)', kind: 'event', color: '#da7101' },
-      { val: 'Fallback: bad', kind: 'next', color: '#437a22' },
-    ],
-    codePrefix: `source$.pipe(`,
-    codeSuffix: `)`,
-    joinWith: ', ',
+    catProblemText: 'Нужно собрать всю цепочку: не спамить сервер на каждую букву, отменять старые запросы и не падать при ошибке сети.',
+    catSuccessText: 'Блестяще! Вы собрали продакшен-оператор liveSearch: быстрый, экономный и неубиваемый.',
+    scenarioBefore: 'Лишние запросы, гонка ответов и падение при сбое',
+    scenarioAfter: 'Пауза 300 мс → отмена старого → retry + catchError внутри',
+    codePrefix: `input$.pipe(\n  `,
+    codeSuffix: `\n)`,
+    joinWith: ',\n  ',
     cards: [
       {
-        id: 'debounceTime(300), distinctUntilChanged()',
-        label: '1) debounceTime + distinctUntilChanged',
-        desc: 'Подождать паузу в наборе и отсеять повтор того же текста',
-      },
-      {
         id: 'switchMap(q => api(q).pipe(...))',
-        label: '2) switchMap(q => api(q).pipe(...))',
-        desc: 'Переключиться на новый запрос и отменить устаревший',
+        label: 'switchMap(q => api(q).pipe(...))',
+        desc: 'Отменять прошлый запрос и переключаться на новый',
       },
       {
-        id: "retry(1), catchError(() => of('Fallback'))",
-        label: '3) Внутри: retry(1) + catchError',
-        desc: 'Повторить 1 раз при сбое и вернуть запасной ответ внутри switchMap',
+        id: 'debounceTime(300), distinctUntilChanged()',
+        label: 'debounceTime(300), distinctUntilChanged()',
+        desc: 'Подождать паузу при вводе и отсеять повтор того же слова',
       },
       {
         id: 'mergeMap(q => api(q)), catchError(...)',
         label: 'mergeMap + внешний catchError',
         desc: 'Запускать параллельно и ловить ошибку снаружи',
         whyWrong:
-          'Не решает проблему: mergeMap приведёт к гонке ответов, а внешний catchError навсегда убьёт живой поиск при первой же сетевой ошибке.',
-        wrongOut: [{ val: 'Гонка ответов и падение поиска ✕', kind: 'error', color: '#a13544' }],
+          'mergeMap создаст гонку ответов, а внешний catchError навсегда отключит строку поиска после первого сбоя.',
+      },
+      {
+        id: "retry(1), catchError(() => of([]))",
+        label: 'retry(1), catchError(() => of([]))',
+        desc: 'Внутри запроса: повторить при сбое и вернуть пустой список',
       },
     ],
     slotsCount: 3,
     correctCardIds: [
       'debounceTime(300), distinctUntilChanged()',
       'switchMap(q => api(q).pipe(...))',
-      "retry(1), catchError(() => of('Fallback'))",
+      'retry(1), catchError(() => of([]))',
     ],
     wrongOrderMsg:
-      'Соберите шаги по порядку: 1) debounceTime + distinctUntilChanged → 2) switchMap(...) → 3) внутри запроса retry(1) + catchError.',
-    hint: 'Сначала очистите входной поток (debounceTime + distinctUntilChanged), затем вызовите switchMap, а внутри него защитите запрос через retry(1) и catchError.',
+      'Проверьте порядок: 1) сначала пауза и дубли (debounceTime + distinctUntilChanged), 2) затем switchMap, 3) внутри него retry + catchError.',
   },
 };
 
@@ -770,8 +586,6 @@ const mission = computed(() => MISSIONS[props.level] || MISSIONS[1]);
 
 const selectedCards = ref<string[]>([]);
 const feedback = ref<{ ok: boolean; msg: string } | null>(null);
-const simulatedOut = ref<SimMarble[]>([]);
-const showHint = ref(false);
 
 const everSolved = computed(() => isMissionCompleted(mission.value.id));
 
@@ -786,8 +600,6 @@ watch(
   () => {
     selectedCards.value = [];
     feedback.value = null;
-    simulatedOut.value = [];
-    showHint.value = false;
   }
 );
 
@@ -795,29 +607,17 @@ function findCard(id: string): CardOption | undefined {
   return mission.value.cards.find((c) => c.id === id);
 }
 
-function evaluateCurrentSelection(requireFullSlots = false) {
+function evaluateCurrentSelection() {
   for (const id of selectedCards.value) {
     const card = findCard(id);
     if (card?.whyWrong) {
       feedback.value = { ok: false, msg: card.whyWrong };
-      simulatedOut.value = card.wrongOut || [
-        { val: 'Неподходящий оператор', kind: 'error', color: '#a13544' },
-      ];
       return;
     }
   }
 
   if (selectedCards.value.length < mission.value.slotsCount) {
-    if (requireFullSlots) {
-      feedback.value = {
-        ok: false,
-        msg: `Заполнено слотов: ${selectedCards.value.length} из ${mission.value.slotsCount}. Выберите недостающие карточки ниже.`,
-      };
-      simulatedOut.value = [];
-    } else {
-      feedback.value = null;
-      simulatedOut.value = [];
-    }
+    feedback.value = null;
     return;
   }
 
@@ -827,18 +627,14 @@ function evaluateCurrentSelection(requireFullSlots = false) {
 
   if (isExactOrder) {
     feedback.value = { ok: true, msg: mission.value.catSuccessText };
-    simulatedOut.value = mission.value.expectedMarbles;
     markMissionCompleted(mission.value.id);
   } else {
     feedback.value = {
       ok: false,
       msg:
         mission.value.wrongOrderMsg ||
-        'Карточки выбраны верно, но стоят в неправильном порядке. Поменяйте их местами.',
+        'Карточки выбраны правильные, но стоят не в том порядке. Попробуйте поменять их местами.',
     };
-    simulatedOut.value = [
-      { val: 'Неверный порядок операторов', kind: 'error', color: '#da7101' },
-    ];
   }
 }
 
@@ -847,13 +643,13 @@ function toggleCard(cardId: string) {
 
   if (existingIdx >= 0) {
     selectedCards.value.splice(existingIdx, 1);
-    evaluateCurrentSelection(false);
+    evaluateCurrentSelection();
     return;
   }
 
   if (mission.value.slotsCount === 1) {
     selectedCards.value = [cardId];
-    evaluateCurrentSelection(true);
+    evaluateCurrentSelection();
     return;
   }
 
@@ -870,37 +666,26 @@ function toggleCard(cardId: string) {
     }
   }
 
-  const clickedCard = findCard(cardId);
-  if (clickedCard?.whyWrong || selectedCards.value.length === mission.value.slotsCount) {
-    evaluateCurrentSelection(true);
-  } else {
-    evaluateCurrentSelection(false);
-  }
+  evaluateCurrentSelection();
 }
 
 function removeSlotAt(index: number) {
   if (index >= 0 && index < selectedCards.value.length) {
     selectedCards.value.splice(index, 1);
-    evaluateCurrentSelection(false);
+    evaluateCurrentSelection();
   }
 }
 
 function clearSelection() {
   selectedCards.value = [];
   feedback.value = null;
-  simulatedOut.value = [];
-}
-
-function applySolution() {
-  selectedCards.value = [...mission.value.correctCardIds];
-  evaluateCurrentSelection(true);
 }
 
 const assembledCode = computed(() => {
   const middle =
     selectedCards.value.length > 0
       ? selectedCards.value.join(mission.value.joinWith)
-      : '/* выберите карточку */';
+      : '/* выберите вариант справа */';
   return `${mission.value.codePrefix}${middle}${mission.value.codeSuffix}`;
 });
 </script>
@@ -908,17 +693,16 @@ const assembledCode = computed(() => {
 <template>
   <div class="quest-level">
     <div class="quest-header">
-      <div class="quest-header-left">
-        <div class="quest-badges">
-          <span class="comet-pill comet-pill--quest">{{ mission.code }}</span>
-          <span v-if="feedback?.ok || everSolved" class="solved-pill">✓ РЕШЕНО</span>
-        </div>
-        <h2>{{ mission.title }}</h2>
-        <p class="comet-subtitle">{{ mission.subtitle }}</p>
+      <div class="quest-badges">
+        <span class="comet-pill comet-pill--quest">{{ mission.code }}</span>
+        <span v-if="feedback?.ok || everSolved" class="solved-pill">✓ РЕШЕНО</span>
       </div>
+      <h2>{{ mission.title }}</h2>
+      <p class="comet-subtitle">{{ mission.subtitle }}</p>
     </div>
 
     <div class="quest-arena">
+      <!-- Левая колонка: Кот + короткая суть + превью кода -->
       <div class="arena-visual comet-card">
         <div
           class="cat-status-box"
@@ -927,15 +711,15 @@ const assembledCode = computed(() => {
             'is-error': feedback && !feedback.ok,
           }"
         >
-          <CometCat :mood="catCurrentMood" :size="72" />
+          <CometCat :mood="catCurrentMood" :size="76" />
           <div class="cat-speech">
             <div class="speech-tag">
               {{
                 feedback?.ok
-                  ? 'РЕЗУЛЬТАТ: ПОТОК РАБОТАЕТ ВЕРНО'
+                  ? 'ОТЛИЧНО! ВСЁ РАБОТАЕТ'
                   : feedback && !feedback.ok
-                    ? 'ПОЧЕМУ ЭТОТ ВАРИАНТ НЕ ПОДХОДИТ'
-                    : 'ЧТО СЕЙЧАС НЕ ТАК'
+                    ? 'ПОЧЕМУ ЭТО НЕ ПОДОЙДЁТ'
+                    : 'СИТУАЦИЯ'
               }}
             </div>
             <p>
@@ -944,136 +728,81 @@ const assembledCode = computed(() => {
           </div>
         </div>
 
-        <div class="conveyor-box">
-          <div class="conveyor-lane">
-            <span class="lane-title">Вход: {{ mission.sourceLabel }}</span>
-            <div class="lane-track">
-              <span
-                v-for="(m, i) in mission.sourceMarbles"
-                :key="i"
-                class="sim-marble"
-                :style="{ backgroundColor: m.color }"
-              >
-                {{ m.val }}
-              </span>
-            </div>
+        <div class="summary-boxes">
+          <div class="summary-row before">
+            <span class="sum-label">Без решения:</span>
+            <span class="sum-val">{{ mission.scenarioBefore }}</span>
           </div>
-
-          <div class="conveyor-lane">
-            <span class="lane-title">Ожидаемый результат: {{ mission.expectedLabel }}</span>
-            <div class="lane-track lane-track--target">
-              <span
-                v-for="(m, i) in mission.expectedMarbles"
-                :key="i"
-                class="sim-marble is-target"
-                :style="{ borderColor: m.color, color: m.color }"
-              >
-                {{ m.val }}
-              </span>
-            </div>
-          </div>
-
-          <div class="conveyor-lane">
-            <span class="lane-title">Что получилось на выходе:</span>
-            <div class="lane-track lane-track--output">
-              <span v-if="simulatedOut.length === 0" class="empty-track">
-                Выберите карточку справа, чтобы увидеть результат...
-              </span>
-              <span
-                v-for="(m, i) in simulatedOut"
-                :key="i"
-                class="sim-marble"
-                :style="{ backgroundColor: m.color }"
-              >
-                {{ m.val }}
-              </span>
-            </div>
+          <div class="summary-row after" :class="{ active: feedback?.ok }">
+            <span class="sum-label">Наша цель:</span>
+            <span class="sum-val">{{ mission.scenarioAfter }}</span>
           </div>
         </div>
 
         <pre class="code-preview-box">{{ assembledCode }}</pre>
       </div>
 
+      <!-- Правая колонка: Слоты и карточки вариантов -->
       <div class="arena-controls comet-card">
-        <div class="cards-workspace">
-          <div class="slots-header">
-            <span>
-              Соберите ответ из карточек ({{ selectedCards.length }} / {{ mission.slotsCount }}):
+        <div class="slots-header">
+          <span>
+            {{
+              mission.slotsCount === 1
+                ? 'Нажмите на подходящий вариант:'
+                : `Выберите карточки по порядку (${selectedCards.length} из ${mission.slotsCount}):`
+            }}
+          </span>
+          <button
+            v-if="selectedCards.length > 0"
+            type="button"
+            class="clear-link"
+            @click="clearSelection"
+          >
+            Сбросить
+          </button>
+        </div>
+
+        <div v-if="mission.slotsCount > 1" class="pipeline-slots">
+          <div
+            v-for="slotIdx in mission.slotsCount"
+            :key="slotIdx"
+            class="pipe-slot"
+            :class="{
+              'is-filled': !!selectedCards[slotIdx - 1],
+              'is-wrong':
+                !!selectedCards[slotIdx - 1] &&
+                (findCard(selectedCards[slotIdx - 1])?.whyWrong ||
+                  (feedback && !feedback.ok)),
+              'is-correct': !!selectedCards[slotIdx - 1] && feedback?.ok,
+            }"
+            @click="removeSlotAt(slotIdx - 1)"
+          >
+            <span class="slot-num">Шаг {{ slotIdx }}</span>
+            <span v-if="selectedCards[slotIdx - 1]" class="slot-val">
+              {{ selectedCards[slotIdx - 1] }} <span class="slot-remove">✕</span>
             </span>
-            <button
-              v-if="selectedCards.length > 0"
-              type="button"
-              class="clear-link"
-              @click="clearSelection"
-            >
-              Сбросить выбор
-            </button>
-          </div>
-
-          <div class="pipeline-slots">
-            <div
-              v-for="slotIdx in mission.slotsCount"
-              :key="slotIdx"
-              class="pipe-slot"
-              :class="{
-                'is-filled': !!selectedCards[slotIdx - 1],
-                'is-wrong':
-                  !!selectedCards[slotIdx - 1] &&
-                  (findCard(selectedCards[slotIdx - 1])?.whyWrong ||
-                    (feedback && !feedback.ok)),
-                'is-correct': !!selectedCards[slotIdx - 1] && feedback?.ok,
-              }"
-              @click="removeSlotAt(slotIdx - 1)"
-            >
-              <span class="slot-num">0{{ slotIdx }}</span>
-              <span v-if="selectedCards[slotIdx - 1]" class="slot-val">
-                {{ selectedCards[slotIdx - 1] }} <span class="slot-remove">✕</span>
-              </span>
-              <span v-else class="slot-placeholder">Кликните на карточку ниже...</span>
-            </div>
-          </div>
-
-          <div class="deck-grid">
-            <button
-              v-for="c in mission.cards"
-              :key="c.id"
-              type="button"
-              class="op-card"
-              :class="{
-                'is-picked': selectedCards.includes(c.id),
-                'is-picked-wrong':
-                  selectedCards.includes(c.id) &&
-                  (!!c.whyWrong || (feedback && !feedback.ok)),
-                'is-picked-ok': selectedCards.includes(c.id) && feedback?.ok,
-              }"
-              @click="toggleCard(c.id)"
-            >
-              <div class="op-card-title">{{ c.label }}</div>
-              <div class="op-card-desc">{{ c.desc }}</div>
-            </button>
+            <span v-else class="slot-placeholder">Пустой слот...</span>
           </div>
         </div>
 
-        <div class="controls-footer">
-          <div class="action-buttons">
-            <button
-              type="button"
-              class="run-stream-btn"
-              @click="evaluateCurrentSelection(true)"
-            >
-              ▶ Проверить
-            </button>
-            <button type="button" class="hint-btn" @click="showHint = !showHint">
-              {{ showHint ? 'Скрыть подсказку' : '💡 Подсказка' }}
-            </button>
-            <button type="button" class="solve-btn" @click="applySolution">
-              Показать ответ
-            </button>
-          </div>
-
-          <div v-if="showHint" class="hint-banner">
-            {{ mission.hint }}
-          </div>
+        <div class="deck-grid">
+          <button
+            v-for="c in mission.cards"
+            :key="c.id"
+            type="button"
+            class="op-card"
+            :class="{
+              'is-picked': selectedCards.includes(c.id),
+              'is-picked-wrong':
+                selectedCards.includes(c.id) &&
+                (!!c.whyWrong || (feedback && !feedback.ok)),
+              'is-picked-ok': selectedCards.includes(c.id) && feedback?.ok,
+            }"
+            @click="toggleCard(c.id)"
+          >
+            <div class="op-card-title">{{ c.label }}</div>
+            <div class="op-card-desc">{{ c.desc }}</div>
+          </button>
         </div>
       </div>
     </div>
@@ -1085,18 +814,16 @@ const assembledCode = computed(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 5px;
+  gap: 8px;
 }
 
 .quest-level :deep(.comet-subtitle) {
-  margin-bottom: 0.35rem !important;
+  margin-bottom: 0.25rem !important;
 }
 
 .quest-header {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
 }
 
 .quest-badges {
@@ -1118,7 +845,7 @@ const assembledCode = computed(() => {
 
 .quest-arena {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
   gap: 14px;
   flex: 1;
   min-height: 0;
@@ -1129,18 +856,18 @@ const assembledCode = computed(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 10px 14px;
-  gap: 6px;
+  padding: 12px 15px;
+  gap: 10px;
 }
 
 .cat-status-box {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border-radius: 10px;
   background: #f7f6f2;
-  border: 1px solid #dcdad2;
+  border: 1.5px solid #dcdad2;
   transition: all 0.2s ease;
 }
 
@@ -1164,7 +891,7 @@ const assembledCode = computed(() => {
   font-weight: 700;
   letter-spacing: 0.05em;
   color: #01696f;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .cat-status-box.is-error .speech-tag {
@@ -1177,85 +904,61 @@ const assembledCode = computed(() => {
 
 .cat-speech p {
   margin: 0;
-  font-size: 0.81rem;
+  font-size: 0.84rem;
   font-weight: 600;
   color: #171614;
-  line-height: 1.34;
+  line-height: 1.38;
 }
 
-.conveyor-box {
+.summary-boxes {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.conveyor-lane {
+.summary-row {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  background: #f2f1ec;
+  border: 1px solid #dcdad2;
 }
 
-.lane-title {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: #6e6c65;
+.summary-row.after.active {
+  background: #e2ede6;
+  border-color: #437a22;
+  color: #2f5e16;
   font-weight: 600;
 }
 
-.lane-track {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 28px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: #eceae3;
-  border: 1px solid #d5d3ca;
-  flex-wrap: wrap;
-}
-
-.lane-track--output {
-  background: #171614;
-  border-color: #3a372f;
-}
-
-.empty-track {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: #9f9d96;
-}
-
-.sim-marble {
+.sum-label {
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 700;
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 999px;
+  color: #6e6c65;
+  flex-shrink: 0;
 }
 
-.sim-marble.is-target {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1.5px dashed #437a22;
+.sum-val {
+  text-align: right;
 }
 
 .code-preview-box {
   margin: 0;
-  padding: 7px 10px;
+  padding: 8px 11px;
   border-radius: 8px;
   background: #ebe9e2;
   border: 1px solid #d5d3ca;
   font-family: var(--font-mono);
   font-size: 11px;
-  line-height: 1.38;
+  line-height: 1.4;
   color: #171614;
   white-space: pre-wrap;
-}
-
-.cards-workspace {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  word-break: break-word;
 }
 
 .slots-header {
@@ -1264,8 +967,8 @@ const assembledCode = computed(() => {
   align-items: center;
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
-  color: #6e6c65;
+  font-weight: 700;
+  color: #57554e;
 }
 
 .clear-link {
@@ -1277,10 +980,6 @@ const assembledCode = computed(() => {
   color: #a13544;
   cursor: pointer;
   padding: 0;
-}
-
-.clear-link:hover {
-  text-decoration: underline;
 }
 
 .pipeline-slots {
@@ -1326,8 +1025,9 @@ const assembledCode = computed(() => {
 }
 
 .slot-num {
-  opacity: 0.55;
+  opacity: 0.6;
   font-size: 10px;
+  flex-shrink: 0;
 }
 
 .slot-val {
@@ -1336,6 +1036,8 @@ const assembledCode = computed(() => {
   justify-content: space-between;
   width: 100%;
   gap: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .slot-remove {
@@ -1349,14 +1051,16 @@ const assembledCode = computed(() => {
 }
 
 .deck-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 7px;
+  flex: 1;
+  justify-content: center;
 }
 
 .op-card {
   text-align: left;
-  padding: 7px 10px;
+  padding: 8px 12px;
   border-radius: 8px;
   background: #ffffff;
   border: 1.5px solid #dcdad2;
@@ -1386,7 +1090,7 @@ const assembledCode = computed(() => {
 
 .op-card-title {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #01696f;
   margin-bottom: 2px;
@@ -1401,65 +1105,8 @@ const assembledCode = computed(() => {
 }
 
 .op-card-desc {
-  font-size: 10.8px;
+  font-size: 11.2px;
   color: #57554e;
-  line-height: 1.25;
-}
-
-.controls-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.action-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.run-stream-btn {
-  background: #01696f;
-  color: #ffffff;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.run-stream-btn:hover {
-  background: #015459;
-}
-
-.hint-btn,
-.solve-btn {
-  background: #ebe9e2;
-  color: #171614;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 6px 11px;
-  border-radius: 8px;
-  border: 1px solid #d5d3ca;
-  cursor: pointer;
-}
-
-.solve-btn {
-  margin-left: auto;
-  color: #01696f;
-}
-
-.hint-banner {
-  font-size: 11px;
-  padding: 5px 9px;
-  border-radius: 6px;
-  background: #f7ebd9;
-  color: #7c4000;
-  border: 1px solid rgba(218, 113, 1, 0.3);
   line-height: 1.3;
 }
 </style>

@@ -9,18 +9,18 @@ export interface QuestMissionInfo {
 }
 
 export const QUEST_MISSIONS: QuestMissionInfo[] = [
-  { id: 1, code: 'M01', title: 'Запуск потока', section: 'Добро пожаловать в RX', slideIndex: 8 },
-  { id: 2, code: 'M02', title: 'Начальное значение', section: 'Базовые элементы', slideIndex: 14 },
-  { id: 3, code: 'M03', title: 'Массив по элементам', section: 'Операторы создания', slideIndex: 19 },
-  { id: 4, code: 'M04', title: 'Порядок в pipe()', section: 'Цепочка pipe и операторы', slideIndex: 26 },
-  { id: 5, code: 'M05', title: 'Поиск и оплата', section: 'Потоки внутри потоков', slideIndex: 31 },
-  { id: 6, code: 'M06', title: 'Кеш + сервер и фильтры', section: 'Объединение потоков', slideIndex: 35 },
-  { id: 7, code: 'M07', title: 'Клик + текущая роль', section: 'Объединение потоков', slideIndex: 38 },
-  { id: 8, code: 'M08', title: 'catchError внутри switchMap', section: 'Ошибки и завершение', slideIndex: 42 },
-  { id: 9, code: 'M09', title: 'ReplaySubject и shareReplay', section: 'Subject и кеш', slideIndex: 46 },
-  { id: 10, code: 'M10', title: 'Состояние scan и эффекты', section: 'Накопление состояния', slideIndex: 50 },
-  { id: 11, code: 'M11', title: 'Отписка в ngOnInit', section: 'RxJS в Angular', slideIndex: 54 },
-  { id: 12, code: 'M12', title: 'Финал: оператор liveSearch', section: 'Практические проекты', slideIndex: 59 },
+  { id: 1, code: 'M01', title: 'Запуск потока', section: 'Добро пожаловать в RX', slideIndex: 9 },
+  { id: 2, code: 'M02', title: 'Начальное значение', section: 'Базовые элементы', slideIndex: 15 },
+  { id: 3, code: 'M03', title: 'Массив по элементам', section: 'Операторы создания', slideIndex: 20 },
+  { id: 4, code: 'M04', title: 'Порядок в pipe()', section: 'Цепочка pipe и операторы', slideIndex: 27 },
+  { id: 5, code: 'M05', title: 'Поиск и оплата', section: 'Потоки внутри потоков', slideIndex: 32 },
+  { id: 6, code: 'M06', title: 'Кеш + сервер и фильтры', section: 'Объединение потоков', slideIndex: 36 },
+  { id: 7, code: 'M07', title: 'Клик + текущая роль', section: 'Объединение потоков', slideIndex: 39 },
+  { id: 8, code: 'M08', title: 'catchError внутри switchMap', section: 'Ошибки и завершение', slideIndex: 43 },
+  { id: 9, code: 'M09', title: 'Кеширование через shareReplay', section: 'Многоадресные потоки и кеш', slideIndex: 47 },
+  { id: 10, code: 'M10', title: 'Состояние scan и эффекты', section: 'Накопление состояния', slideIndex: 51 },
+  { id: 11, code: 'M11', title: 'Отписка в ngOnInit', section: 'RxJS в Angular', slideIndex: 55 },
+  { id: 12, code: 'M12', title: 'Финал: оператор liveSearch', section: 'Практические проекты', slideIndex: 60 },
 ];
 
 const STORAGE_KEY = 'comet-rxjs-quest-v3';

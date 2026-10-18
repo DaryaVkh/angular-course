@@ -12,34 +12,20 @@ class: comet-dark
 ---
 
 <div class="flex items-center justify-between h-full gap-8 pt-4">
-  <div class="flex flex-col max-w-[60%]">
+  <div class="flex flex-col max-w-[62%]">
     <span class="comet-pill">ЛЕКЦИЯ И ПРАКТИКА · ПОЛНЫЙ КУРС</span>
     <h1 class="!text-[4.2rem] !leading-[1.02] mt-2 mb-3">RxJS</h1>
     <div class="text-[1.95rem] font-bold leading-tight mb-4">
       Реактивное программирование<br />для фронтенд-разработчиков
     </div>
     <p class="comet-subtitle !text-[1.12rem]">
-      От базовой идеи потока до объединения источников, обработки ошибок, накопления состояния и создания своих операторов
+      Как описывать клики, живой поиск, сетевые запросы и состояние экрана едиными цепочками без ручных таймеров и флагов
     </p>
   </div>
-  <div class="flex flex-col items-center gap-5 pr-6">
-    <CometCat mood="idle" :size="135" dark caption="Помощник по потокам Кот Комет" />
-    <div class="w-[270px]">
-      <MarbleStream
-        :interactive="false"
-        compact
-        :tracks="[
-          {
-            name: 'stream$',
-            completeAt: 88,
-            items: [
-              { x: 18, label: 'a', color: 'teal' },
-              { x: 44, label: 'b', color: 'blue' },
-              { x: 70, label: 'c', color: 'orange' }
-            ]
-          }
-        ]"
-      />
+  <div class="flex flex-col items-center gap-4 pr-6">
+    <CometCat mood="idle" :size="145" dark caption="Помощник по потокам Кот Комет" />
+    <div class="font-mono text-xs text-[#9f9d96] bg-[#201f1d] border border-[#3a372f] px-4 py-2 rounded-full">
+      событие &nbsp;→&nbsp; pipe() &nbsp;→&nbsp; интерфейс
     </div>
   </div>
 </div>
@@ -61,53 +47,9 @@ transition: slide-left
 
 <span class="comet-pill">ДОБРО ПОЖАЛОВАТЬ В RX</span>
 <h2>В интерфейсе всё происходит во времени</h2>
-<p class="comet-subtitle">Пользователь нажимает кнопки, печатает в поиске, сервер присылает ответ с задержкой, а таймер отсчитывает секунды.</p>
+<p class="comet-subtitle">Пользователь ставит лайки, набирает текст в поиске и переключает вкладки, а сервер отвечает с задержкой.</p>
 
-<MarbleStream
-  :tracks="[
-    {
-      name: 'клики',
-      items: [
-        { x: 14, label: 'клик 1', color: 'teal', detail: 'Пользователь нажал кнопку в первый раз' },
-        { x: 38, label: 'клик 2', color: 'teal', detail: 'Второе нажатие через пару секунд' },
-        { x: 68, label: 'клик 3', color: 'teal', detail: 'Третье нажатие' }
-      ]
-    },
-    {
-      name: 'поле ввода',
-      items: [
-        { x: 20, label: 'r', color: 'blue', detail: 'Ввели первую букву r' },
-        { x: 38, label: 'rx', color: 'blue', detail: 'Допечатали вторую букву — получилось rx' },
-        { x: 54, label: 'rxjs', color: 'blue', detail: 'Допечатали слово rxjs целиком' }
-      ]
-    },
-    {
-      name: 'запрос HTTP',
-      completeAt: 76,
-      items: [
-        { x: 64, label: 'ответ', color: 'green', detail: 'Сервер вернул данные, после чего запрос завершился (|)' }
-      ]
-    },
-    {
-      name: 'таймер',
-      items: [
-        { x: 14, label: '0', color: 'orange' },
-        { x: 38, label: '1', color: 'orange' },
-        { x: 64, label: '2', color: 'orange' },
-        { x: 84, label: '3', color: 'orange' }
-      ]
-    }
-  ]"
-  :steps="[
-    { x: 14, text: 'Первый клик по кнопке и первый отсчёт таймера.' },
-    { x: 20, text: 'Пользователь начал печатать в строке поиска: символ r.' },
-    { x: 38, text: 'Второй клик, продолжение ввода (rx) и следующий шаг таймера.' },
-    { x: 54, text: 'Пользователь закончил печатать слово rxjs.' },
-    { x: 64, text: 'Пришёл ответ от сервера (HTTP), и поток запроса сразу закрылся зелёной чертой (|).' },
-    { x: 68, text: 'Ещё один клик по кнопке.' },
-    { x: 84, text: 'Таймер продолжает идти дальше.' }
-  ]"
-/>
+<RxMiniApp scenario="events-timeline" />
 
 ---
 transition: slide-left
@@ -115,25 +57,25 @@ transition: slide-left
 
 <span class="comet-pill">ДОБРО ПОЖАЛОВАТЬ В RX</span>
 <h2>Почему привычных инструментов не всегда хватает</h2>
-<p class="comet-subtitle">Когда на экране нужно связать ввод текста, таймер и отмену запросов, обычный код быстро запутывается.</p>
+<p class="comet-subtitle">Когда нужно подождать паузу после набора текста и отменить прошлый запрос, в обычном коде появляется куча переменных: <code>timerId</code>, <code>isLoading</code> и <code>AbortController</code>.</p>
 
 <div class="comet-grid-3 my-auto">
   <div class="comet-card">
     <div class="title-red">Вложенные колбэки</div>
     <p class="text-sm text-[#3a372f] m-0">
-      Когда одно действие зависит от другого, функции вкладываются друг в друга. Такой код тяжело читать, а отменить цепочку посередине почти невозможно.
+      Когда одно действие запускает другое, функции вкладываются друг в друга. Такой код тяжело читать, а аккуратно прервать цепочку посередине почти нереально.
     </p>
   </div>
   <div class="comet-card">
     <div class="title-orange">Promise</div>
     <p class="text-sm text-[#3a372f] m-0">
-      Отлично подходит для одного запроса, но срабатывает только <strong>один раз</strong>. А в строке поиска или фильтре новые значения приходят снова и снова.
+      Хорош для одного запроса, но срабатывает только <strong>один раз</strong>. А в строке поиска или фильтре каталога новые значения приходят снова и снова.
     </p>
   </div>
   <div class="comet-card">
     <div class="title-blue">Слушатели событий</div>
     <p class="text-sm text-[#3a372f] m-0">
-      Каждый <code>addEventListener</code> живёт сам по себе. Чтобы добавить паузу, отсеять повторы и не забыть удалить слушатель, приходится заводить флаги и таймеры вручную.
+      С <code>addEventListener</code> всю логику приходится писать руками: заводить <code>setTimeout</code>, хранить прошлое значение для проверки повторов и не забывать вызывать <code>removeEventListener</code>.
     </p>
   </div>
 </div>
@@ -143,40 +85,47 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ДОБРО ПОЖАЛОВАТЬ В RX</span>
-<h2>Что такое RxJS: работаем с событиями как с массивом</h2>
-<p class="comet-subtitle">С массивами мы уже умеем работать через <code>filter</code> и <code>map</code>. RxJS даёт те же методы для событий во времени.</p>
+<h2>Императивный код против реактивного</h2>
+<p class="comet-subtitle">Сравните два подхода: дёргать изменения вручную в каждом обработчике или один раз описать цепочку правил.</p>
 
-<div class="comet-grid-2 mb-4">
+<div class="comet-grid-2 my-auto">
   <div class="comet-card">
-    <div class="title-blue">Обычный массив — все данные уже в памяти</div>
-    <p class="text-sm text-[#6e6c65] mb-2">Берём готовый список чисел, отбираем нужные и умножаем:</p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">[1, 2, 3, 4]
-  .filter(x =&gt; x &gt; 2)
-  .map(x =&gt; x * 10);
-// сразу получили [30, 40]</pre>
+    <div class="title-orange">Императивный подход — управляем вручную</div>
+    <p class="text-sm text-[#6e6c65] mb-2">Сами храним таймеры, прошлое значение и следим за порядком вызовов:</p>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">let timerId: any;
+let lastQuery = '';
+input.addEventListener('input', (e) =&gt; {
+  clearTimeout(timerId);
+  timerId = setTimeout(() =&gt; {
+    if (e.target.value !== lastQuery) {
+      lastQuery = e.target.value;
+      loadBooks(lastQuery);
+    }
+  }, 300);
+});</pre>
   </div>
   <div class="comet-card">
-    <div class="title-teal">Поток RxJS — данные приходят со временем</div>
-    <p class="text-sm text-[#6e6c65] mb-2">Точно так же описываем шаги, но они срабатывают на каждое новое событие:</p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">clicks$.pipe(
-  filter(x =&gt; x &gt; 2),
-  map(x =&gt; x * 10)
-);
-// 30, 40 — по мере нажатий</pre>
+    <div class="title-teal">Реактивный подход (RxJS) — описываем поток</div>
+    <p class="text-sm text-[#6e6c65] mb-2">Собираем обработку событий как конвейер из готовых шагов:</p>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">searchControl.valueChanges.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  switchMap(query =&gt; loadBooks(query))
+).subscribe(books =&gt; {
+  this.books = books;
+});</pre>
   </div>
 </div>
 
-<div class="comet-card comet-card--green">
-  <div class="font-mono text-xs uppercase tracking-wider text-[#01696f] font-bold mb-2">
-    Пример из жизни · Поиск книг по мере ввода
-  </div>
-  <div class="grid grid-cols-4 gap-3 text-center text-sm font-semibold items-center">
-    <div class="bg-white rounded-lg py-2 px-3 border border-[#dcdad2]">1. Ввод текста</div>
-    <div class="bg-white rounded-lg py-2 px-3 border border-[#dcdad2]">2. Пауза 300 мс</div>
-    <div class="bg-white rounded-lg py-2 px-3 border border-[#dcdad2]">3. Запрос на сервер</div>
-    <div class="bg-[#d6eadf] text-[#437a22] rounded-lg py-2 px-3 border border-[#437a22]/30">4. Список на экране</div>
-  </div>
-</div>
+---
+transition: slide-left
+---
+
+<span class="comet-pill">ДОБРО ПОЖАЛОВАТЬ В RX · ПРИМЕР ИЗ ЖИЗНИ</span>
+<h2>Как работает живой поиск книг по шагам</h2>
+<p class="comet-subtitle">Попробуйте набрать запрос в мини-приложении и посмотрите, как событие проходит все 4 этапа:</p>
+
+<RxMiniApp scenario="book-search" />
 
 ---
 transition: slide-left
@@ -184,29 +133,29 @@ transition: slide-left
 
 <span class="comet-pill">ДОБРО ПОЖАЛОВАТЬ В RX</span>
 <h2>Чем Observable отличается от Promise</h2>
-<p class="comet-subtitle">Оба работают с асинхронным кодом, но решают разные задачи.</p>
+<p class="comet-subtitle">Четыре практических отличия, которые определяют выбор инструмента в коде.</p>
 
 <div class="comet-grid-2 my-auto">
   <div class="comet-card">
-    <div class="title-orange">Promise — как заказ одной посылки</div>
-    <ul class="text-sm space-y-2 pl-4 m-0">
-      <li>возвращает только <strong>одно значение</strong> и завершается</li>
-      <li>начинает выполняться <strong>сразу в момент создания</strong></li>
-      <li>у самого <code>Promise</code> нет встроенного метода отмены</li>
+    <div class="title-orange"><code>Promise</code> — однократный результат</div>
+    <ul class="text-sm space-y-1.5 pl-4 m-0">
+      <li>возвращает <strong>только одно значение</strong> и завершается</li>
+      <li>запускается <strong>сразу при создании</strong>, даже без <code>.then()</code></li>
+      <li>нельзя просто отменить штатным методом самого промиса</li>
     </ul>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs mt-3 mb-0">// Запрос уже ушёл, даже без .then()
+    <pre v-pre class="comet-card--code p-2.5 rounded mt-3 mb-0">// Запрос уже ушёл в сеть:
 const p = fetch('/api/user');</pre>
   </div>
   <div class="comet-card">
-    <div class="title-teal">Observable — как подписка на радиоволну</div>
-    <ul class="text-sm space-y-2 pl-4 m-0">
-      <li>может выдать <strong>одно, десять или бесконечно много</strong> значений</li>
-      <li>начинает работать <strong>только когда на него подписались</strong></li>
-      <li>подписку можно остановить в любой момент через <code>unsubscribe()</code></li>
+    <div class="title-teal"><code>Observable</code> — поток значений во времени</div>
+    <ul class="text-sm space-y-1.5 pl-4 m-0">
+      <li>выдаёт <strong>0, 1 или сколько угодно</strong> значений подряд</li>
+      <li>ленивый: стартует <strong>только при вызове</strong> <code>subscribe()</code></li>
+      <li>легко отменяется в любой момент через <code>unsubscribe()</code></li>
     </ul>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs mt-3 mb-0">// Пока не вызвали subscribe, ничего не происходит
+    <pre v-pre class="comet-card--code p-2.5 rounded mt-3 mb-0">// Запрос пойдёт только после subscribe:
 const sub = stream$.subscribe(render);
-sub.unsubscribe(); // остановили</pre>
+sub.unsubscribe(); // отменили</pre>
   </div>
 </div>
 
@@ -215,35 +164,35 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ДОБРО ПОЖАЛОВАТЬ В RX</span>
-<h2>Где потоки уже встроены в Angular</h2>
-<p class="comet-subtitle">В Angular не нужно подключать RxJS отдельно — основные части фреймворка уже возвращают потоки.</p>
+<h2>Почему RxJS так важен в Angular</h2>
+<p class="comet-subtitle">Многие встроенные механизмы Angular уже построены на потоках, поэтому разные действия пользователя легко связывать вместе.</p>
 
 <div class="comet-grid-3 my-auto">
   <div class="comet-card">
-    <div class="title-teal">1. Запросы к серверу</div>
+    <div class="title-teal">1. Сетевые запросы</div>
     <p class="text-sm text-[#3a372f] mb-3">
-      Сервис <code>HttpClient</code> возвращает поток. Это позволяет легко повторять упавшие запросы и отменять ненужные.
+      <code>HttpClient</code> возвращает поток. Благодаря этому незавершённый запрос сам прерывается, если пользователь передумал и ушёл со страницы.
     </p>
     <div class="font-mono text-xs text-[#01696f] bg-[#e3ece8] px-2.5 py-1.5 rounded">
       this.http.get('/api/books')
     </div>
   </div>
   <div class="comet-card">
-    <div class="title-blue">2. Адресная строка (Router)</div>
+    <div class="title-blue">2. Роутер и адресная строка</div>
     <p class="text-sm text-[#3a372f] mb-3">
-      Когда пользователь переходит между товарами, роутер присылает новый <code>id</code> в поток без перезагрузки компонента.
+      Смена <code>id</code> товара в URL или параметров фильтрации приходит как поток событий без перезагрузки компонента.
     </p>
     <div class="font-mono text-xs text-[#006494] bg-[#e5eef5] px-2.5 py-1.5 rounded">
       route.paramMap, route.queryParams
     </div>
   </div>
   <div class="comet-card">
-    <div class="title-orange">3. Формы и события DOM</div>
+    <div class="title-orange">3. Смешивание событий</div>
     <p class="text-sm text-[#3a372f] mb-3">
-      Каждое изменение поля ввода или статуса валидации формы приходит как новое значение в потоке.
+      В одном <code>pipe()</code> можно легко объединить ввод в форму, клики по кнопкам и параметры URL в единую цепочку загрузки данных.
     </p>
     <div class="font-mono text-xs text-[#da7101] bg-[#f7ebd9] px-2.5 py-1.5 rounded">
-      control.valueChanges, fromEvent()
+      control.valueChanges + fromEvent()
     </div>
   </div>
 </div>
@@ -271,29 +220,29 @@ transition: slide-left
 
 <span class="comet-pill">БАЗОВЫЕ ЭЛЕМЕНТЫ</span>
 <h2>Поток запускается только при вызове <code>subscribe()</code></h2>
-<p class="comet-subtitle">Обычный (холодный) Observable ведёт себя как функция: пока её не вызвали, код внутри не выполняется.</p>
+<p class="comet-subtitle">Обычный (холодный) Observable работает как чертёж: пока вы не нажали <code>subscribe()</code>, код внутри не выполняется.</p>
 
 <div class="comet-grid-2 my-auto">
   <div class="comet-card comet-card--code flex flex-col justify-center">
     <span class="comet-pill mb-2">ОБЪЯВЛЕНИЕ И ЗАПУСК</span>
-    <div class="font-mono text-sm leading-relaxed">
+    <div class="font-mono text-xs leading-relaxed">
       <div>const stream$ = of(1, 2, 3);</div>
-      <div class="text-[#6e6c65]">// 1. Просто описали поток — ничего не происходит</div>
-      <div class="mt-3">stream$.subscribe(v => console.log(v));</div>
-      <div class="text-[#01696f] font-bold">// 2. Подписались — в консоль вывелось: 1, 2, 3</div>
+      <div class="text-[#6e6c65]">// 1. Просто описали поток — тишина</div>
+      <div class="mt-3">stream$.subscribe(v =&gt; console.log(v));</div>
+      <div class="text-[#01696f] font-bold">// 2. Подписались — вывелось: 1, 2, 3</div>
     </div>
   </div>
   <div class="flex flex-col gap-3">
     <div class="comet-card">
-      <div class="title-teal">Каждая подписка запускает работу заново</div>
+      <div class="title-teal">Каждая подписка — новый запуск</div>
       <p class="text-sm m-0">
-        Если подписаться на <code>http.get('/api/users')</code> в двух местах, уйдёт <strong>два отдельных сетевых запроса</strong> — как при двух вызовах обычной функции.
+        Если подписаться на <code>http.get('/api/users')</code> в двух компонентах, в сеть уйдёт <strong>два отдельных запроса</strong>.
       </p>
     </div>
     <div class="comet-card">
-      <div class="title-orange">Осторожно с готовым Promise</div>
+      <div class="title-orange">Ловушка с готовым Promise</div>
       <p class="text-sm m-0">
-        Если передать в <code>from(fetch('/api'))</code> уже созданный промис, запрос уйдёт сразу, потому что <code>fetch()</code> вызвался ещё до <code>from()</code>.
+        Если написать <code>from(fetch('/api'))</code>, то <code>fetch()</code> вызовется мгновенно ещё до подписки.
       </p>
     </div>
   </div>
@@ -305,150 +254,98 @@ transition: slide-left
 
 <span class="comet-pill">БАЗОВЫЕ ЭЛЕМЕНТЫ</span>
 <h2>Три сигнала потока: <code>next</code>, <code>error</code> и <code>complete</code></h2>
-<p class="comet-subtitle">Во время работы поток может присылать данные, а в конце — либо успешно завершиться, либо сообщить об ошибке.</p>
-
-<div class="comet-grid-3 mb-4">
-  <div class="comet-card">
-    <div class="title-teal"><code>next(value)</code></div>
-    <p class="text-sm m-0 text-[#3a372f]">
-      Пришло новое значение. За время жизни потока может вызваться сколько угодно раз (или ни разу).
-    </p>
-  </div>
-  <div class="comet-card">
-    <div class="title-green"><code>complete()</code></div>
-    <p class="text-sm m-0 text-[#3a372f]">
-      Поток успешно закончил работу (зелёная черта <code>|</code> на схеме). Новых значений больше не будет.
-    </p>
-  </div>
-  <div class="comet-card">
-    <div class="title-red"><code>error(err)</code></div>
-    <p class="text-sm m-0 text-[#3a372f]">
-      Произошла ошибка (значок <code>✕</code>). Поток сразу закрывается, и после ошибки данные уже не придут.
-    </p>
-  </div>
-</div>
-
-<div class="comet-grid-2 items-center">
-  <MarbleStream
-    compact
-    :tracks="[
-      {
-        name: 'успех',
-        completeAt: 82,
-        items: [
-          { x: 20, label: '10', color: 'teal', detail: 'next(10) — первое значение' },
-          { x: 48, label: '20', color: 'teal', detail: 'next(20) — второе значение' },
-          { x: 72, label: '30', color: 'teal', detail: 'next(30), а следом complete() |' }
-        ]
-      },
-      {
-        name: 'ошибка',
-        errorAt: 64,
-        items: [
-          { x: 20, label: '10', color: 'teal', detail: 'next(10) — успело прийти до сбоя' },
-          { x: 64, label: '500', kind: 'error', detail: 'error() — поток аварийно закрылся, дальше значений нет' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 20, text: 'Оба потока начали работу и выдали первое значение next(10).' },
-      { x: 48, text: 'Первый поток продолжает работать и выдаёт next(20).' },
-      { x: 64, text: 'Во втором потоке произошла ошибка (✕) — он сразу прекращает работу.' },
-      { x: 72, text: 'Первый поток выдаёт последнее значение next(30) и успешно закрывается (|).' }
-    ]"
-  />
-  <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">stream$.subscribe({
-  next: value =&gt; console.log('Данные:', value),
-  error: err =&gt; console.error('Ошибка:', err),
-  complete: () =&gt; console.log('Поток завершён')
-});</pre>
-</div>
-
----
-transition: slide-left
----
-
-<span class="comet-pill">БАЗОВЫЕ ЭЛЕМЕНТЫ</span>
-<h2><code>Subject</code> и <code>BehaviorSubject</code></h2>
-<p class="comet-subtitle">Когда нам нужно самим отправлять новые значения в поток с помощью метода <code>.next()</code>.</p>
-
-<div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-blue"><code>Subject</code> — только будущие события</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Работает как прямое объявление по громкоговорителю: кто был в комнате в момент вызова <code>next()</code>, тот услышал. Кто подписался позже — прошлые события не получит.
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">const submit$ = new Subject&lt;void&gt;();
-submit$.next(); // никто ещё не подписан — ушло в пустоту
-submit$.subscribe(() =&gt; sendForm());
-submit$.next(); // сработает!</pre>
-  </div>
-  <div class="comet-card">
-    <div class="title-teal"><code>BehaviorSubject</code> — хранит текущее значение</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Требует начальное значение при создании и всегда помнит последнее. Любой новый подписчик <strong>сразу же</strong> получает текущее состояние.
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">const page$ = new BehaviorSubject&lt;number&gt;(1);
-// Подписались позже — но сразу получили 1:
-page$.subscribe(p =&gt; console.log('Страница:', p));
-page$.next(2); // теперь все получат 2</pre>
-  </div>
-</div>
-
----
-transition: slide-left
----
-
-<span class="comet-pill">БАЗОВЫЕ ЭЛЕМЕНТЫ</span>
-<h2>Подписка — это ресурс, который нужно закрывать</h2>
-<p class="comet-subtitle">Если компонент удалился с экрана, а бесконечный поток продолжает работать, возникает утечка памяти.</p>
+<p class="comet-subtitle">Проверьте на карточке профиля, как поток отдаёт данные и закрывается при успехе или сбое:</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    :tracks="[
-      {
-        name: 'компонент',
-        items: [
-          { x: 14, label: 'открыт', color: 'teal', detail: 'Компонент появился на экране и подписался на таймер' },
-          { x: 64, label: 'удалён', color: 'red', detail: 'Пользователь ушёл со страницы — вызываем unsubscribe()' }
-        ]
-      },
-      {
-        name: 'без отписки',
-        items: [
-          { x: 22, label: '1', color: 'teal' },
-          { x: 42, label: '2', color: 'teal' },
-          { x: 64, label: '3', color: 'orange', detail: 'Компонента уже нет, а таймер всё ещё крутится в памяти!' },
-          { x: 84, label: '4 (утечка)', color: 'red', detail: 'Лишняя нагрузка и ошибки при обращении к удалённому экрану' }
-        ]
-      },
-      {
-        name: 'с отпиской',
-        items: [
-          { x: 22, label: '1', color: 'green' },
-          { x: 42, label: '2', color: 'green' },
-          { x: 64, label: 'стоп', kind: 'cancel', detail: 'unsubscribe() остановил поток вместе с удалением компонента' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 14, text: 'Компонент открылся и запустил подписку на интервал.' },
-      { x: 22, text: 'Пришло первое значение — всё работает штатно.' },
-      { x: 42, text: 'Пришло второе значение.' },
-      { x: 64, text: 'Пользователь закрыл страницу: с отпиской поток останавливается (✕), а без отписки продолжает жить.' },
-      { x: 84, text: 'Забытая подписка продолжает тратить память в фоне после ухода со страницы.' }
-    ]"
-  />
-  <div class="flex flex-col gap-3">
-    <div class="comet-card comet-card--code">
-      <pre v-pre class="m-0 text-xs">const sub = interval(1000).subscribe(render);
-// При уходе со страницы:
-sub.unsubscribe();</pre>
+  <RxMiniApp scenario="signals-profile" />
+  <div class="flex flex-col gap-2.5">
+    <div class="comet-card !py-2.5">
+      <div class="title-teal !text-sm"><code>next(value)</code> — пришли данные</div>
+      <p class="text-xs m-0 text-[#3a372f]">
+        Передаёт новое значение подписчику. Может сработать один раз (HTTP) или много раз (клики, таймер).
+      </p>
     </div>
+    <div class="comet-card !py-2.5">
+      <div class="title-green !text-sm"><code>complete()</code> — успешный финал</div>
+      <p class="text-xs m-0 text-[#3a372f]">
+        Задача выполнена, поток закрылся. Новых значений больше не придёт.
+      </p>
+    </div>
+    <div class="comet-card !py-2.5">
+      <div class="title-red !text-sm"><code>error(err)</code> — сбой и остановка</div>
+      <p class="text-xs m-0 text-[#3a372f]">
+        Поток аварийно закрывается. После ошибки ни <code>next</code>, ни <code>complete</code> уже не вызовутся.
+      </p>
+    </div>
+  </div>
+</div>
+
+---
+transition: slide-left
+---
+
+<span class="comet-pill">БАЗОВЫЕ ЭЛЕМЕНТЫ</span>
+<h2>Три вида <code>Subject</code>: когда мы сами пушим данные</h2>
+<p class="comet-subtitle">У любого <code>Subject</code> есть метод <code>.next()</code> снаружи. Разница в том, что получит подписчик, который подключился позже:</p>
+
+<div class="comet-grid-3 my-auto">
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-blue"><code>Subject</code></div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        <strong>Не хранит прошлых значений.</strong> Кто подписался позже вызова <code>next()</code>, старые события уже не увидит. Подходит для кликов и команд.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2 rounded m-0">const send$ = new Subject&lt;void&gt;();
+send$.next(); // никто не услышал
+send$.subscribe(submitForm);
+send$.next(); // сработает!</pre>
+  </div>
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-teal"><code>BehaviorSubject</code></div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        <strong>Хранит текущее значение.</strong> Требует стартовое значение при создании и мгновенно отдаёт последнее состояние каждому новому подписчику.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2 rounded m-0">const page$ = new BehaviorSubject(1);
+// Сразу получит текущую 1:
+page$.subscribe(renderPage);
+page$.next(2); // все получат 2</pre>
+  </div>
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-orange"><code>ReplaySubject(N)</code></div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        <strong>Помнит N последних событий.</strong> Начальное значение не нужно: при подписке выдаёт из буфера последние <code>N</code> значений по очереди.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2 rounded m-0">const log$ = new ReplaySubject(2);
+log$.next('A');
+log$.next('B');
+// Сразу получит 'A', затем 'B':
+log$.subscribe(console.log);</pre>
+  </div>
+</div>
+
+---
+transition: slide-left
+---
+
+<span class="comet-pill">БАЗОВЫЕ ЭЛЕМЕНТЫ</span>
+<h2>Зачем закрывать подписки</h2>
+<p class="comet-subtitle">Компонент уже закрыли, а забытая подписка продолжает работать в фоне и тратить память.</p>
+
+<div class="comet-grid-2 my-auto items-center">
+  <RxMiniApp scenario="player-leak" />
+  <div class="flex flex-col gap-3">
+    <pre v-pre class="comet-card--code p-3 rounded m-0">const sub = interval(1000).subscribe(tick);
+// При закрытии компонента:
+sub.unsubscribe();</pre>
     <div class="comet-card">
-      <div class="title-teal !text-sm">Как мы делаем это в Angular</div>
+      <div class="title-teal !text-sm">Как не писать <code>unsubscribe()</code> руками</div>
       <p class="text-xs text-[#3a372f] m-0">
-        Вместо ручного вызова <code>unsubscribe()</code> мы используем пайп <code>| async</code> в шаблоне или оператор <code>takeUntilDestroyed()</code> — они отписываются сами.
+        В Angular мы используем пайп <code>| async</code> в шаблоне или оператор <code>takeUntilDestroyed()</code> — они сами остановят поток, когда пользователь уйдёт со страницы.
       </p>
     </div>
   </div>
@@ -476,54 +373,27 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ОПЕРАТОРЫ СОЗДАНИЯ</span>
-<h2><code>of([1, 2, 3])</code> и <code>from([1, 2, 3])</code> — в чём разница</h2>
-<p class="comet-subtitle">Передаём один и тот же массив, но получаем совершенно разное поведение потока.</p>
+<h2><code>of()</code> и <code>from()</code> — когда какой нужен на практике</h2>
+<p class="comet-subtitle">Один отдаёт данные целиком (для заглушек и кеша), а другой разбирает массив по элементам или ждёт <code>Promise</code>.</p>
 
-<div class="comet-grid-2 mb-4">
-  <div class="comet-card">
-    <div class="title-orange"><code>of([1, 2, 3])</code> — массив целиком за один раз</div>
-    <p class="text-sm text-[#3a372f] mb-2">
-      Передаёт аргумент как есть, не заглядывая внутрь. Подписчик получит один вызов <code>next([1, 2, 3])</code>.
+<div class="comet-grid-2 mb-3">
+  <div class="comet-card !py-2.5">
+    <div class="title-orange !text-sm"><code>of(items)</code> — отдать готовый список сразу</div>
+    <p class="text-xs text-[#3a372f] mb-2">
+      Полезно для моков в тестах и запасного ответа в <code>catchError(() => of([]))</code>, когда шаблон ждёт весь массив сразу.
     </p>
-    <pre v-pre class="comet-card--code p-2 rounded text-xs m-0">of([1, 2, 3]).subscribe(v =&gt; console.log(v));
-// выведет один раз: [1, 2, 3]</pre>
+    <pre v-pre class="comet-card--code p-2 rounded m-0">of(['📱', '🎧']).subscribe(list =&gt; renderAll(list));</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-teal"><code>from([1, 2, 3])</code> — элементы по одному</div>
-    <p class="text-sm text-[#3a372f] mb-2">
-      Достаёт элементы из массива по очереди и отправляет каждый отдельным вызовом <code>next()</code>. Также умеет превращать <code>Promise</code> в поток.
+  <div class="comet-card !py-2.5">
+    <div class="title-teal !text-sm"><code>from(items)</code> — обработать по одному</div>
+    <p class="text-xs text-[#3a372f] mb-2">
+      Нужен, когда массив файлов или ID надо отправлять на сервер поштучно. Ещё <code>from(promise)</code> превращает промис в поток.
     </p>
-    <pre v-pre class="comet-card--code p-2 rounded text-xs m-0">from([1, 2, 3]).subscribe(v =&gt; console.log(v));
-// выведет три раза: 1, затем 2, затем 3</pre>
+    <pre v-pre class="comet-card--code p-2 rounded m-0">from(files).pipe(concatMap(f =&gt; upload(f)));</pre>
   </div>
 </div>
 
-<MarbleStream
-  compact
-  :tracks="[
-    {
-      name: 'of([1,2,3])',
-      completeAt: 50,
-      items: [
-        { x: 24, label: '[1, 2, 3]', color: 'orange', detail: 'Весь массив пришёл одним значением' }
-      ]
-    },
-    {
-      name: 'from([1,2,3])',
-      completeAt: 84,
-      items: [
-        { x: 24, label: '1', color: 'teal', detail: 'Первый элемент массива (1)' },
-        { x: 48, label: '2', color: 'teal', detail: 'Второй элемент массива (2)' },
-        { x: 72, label: '3', color: 'teal', detail: 'Третий элемент массива (3)' }
-      ]
-    }
-  ]"
-  :steps="[
-    { x: 24, text: 'of() сразу отдал весь массив [1, 2, 3] целиком, а from() выдал только первый элемент 1.' },
-    { x: 48, text: 'Поток of() уже завершился, а from() выдаёт второй элемент 2.' },
-    { x: 72, text: 'from() выдаёт третий элемент 3 и после этого завершается (|).' }
-  ]"
-/>
+<RxMiniApp scenario="of-vs-from" />
 
 ---
 transition: slide-left
@@ -531,36 +401,36 @@ transition: slide-left
 
 <span class="comet-pill">ОПЕРАТОРЫ СОЗДАНИЯ</span>
 <h2><code>defer()</code>, <code>EMPTY</code> и <code>throwError()</code></h2>
-<p class="comet-subtitle">Как вычислять данные в момент подписки, возвращать пустой поток и передавать ошибки.</p>
+<p class="comet-subtitle">Как вычислять данные в момент подписки, тихо завершать поток или пробрасывать ошибку.</p>
 
 <div class="comet-grid-2 my-auto">
   <div class="comet-card flex flex-col justify-between">
     <div>
-      <div class="title-teal"><code>defer(() => ...)</code> — свежий расчёт при подписке</div>
-      <p class="text-sm text-[#3a372f]">
-        Если написать <code>of(Date.now())</code>, время зафиксируется один раз при загрузке файла. А <code>defer</code> вызывает функцию заново для каждого нового подписчика.
+      <div class="title-teal"><code>defer(() => ...)</code> — расчёт в момент подписки</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        В <code>of(Date.now())</code> время зафиксируется один раз при старте файла. А <code>defer</code> вызывает колбэк заново при каждом вызове <code>subscribe()</code>.
       </p>
     </div>
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">let count = 0;
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">let count = 0;
 const req$ = defer(() =&gt; of(++count));
 req$.subscribe(console.log); // 1
 req$.subscribe(console.log); // 2
-// Делает ленивым запуск fetch():
-const users$ = defer(() =&gt; from(fetch('/api/users')));</pre>
+// Делаем fetch() ленивым:
+const api$ = defer(() =&gt; from(fetch('/api')));</pre>
   </div>
   <div class="comet-card flex flex-col justify-between">
     <div>
-      <div class="title-red"><code>EMPTY</code> и <code>throwError(() => err)</code></div>
-      <p class="text-sm text-[#3a372f]">
-        <code>EMPTY</code> мгновенно закрывается через <code>complete()</code> без значений. А <code>throwError</code> сразу переходит в ветку <code>error</code>.
+      <div class="title-red"><code>EMPTY</code> и <code>throwError()</code></div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        <code>EMPTY</code> ничего не эмитит и сразу закрывается через <code>complete()</code>. А <code>throwError</code> передаёт ошибку дальше в обработчик.
       </p>
     </div>
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">this.http.get('/api/profile').pipe(
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">this.http.get('/api/profile').pipe(
   catchError(err =&gt; {
-    console.error('Ошибка загрузки', err);
-    // Либо пробросить ошибку: return throwError(() =&gt; err);
-    // Либо тихо завершить:
+    this.showToast('Не удалось загрузить');
+    // Тихо остановить цепочку:
     return EMPTY;
+    // Или пробросить: return throwError(() =&gt; err);
   })
 );</pre>
   </div>
@@ -572,50 +442,21 @@ transition: slide-left
 
 <span class="comet-pill">ОПЕРАТОРЫ СОЗДАНИЯ</span>
 <h2>Таймеры <code>timer()</code>, <code>interval()</code> и <code>take(N)</code></h2>
-<p class="comet-subtitle"><code>timer(ms)</code> выдаёт одно значение после паузы, а <code>interval(ms)</code> тикает бесконечно, пока его не остановит <code>take(N)</code>.</p>
+<p class="comet-subtitle">Внутри <code>interval(1000)</code> работает обычный <code>setInterval</code> — он выдаёт числа <code>0, 1, 2...</code> каждую секунду, пока мы сами его не остановим.</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    pipeline
-    :tracks="[
-      {
-        name: 'interval(1000)',
-        items: [
-          { x: 16, label: '0', color: 'teal' },
-          { x: 36, label: '1', color: 'teal' },
-          { x: 56, label: '2', color: 'teal' },
-          { x: 78, label: '3', color: 'gray' }
-        ]
-      },
-      {
-        name: 'take(3)',
-        completeAt: 64,
-        items: [
-          { x: 16, label: '0', color: 'green' },
-          { x: 36, label: '1', color: 'green' },
-          { x: 56, label: '2', color: 'green' },
-          { x: 78, label: '3', kind: 'filtered' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 16, text: 'Прошла 1 секунда: interval выдал 0. Оператор take(3) пропустил первое значение (1 из 3).' },
-      { x: 36, text: 'Прошла 2-я секунда: interval выдал 1. take(3) пропустил второе значение (2 из 3).' },
-      { x: 56, text: 'Прошла 3-я секунда: interval выдал 2. take(3) получил третье значение и сразу закрыл поток (|).' },
-      { x: 78, text: 'Таймер уже отключён — следующие значения больше не идут, утечки памяти нет.' }
-    ]"
-  />
+  <RxMiniApp scenario="promo-timer" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">// Одно значение 0 через 500 мс и complete:
-timer(500).subscribe(console.log);
-// Повторяющийся счётчик на 3 шага:
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// Один раз через 500 мс (как setTimeout):
+timer(500).subscribe(() =&gt; hideBanner());
+// Ровно 3 шага каждую секунду и стоп:
 interval(1000).pipe(
   take(3)
-).subscribe(v =&gt; console.log('Шаг:', v));</pre>
+).subscribe(step =&gt; console.log(step));</pre>
     <div class="comet-card">
-      <div class="title-green !text-sm">Зачем нужен <code>take(3)</code></div>
+      <div class="title-green !text-sm">Как <code>take(3)</code> останавливает таймер</div>
       <p class="text-xs text-[#3a372f] m-0">
-        Сам по себе <code>interval(1000)</code> работает бесконечно. Оператор <code>take(3)</code> отсчитывает ровно 3 значения, вызывает <code>complete()</code> и сам останавливает таймер.
+        Как только <code>take(3)</code> получает третье значение, он вызывает <code>complete()</code> и автоматически очищает внутренний <code>setInterval</code>.
       </p>
     </div>
   </div>
@@ -634,7 +475,7 @@ transition: fade-out
 
 <span class="comet-pill mt-4">РАЗДЕЛ 4 ИЗ 11</span>
 <h1 class="!text-[3.2rem] mt-2">Цепочка pipe и операторы</h1>
-<p class="comet-subtitle !text-[1.2rem]">Как данные проходят через цепочку операторов шаг за шагом</p>
+<p class="comet-subtitle !text-[1.2rem]">Как данные проходят через конвейер операторов и обновляют интерфейс</p>
 
 <SectionStepper :total="11" :active="4" />
 
@@ -643,63 +484,23 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ЦЕПОЧКА PIPE И ОПЕРАТОРЫ</span>
-<h2>Как работает <code>pipe()</code>: разбор по шагам</h2>
-<p class="comet-subtitle">Каждое значение из источника проходит сверху вниз через все операторы по очереди. Нажмите <strong>«Показать по шагам»</strong>:</p>
+<h2>Как работает конвейер <code>pipe()</code></h2>
+<p class="comet-subtitle">Каждый товар по очереди проходит через <code>filter</code> (проверка склада) и <code>map</code> (расчёт скидки):</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    pipeline
-    :tracks="[
-      {
-        name: 'вход: of(1..5)',
-        items: [
-          { x: 14, label: '1', color: 'teal' },
-          { x: 31, label: '2', color: 'teal' },
-          { x: 49, label: '3', color: 'teal' },
-          { x: 67, label: '4', color: 'teal' },
-          { x: 84, label: '5', color: 'teal' }
-        ]
-      },
-      {
-        name: 'filter(x > 2)',
-        items: [
-          { x: 14, label: '1', kind: 'filtered', detail: '1 > 2 — ложь, фильтр не пропускает единицу дальше' },
-          { x: 31, label: '2', kind: 'filtered', detail: '2 > 2 — ложь, двойка тоже останавливается здесь' },
-          { x: 49, label: '3', color: 'blue', detail: '3 > 2 — истина! Число 3 идёт в следующий оператор' },
-          { x: 67, label: '4', color: 'blue', detail: '4 > 2 — истина! Число 4 проходит дальше' },
-          { x: 84, label: '5', color: 'blue', detail: '5 > 2 — истина! Число 5 проходит дальше' }
-        ]
-      },
-      {
-        name: 'map(x * 10)',
-        completeAt: 92,
-        items: [
-          { x: 49, label: '30', color: 'green', detail: '3 * 10 = 30 — попадает в subscribe()' },
-          { x: 67, label: '40', color: 'green', detail: '4 * 10 = 40 — попадает в subscribe()' },
-          { x: 84, label: '50', color: 'green', detail: '5 * 10 = 50 — попадает в subscribe()' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 14, text: 'В поток приходит 1 → проверяем filter(x > 2): условие ложно (1 ✕), поэтому до map() единица даже не доходит.' },
-      { x: 31, text: 'Приходит 2 → проверяем filter(x > 2): снова ложно (2 ✕), дальше значение не идёт.' },
-      { x: 49, text: 'Приходит 3 → проходит фильтр (3 > 2) → спускается в map(x * 10) → на выходе получаем 30.' },
-      { x: 67, text: 'Приходит 4 → проходит фильтр → в map умножается на 10 → на выходе получаем 40.' },
-      { x: 84, text: 'Приходит 5 → проходит фильтр → в map превращается в 50, и поток завершается (|).' }
-    ]"
-  />
+  <RxMiniApp scenario="pipe-catalog" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">of(1, 2, 3, 4, 5).pipe(
-  filter(x =&gt; x &gt; 2),
-  map(x =&gt; x * 10)
-).subscribe(result =&gt; {
-  console.log(result);
-  // 30, 40, 50
-});</pre>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">from(products).pipe(
+  filter(item =&gt; item.inStock),
+  map(item =&gt; ({
+    ...item,
+    price: item.price * 0.9
+  }))
+).subscribe(item =&gt; renderCard(item));</pre>
     <div class="comet-card">
-      <div class="title-teal !text-sm">Почему порядок операторов важен</div>
+      <div class="title-teal !text-sm">Сначала фильтруйте, потом преобразуйте</div>
       <p class="text-xs text-[#3a372f] m-0">
-        Ставьте <code>filter</code> <strong>перед</strong> <code>map</code>: тогда отброшенные значения (<code>1</code> и <code>2</code>) не будут зря вычисляться в следующих операторах.
+        Ставьте <code>filter</code> перед <code>map</code>, чтобы не считать скидки и не создавать лишние объекты для товаров, которых нет в наличии.
       </p>
     </div>
   </div>
@@ -711,15 +512,15 @@ transition: slide-left
 
 <span class="comet-pill">ЦЕПОЧКА PIPE И ОПЕРАТОРЫ</span>
 <h2><code>map()</code> и <code>tap()</code> — в чём отличие</h2>
-<p class="comet-subtitle">Один оператор преобразует данные для экрана, а второй позволяет просто подсмотреть за потоком со стороны.</p>
+<p class="comet-subtitle">Один оператор меняет данные для экрана, а второй выполняет попутное действие, не трогая само значение.</p>
 
 <div class="comet-grid-2 my-auto">
   <div class="comet-card">
-    <div class="title-teal"><code>map(fn)</code> — меняет значение в потоке</div>
+    <div class="title-teal"><code>map(fn)</code> — преобразует данные</div>
     <p class="text-sm text-[#3a372f] mb-3">
-      Берёт входное значение, возвращает новое и передаёт его дальше по цепочке. Например, превращает ответ сервера в удобный для шаблона объект.
+      Принимает значение, возвращает новое и передаёт его следующему оператору. Например, собирает полное имя пользователя из ответа сервера.
     </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">http.get&lt;UserDto&gt;('/api/user').pipe(
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">http.get&lt;UserDto&gt;('/api/user').pipe(
   map(dto =&gt; ({
     id: dto.id,
     fullName: `${dto.firstName} ${dto.lastName}`
@@ -727,14 +528,13 @@ transition: slide-left
 );</pre>
   </div>
   <div class="comet-card">
-    <div class="title-orange"><code>tap(fn)</code> — посмотреть, не меняя</div>
+    <div class="title-orange"><code>tap(fn)</code> — действие со стороны</div>
     <p class="text-sm text-[#3a372f] mb-3">
-      Полезен для отладки (<code>console.log</code>) или записи метрик. Что бы вы ни вернули внутри <code>tap</code>, дальше по потоку пойдёт исходное значение.
+      Нужен для <code>console.log</code>, аналитики или переключения флага. Что бы вы ни вернули из <code>tap</code>, дальше пойдёт исходное значение.
     </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">of(1, 2, 3).pipe(
-  tap(x =&gt; console.log('До умножения:', x)),
-  map(x =&gt; x * 10),
-  tap(x =&gt; console.log('После умножения:', x))
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">this.http.get('/api/items').pipe(
+  tap(() =&gt; console.log('Запрос выполнен')),
+  map(res =&gt; res.items)
 );</pre>
   </div>
 </div>
@@ -744,44 +544,20 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ЦЕПОЧКА PIPE И ОПЕРАТОРЫ</span>
-<h2><code>startWith()</code> — начальное значение сразу при подписке</h2>
-<p class="comet-subtitle">Помогает сразу задать стартовое состояние экрана, пока запрос к серверу ещё выполняется.</p>
+<h2><code>startWith()</code> — мгновенный старт экрана</h2>
+<p class="comet-subtitle">Выдаёт стартовое значение в ту же миллисекунду, когда вызвали <code>subscribe()</code>, не дожидаясь ответа сервера.</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    pipeline
-    :tracks="[
-      {
-        name: 'запрос API',
-        completeAt: 84,
-        items: [
-          { x: 66, label: 'книги', color: 'teal', detail: 'Ответ сервера пришёл через некоторое время' }
-        ]
-      },
-      {
-        name: 'startWith([])',
-        completeAt: 84,
-        items: [
-          { x: 18, label: '[] (старт)', color: 'green', detail: 'Выдаётся мгновенно в момент вызова subscribe()' },
-          { x: 66, label: 'книги', color: 'green', detail: 'Затем приходит настоящий список с сервера' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 18, text: 'Подписались на поток: сервер ещё думает, но startWith([]) сразу отдаёт пустой список.' },
-      { x: 66, text: 'Пришёл ответ от сервера — экран обновляется настоящим списком книг.' }
-    ]"
-  />
+  <RxMiniApp scenario="start-with-profile" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">this.api.getBooks().pipe(
-  startWith([])
-).subscribe(books =&gt; {
-  this.books = books;
-});</pre>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">state$ = this.api.getProfile().pipe(
+  map(user =&gt; ({ status: 'ready', user })),
+  startWith({ status: 'loading' })
+);</pre>
     <div class="comet-card">
-      <div class="title-green !text-sm">Зачем он нужен</div>
+      <div class="title-green !text-sm">Зачем он нужен в UI</div>
       <p class="text-xs text-[#3a372f] m-0">
-        Без <code>startWith</code> поток молчит до первого события. С ним шаблон сразу получает начальные данные или статус <code>'loading'</code>.
+        Сразу показывает скелетон загрузки или задаёт начальную пустую строку <code>startWith('')</code> для фильтров формы, пока пользователь ещё ничего не ввёл.
       </p>
     </div>
   </div>
@@ -792,52 +568,20 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ЦЕПОЧКА PIPE И ОПЕРАТОРЫ</span>
-<h2><code>distinctUntilChanged()</code> — убираем повторы подряд</h2>
-<p class="comet-subtitle">Сравнивает новое значение с предыдущим (<code>===</code>). Если пришло то же самое подряд — пропускает ход.</p>
+<h2><code>distinctUntilChanged()</code> — защита от повторов подряд</h2>
+<p class="comet-subtitle">Сравнивает новое значение с предыдущим. Если пользователь кликнул на уже открытую вкладку — запрос не дублируется.</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    pipeline
-    :tracks="[
-      {
-        name: 'вход',
-        items: [
-          { x: 16, label: 'a', color: 'teal' },
-          { x: 34, label: 'a', color: 'teal' },
-          { x: 52, label: 'b', color: 'blue' },
-          { x: 70, label: 'b', color: 'blue' },
-          { x: 86, label: 'a', color: 'teal' }
-        ]
-      },
-      {
-        name: 'без повторов',
-        completeAt: 92,
-        items: [
-          { x: 16, label: 'a', color: 'green', detail: 'Первое значение a — пропускаем' },
-          { x: 34, label: 'a', kind: 'filtered', detail: 'Снова a подряд — отсеиваем дубликат' },
-          { x: 52, label: 'b', color: 'green', detail: 'Новое значение b — пропускаем' },
-          { x: 70, label: 'b', kind: 'filtered', detail: 'Снова b подряд — отсеиваем дубликат' },
-          { x: 86, label: 'a', color: 'green', detail: 'Перед ним было b, поэтому новое a снова проходит!' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 16, text: 'Приходит первая буква a — пропускаем дальше.' },
-      { x: 34, text: 'Снова приходит a подряд — distinctUntilChanged отсеивает повтор (a ✕).' },
-      { x: 52, text: 'Приходит b — значение изменилось, пропускаем дальше.' },
-      { x: 70, text: 'Второй раз подряд приходит b — отсеиваем дубликат (b ✕).' },
-      { x: 86, text: 'Снова приходит a — перед ним было b, поэтому это не повтор подряд, значение проходит!' }
-    ]"
-  />
+  <RxMiniApp scenario="distinct-tabs" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">from(['a', 'a', 'b', 'b', 'a']).pipe(
-  distinctUntilChanged()
-).subscribe(console.log);
-// Выведет: 'a', 'b', 'a'</pre>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">categoryTab$.pipe(
+  distinctUntilChanged(),
+  switchMap(cat =&gt; this.api.getItems(cat))
+);</pre>
     <div class="comet-card">
-      <div class="title-blue !text-sm">Как сравнивать объекты</div>
+      <div class="title-blue !text-sm">Сравнение объектов</div>
       <p class="text-xs text-[#3a372f] m-0">
-        По умолчанию значения сравниваются через <code>===</code>. Для объектов можно передать свою проверку: <code>distinctUntilChanged((a, b) => a.id === b.id)</code>.
+        По умолчанию проверяет равенство через <code>===</code>. Для объектов можно передать свою функцию: <code>distinctUntilChanged((a, b) => a.id === b.id)</code>.
       </p>
     </div>
   </div>
@@ -849,51 +593,21 @@ transition: slide-left
 
 <span class="comet-pill">ЦЕПОЧКА PIPE И ОПЕРАТОРЫ</span>
 <h2><code>debounceTime(300)</code> — ждём паузу при вводе</h2>
-<p class="comet-subtitle">Чтобы не отправлять запрос на каждую букву, подождём 300 мс тишины после последнего нажатия клавиши.</p>
+<p class="comet-subtitle">Каждое нажатие клавиши сбрасывает таймер на 0. Запрос уйдёт только тогда, когда пользователь остановился на 300 мс.</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    pipeline
-    :tracks="[
-      {
-        name: 'печатаем',
-        items: [
-          { x: 14, label: 'r', color: 'teal' },
-          { x: 28, label: 'rx', color: 'teal' },
-          { x: 42, label: 'rxjs', color: 'teal' },
-          { x: 76, label: 'rxjs 8', color: 'teal' }
-        ]
-      },
-      {
-        name: 'таймер 300 мс',
-        items: [
-          { x: 14, label: 'r', kind: 'filtered', detail: 'Не успело пройти 300 мс — пользователь нажал следующую клавишу' },
-          { x: 28, label: 'rx', kind: 'filtered', detail: 'Таймер снова сбросился из-за новой буквы' },
-          { x: 58, label: 'rxjs', color: 'green', detail: 'После ввода rxjs прошло 300 мс тишины — отправляем запрос!' },
-          { x: 88, label: 'rxjs 8', color: 'green', detail: 'После второй паузы отправляем обновлённый запрос' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 14, text: 'Набрали r — запустился таймер на 300 мс.' },
-      { x: 28, text: 'Быстро допечатали rx — старый таймер сбросился (r ✕), отсчёт 300 мс начался заново.' },
-      { x: 42, text: 'Быстро допечатали rxjs — таймер снова перезапустился (rx ✕).' },
-      { x: 58, text: 'Пользователь сделал паузу 300 мс — таймер сработал и пропустил итоговое слово rxjs!' },
-      { x: 76, text: 'Позже допечатали rxjs 8 — снова ждём паузу.' },
-      { x: 88, text: 'Прошло ещё 300 мс тишины — на выход ушло rxjs 8.' }
-    ]"
-  />
+  <RxMiniApp scenario="debounce-search" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">searchControl.valueChanges.pipe(
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">searchControl.valueChanges.pipe(
   debounceTime(300),
   distinctUntilChanged()
-).subscribe(text =&gt; {
-  this.loadBooks(text);
+).subscribe(query =&gt; {
+  this.loadBooks(query);
 });</pre>
     <div class="comet-card">
-      <div class="title-orange !text-sm">Как это работает простыми словами</div>
+      <div class="title-orange !text-sm">Экономия запросов</div>
       <p class="text-xs text-[#3a372f] m-0">
-        Каждое новое нажатие клавиши сбрасывает секундомер на ноль. Значение проходит дальше только тогда, когда пользователь перестал печатать на 300 миллисекунд.
+        Вместо 4 запросов на каждую букву слова <code>rxjs</code> сервер получит всего 1 итоговый запрос после короткой паузы.
       </p>
     </div>
   </div>
@@ -921,32 +635,32 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ПОТОКИ ВНУТРИ ПОТОКОВ</span>
-<h2>Когда одно событие запускает другой поток</h2>
-<p class="comet-subtitle">Пользователь вводит текст или кликает по кнопке — и на каждое событие мы вызываем <code>http.get()</code> или <code>http.post()</code>.</p>
+<h2>Когда одно событие запускает HTTP-запрос</h2>
+<p class="comet-subtitle">Клик или ввод текста в потоке создаёт новый внутренний поток <code>http.get()</code>. Нужно решить, что делать, если старый запрос ещё не завершился.</p>
 
 <div class="comet-grid-2 my-auto">
   <div class="comet-card">
-    <div class="title-red">В чём возникает проблема</div>
+    <div class="title-red">Что будет без управления</div>
     <p class="text-sm text-[#3a372f] mb-3">
-      Запрос к серверу занимает время. Пока идёт первый запрос, пользователь может ввести новую букву или нажать кнопку ещё раз.
+      Сеть работает с разной скоростью. Если пользователь быстро переключил вкладку с Товар 1 на Товар 2, медленный ответ от первого товара может прийти позже и затереть экран.
     </p>
     <p class="text-sm text-[#3a372f] m-0">
-      Если никак этим не управлять, ответы от сервера придут вперемешку или заказ создастся дважды.
+      А случайный двойной клик по кнопке «Оплатить» отправит два заказа подряд.
     </p>
   </div>
   <div class="comet-card flex flex-col justify-center gap-2.5">
-    <div class="title-teal">Четыре правила выбора оператора</div>
+    <div class="title-teal">Четыре оператора под каждую задачу</div>
     <div class="p-2 rounded bg-[#e3ece8] text-xs font-semibold">
-      1. <code>switchMap</code> — <strong>отменить старый</strong> и слушать только последний (поиск, вкладки)
+      <code>switchMap</code> — <strong>отменить прошлый запрос</strong> (поиск, смена товара)
     </div>
     <div class="p-2 rounded bg-[#e5eef5] text-xs font-semibold">
-      2. <code>mergeMap</code> — <strong>запустить параллельно</strong>, порядок не важен (загрузка по ID)
+      <code>mergeMap</code> — <strong>грузить параллельно</strong> (независимые карточки, акции)
     </div>
     <div class="p-2 rounded bg-[#f7ebd9] text-xs font-semibold">
-      3. <code>concatMap</code> — <strong>поставить в очередь</strong>, важен строгий порядок (сохранения)
+      <code>concatMap</code> — <strong>поставить в очередь</strong> (пошаговое сохранение)
     </div>
     <div class="p-2 rounded bg-[#e2ede6] text-xs font-semibold">
-      4. <code>exhaustMap</code> — <strong>игнорировать новые</strong>, пока текущий занят (кнопка входа/оплаты)
+      <code>exhaustMap</code> — <strong>игнорировать новые клики</strong> (кнопка оплаты/входа)
     </div>
   </div>
 </div>
@@ -955,8 +669,8 @@ transition: slide-left
 transition: slide-left
 ---
 
-<span class="comet-pill">ПОТОКИ ВНУТРИ ПОТОКОВ · СРАВНЕНИЕ</span>
-<h2>Разберите все 4 оператора по шагам</h2>
+<span class="comet-pill">ПОТОКИ ВНУТРИ ПОТОКОВ · СРАВНЕНИЕ НА ВИДЖЕТАХ</span>
+<h2>Попробуйте все 4 оператора в деле</h2>
 
 <HigherOrderExplorer />
 
@@ -964,60 +678,21 @@ transition: slide-left
 transition: slide-left
 ---
 
-<span class="comet-pill">ПОТОКИ ВНУТРИ ПОТОКОВ · ПАРАЛЛЕЛЬНОСТЬ С ЛИМИТОМ</span>
+<span class="comet-pill">ПОТОКИ ВНУТРИ ПОТОКОВ · ЛИМИТ ПАРАЛЛЕЛЬНОСТИ</span>
 <h2>Ограничение параллельности: <code>mergeMap(fn, N)</code></h2>
-<p class="comet-subtitle">Загружать 100 файлов одновременно — тяжело для браузера, а по одному — слишком долго. Второй аргумент <code>mergeMap</code> задаёт лимит активных потоков.</p>
+<p class="comet-subtitle">Отправлять 50 тяжёлых файлов одновременно — перегрузка сети, а по одному — долго. Второй аргумент задаёт число активных слотов.</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    :tracks="[
-      {
-        name: 'слот 1',
-        completeAt: 84,
-        items: [
-          { x: 14, label: 'файл A (60мс)', color: 'blue', detail: 'Стартовал сразу в первом слоте и грузится долго' },
-          { x: 78, label: 'A готов', color: 'green' }
-        ]
-      },
-      {
-        name: 'слот 2',
-        completeAt: 72,
-        items: [
-          { x: 14, label: 'B', color: 'teal', detail: 'Стартовал во втором слоте и быстро завершился' },
-          { x: 38, label: 'C', color: 'orange', detail: 'Сразу занял освободившийся второй слот' },
-          { x: 60, label: 'D', color: 'green', detail: 'Занял слот после завершения C' }
-        ]
-      },
-      {
-        name: 'выход',
-        completeAt: 88,
-        items: [
-          { x: 28, label: 'B', color: 'teal' },
-          { x: 50, label: 'C', color: 'orange' },
-          { x: 68, label: 'D', color: 'green' },
-          { x: 78, label: 'A', color: 'blue' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 14, text: 'При лимите 2 одновременно стартуют только файлы A и B. Файлы C и D ждут свободного слота.' },
-      { x: 28, text: 'Быстрый файл B загрузился первым — во втором слоте тут же стартует файл C.' },
-      { x: 50, text: 'Файл C загрузился — на его место сразу встаёт файл D.' },
-      { x: 68, text: 'Файл D готов, а в первом слоте всё ещё докачивается большой файл A.' },
-      { x: 78, text: 'Большой файл A завершился последним. В каждый момент шло не более 2 загрузок!' }
-    ]"
-  />
+  <RxMiniApp scenario="upload-limit" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">function uploadFiles$(files: File[]) {
-  return from(files).pipe(
-    // Второй аргумент 2 — максимум 2 загрузки сразу:
-    mergeMap(file =&gt; uploadFile(file), 2)
-  );
-}</pre>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">from(files).pipe(
+  // Максимум 2 загрузки одновременно:
+  mergeMap(file =&gt; this.upload(file), 2)
+).subscribe();</pre>
     <div class="comet-card">
-      <div class="title-blue !text-sm">Бонус: <code>concatMap</code> — это <code>mergeMap(fn, 1)</code></div>
+      <div class="title-blue !text-sm">Связь с <code>concatMap</code></div>
       <p class="text-xs text-[#3a372f] m-0">
-        Если передать лимит <code>1</code>, потоки будут выполняться строго по одному в очереди — именно так внутри и устроен <code>concatMap</code>.
+        Вызов <code>mergeMap(fn, 1)</code> разрешает только 1 активный запрос за раз — это в точности поведение оператора <code>concatMap(fn)</code>.
       </p>
     </div>
   </div>
@@ -1045,27 +720,35 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ОБЪЕДИНЕНИЕ ПОТОКОВ</span>
-<h2><code>merge()</code> и <code>concat()</code> — слияние или строгая очередь</h2>
-<p class="comet-subtitle">Когда нужно объединить два готовых потока в один общий поток значений.</p>
+<h2><code>merge()</code> и <code>concat()</code> — общая лента или очередь</h2>
+<p class="comet-subtitle">Объединяют несколько потоков событий в один общий поток.</p>
 
 <div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-blue"><code>merge(a$, b$)</code> — всё по мере прихода</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Подписывается на оба источника сразу. Чьё событие случилось раньше — то сразу и проходит дальше.
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">// Слушаем клики кнопки и нажатие клавиши Enter вместе:
-const submit$ = merge(buttonClicks$, enterKey$);</pre>
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-blue"><code>merge(a$, b$)</code> — слушать оба сразу</div>
+      <p class="text-sm text-[#3a372f] mb-3">
+        Подписывается на все потоки одновременно. Какое событие произошло раньше — то сразу и проходит дальше.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// Отправка по кнопке ИЛИ клавише Enter:
+const submit$ = merge(
+  saveBtnClicks$,
+  enterKeyPress$
+);</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-orange"><code>concat(cache$, server$)</code> — строго по очереди</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Сначала слушает только первый поток. Когда он завершится (<code>complete</code>), подписывается на второй. Идеально для сценария «сначала кеш, потом сервер».
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">const cache$ = of('Данные из кеша');
-const server$ = this.http.get('/api/fresh');
-// Сначала мгновенно кеш, затем ответ сервера:
-const data$ = concat(cache$, server$);</pre>
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-orange"><code>concat(a$, b$)</code> — строго по очереди</div>
+      <p class="text-sm text-[#3a372f] mb-3">
+        Ждёт, пока первый поток полностью завершится (<code>complete</code>), и только после этого подписывается на второй.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// Сначала быстрый кеш, следом сервер:
+const products$ = concat(
+  this.getCachedProducts(),
+  this.http.get('/api/products')
+);</pre>
   </div>
 </div>
 
@@ -1074,32 +757,24 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ОБЪЕДИНЕНИЕ ПОТОКОВ</span>
-<h2><code>combineLatest()</code> — когда все источники равны</h2>
-<p class="comet-subtitle">Ждёт хотя бы по одному значению от каждого потока, а затем срабатывает при изменении любого из них.</p>
+<h2><code>combineLatest()</code> — общая панель фильтров</h2>
+<p class="comet-subtitle">Ждёт хотя бы по одному значению от каждого фильтра, а дальше пересчитывает каталог при изменении любого из них.</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    :tracks="[
-      { name: 'фильтр$', items: [{ x: 12, label: 'книги', color: 'teal' }, { x: 54, label: 'игры', color: 'teal' }] },
-      { name: 'страница$', items: [{ x: 26, label: 'стр 1', color: 'blue' }, { x: 82, label: 'стр 2', color: 'blue' }] },
-      { name: 'результат', items: [{ x: 26, label: 'книги, 1', color: 'green' }, { x: 54, label: 'игры, 1', color: 'green' }, { x: 82, label: 'игры, 2', color: 'green' }] }
-    ]"
-    :steps="[
-      { x: 12, text: 'Фильтр выдал «книги», но страница$ ещё молчит — combineLatest ждёт второй поток.' },
-      { x: 26, text: 'Страница выдала «стр 1» — оба потока дали значения, получаем первую пару [книги, 1].' },
-      { x: 54, text: 'Пользователь сменил фильтр на «игры» — сразу получаем обновлённую пару [игры, 1].' },
-      { x: 82, text: 'Перешли на «стр 2» — получаем пару [игры, 2].' }
-    ]"
-  />
+  <RxMiniApp scenario="combine-filters" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">const filters$ = combineLatest([
-  searchControl.valueChanges.pipe(startWith('')),
-  categoryControl.valueChanges.pipe(startWith('all'))
-]);</pre>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">catalog$ = combineLatest([
+  category$.pipe(startWith('Книги')),
+  sort$.pipe(startWith('Популярные'))
+]).pipe(
+  switchMap(([cat, sort]) =&gt;
+    this.api.getItems(cat, sort)
+  )
+);</pre>
     <div class="comet-card">
-      <div class="title-orange !text-sm">Не забывайте про <code>startWith()</code></div>
+      <div class="title-orange !text-sm">Зачем здесь <code>startWith()</code></div>
       <p class="text-xs text-[#3a372f] m-0">
-        Если пользователь ещё не трогал поле формы, <code>valueChanges</code> молчит. Добавьте <code>startWith('')</code>, чтобы список загрузился сразу при открытии экрана.
+        Если хотя бы один фильтр ещё не выдал стартовое значение, <code>combineLatest</code> будет молчать. Со <code>startWith</code> витрина загружается сразу.
       </p>
     </div>
   </div>
@@ -1116,32 +791,22 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ОБЪЕДИНЕНИЕ ПОТОКОВ</span>
-<h2><code>withLatestFrom()</code> — главное событие + фоновое состояние</h2>
-<p class="comet-subtitle">Когда нужно срабатывать <strong>только от главного потока</strong> (например, клика), подглядывая в текущее значение второго потока.</p>
+<h2><code>withLatestFrom()</code> — главный клик + фоновые данные</h2>
+<p class="comet-subtitle">Когда действие должно запускаться <strong>только по кнопке</strong>, но внутри нужно подсмотреть текущее состояние из другого потока.</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    :tracks="[
-      { name: 'saveClick$', items: [{ x: 40, label: 'клик 1', color: 'teal' }, { x: 80, label: 'клик 2', color: 'teal' }] },
-      { name: 'role$', items: [{ x: 14, label: 'user', color: 'blue' }, { x: 60, label: 'admin', color: 'orange', detail: 'Роль сменилась в фоне, но без клика сохранение НЕ вызывается' }] },
-      { name: 'результат', items: [{ x: 40, label: 'Save: user', color: 'green' }, { x: 80, label: 'Save: admin', color: 'green' }] }
-    ]"
-    :steps="[
-      { x: 14, text: 'В потоке role$ установлено значение «user». На выходе тишина — клика ещё не было.' },
-      { x: 40, text: 'Пользователь нажал «Сохранить» (клик 1) — берём текущую роль и получаем «Save: user».' },
-      { x: 60, text: 'Роль в фоне сменилась на «admin» — в отличие от combineLatest, здесь ничего не запускается!' },
-      { x: 80, text: 'Пользователь нажал «Сохранить» (клик 2) — теперь сохраняем с новой ролью «Save: admin».' }
-    ]"
-  />
+  <RxMiniApp scenario="with-latest-save" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">const result$ = saveClick$.pipe(
-  withLatestFrom(role$),
-  map(([click, role]) =&gt; `Save as ${role}`)
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">saveClick$.pipe(
+  withLatestFrom(this.userRole$),
+  switchMap(([_, role]) =&gt;
+    this.api.saveDocument(role)
+  )
 );</pre>
     <div class="comet-card">
-      <div class="title-teal !text-sm"><code>combineLatest</code> vs <code>withLatestFrom</code></div>
+      <div class="title-teal !text-sm">Отличие от <code>combineLatest</code></div>
       <p class="text-xs text-[#3a372f] m-0">
-        В <code>combineLatest</code> все источники равны (любое изменение запускает код). В <code>withLatestFrom</code> команду даёт только главный поток.
+        Попробуйте переключить роль в виджете слева: сам по себе выбор роли запрос не отправляет. Запрос уйдёт только по нажатию «Сохранить».
       </p>
     </div>
   </div>
@@ -1152,33 +817,23 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ОБЪЕДИНЕНИЕ ПОТОКОВ</span>
-<h2><code>forkJoin()</code> — дождаться завершения всех задач</h2>
-<p class="comet-subtitle">Аналог <code>Promise.all</code> для конечных потоков: запускает запросы параллельно и выдаёт один общий ответ в самом конце.</p>
+<h2><code>forkJoin()</code> — дождаться всех запросов</h2>
+<p class="comet-subtitle">Аналог <code>Promise.all</code>: запускает запросы параллельно и отдаёт единый объект, когда завершился каждый из них.</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    :tracks="[
-      { name: 'user$', completeAt: 42, items: [{ x: 34, label: 'профиль', color: 'blue' }] },
-      { name: 'roles$', completeAt: 72, items: [{ x: 64, label: 'права', color: 'orange' }] },
-      { name: 'результат', completeAt: 84, items: [{ x: 72, label: '{профиль, права}', color: 'green' }] }
-    ]"
-    :steps="[
-      { x: 34, text: 'Запрос user$ вернул профиль и завершился (|), но roles$ ещё выполняется.' },
-      { x: 64, text: 'Запрос roles$ вернул список прав доступа.' },
-      { x: 72, text: 'Оба запроса завершились (|) — forkJoin отдаёт единый объект с обоими ответами.' }
-    ]"
-  />
+  <RxMiniApp scenario="forkjoin-assets" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">forkJoin({
-  user: this.http.get('/api/user'),
-  roles: this.http.get('/api/roles')
-}).subscribe(({ user, roles }) =&gt; {
-  this.initScreen(user, roles);
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">forkJoin({
+  btc: this.api.getQuote('BTC'),
+  eth: this.api.getQuote('ETH'),
+  sp500: this.api.getQuote('SP500')
+}).subscribe(quotes =&gt; {
+  this.renderDashboard(quotes);
 });</pre>
     <div class="comet-card">
-      <div class="title-red !text-sm">Не передавайте бесконечные потоки</div>
+      <div class="title-red !text-sm">Только для конечных потоков</div>
       <p class="text-xs text-[#3a372f] m-0">
-        <code>forkJoin</code> ждёт сигнала <code>complete()</code> от каждого потока. Если передать туда бесконечный <code>interval()</code> или <code>valueChanges</code>, ответа не будет никогда.
+        <code>forkJoin</code> ждёт сигнала <code>complete()</code>. Для HTTP-запросов это отлично работает, а на бесконечном <code>valueChanges</code> ответа не будет никогда.
       </p>
     </div>
   </div>
@@ -1197,7 +852,7 @@ transition: fade-out
 
 <span class="comet-pill mt-4">РАЗДЕЛ 7 ИЗ 11</span>
 <h1 class="!text-[3.2rem] mt-2">Ошибки и завершение</h1>
-<p class="comet-subtitle !text-[1.2rem]">catchError внутри switchMap, повторные попытки retry и гарантированная уборка в finalize</p>
+<p class="comet-subtitle !text-[1.2rem]">catchError внутри switchMap, повторные попытки retry и уборка в finalize</p>
 
 <SectionStepper :total="11" :active="7" />
 
@@ -1206,33 +861,38 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ОШИБКИ И ЗАВЕРШЕНИЕ</span>
-<h2>Почему важно ставить <code>catchError</code> внутри <code>switchMap</code></h2>
-<p class="comet-subtitle">Любая ошибка завершает тот поток, в котором её поймали. Если поймать ошибку снаружи <code>switchMap</code>, поле поиска перестанет работать навсегда.</p>
+<h2>Почему <code>catchError</code> ставят внутри <code>switchMap</code></h2>
+<p class="comet-subtitle">Ошибка закрывает тот поток, в котором её поймали. Если ошибка выскочит в главный поток ввода, строка поиска отключится навсегда.</p>
 
 <div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-red">Плохо: <code>catchError</code> снаружи — убивает поиск</div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      Ошибка из <code>http.get</code> вылетает во внешний поток <code>query$</code> и завершает его. На следующий ввод пользователя поиск уже не среагирует:
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">query$.pipe(
-  switchMap(q =&gt; this.http.get(`/api?q=${q}`)),
-  // После первой ошибки весь query$ закрыт!
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-red">Ошибка снаружи — поиск умирает</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Один сбой сети завершает весь внешний поток <code>searchText$</code>. Дальше пользователь печатает, но ничего не происходит:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">searchText$.pipe(
+  switchMap(q =&gt; this.api.search(q)),
+  // Плохо: весь searchText$ закроется!
   catchError(() =&gt; of([]))
-)</pre>
+);</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-green">Хорошо: <code>catchError</code> внутри — гасит только сбой запроса</div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      Ошибка перехватывается внутри маленького потока <code>http.get</code> и превращается в запасной массив <code>of([])</code>. Внешний поток <code>query$</code> продолжает жить:
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">query$.pipe(
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-green">Ошибка внутри — поиск живёт дальше</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Ловим сбой внутри маленького потока <code>api.search(q)</code> и подменяем на пустой массив <code>of([])</code>. Главный поток продолжает слушать ввод:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">searchText$.pipe(
   switchMap(q =&gt;
-    this.http.get(`/api?q=${q}`).pipe(
-      catchError(() =&gt; of([])) // внешний поток жив!
+    this.api.search(q).pipe(
+      // Хорошо: гасим сбой одного запроса
+      catchError(() =&gt; of([]))
     )
   )
-)</pre>
+);</pre>
   </div>
 </div>
 
@@ -1241,29 +901,33 @@ transition: slide-left
 ---
 
 <span class="comet-pill">ОШИБКИ И ЗАВЕРШЕНИЕ</span>
-<h2><code>retry()</code> и <code>finalize()</code> — повтор при сбое и уборка</h2>
-<p class="comet-subtitle">Как дать сети второй шанс перед показом ошибки и гарантированно выключить спиннер загрузки.</p>
+<h2><code>retry()</code> и <code>finalize()</code> — повтор и выключение спиннера</h2>
+<p class="comet-subtitle">Как автоматически повторить случайно упавший запрос и гарантированно убрать индикатор загрузки.</p>
 
 <div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-orange"><code>retry(N)</code> — переподписка при ошибке</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Если источник упал с ошибкой, <code>retry(2)</code> не пропускает ошибку дальше, а заново подписывается на источник до 2 раз. Ставится <strong>перед</strong> <code>catchError</code>.
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">this.http.get('/api/data').pipe(
-  retry(2), // до 2 повторов при сбое
-  catchError(() =&gt; of('Запасные данные'))
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-orange"><code>retry(N)</code> — вторая попытка</div>
+      <p class="text-sm text-[#3a372f] mb-3">
+        Если запрос упал, <code>retry(2)</code> сам переподпишется на него ещё до 2 раз. Всегда ставится <strong>перед</strong> <code>catchError</code>.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">this.http.get('/api/items').pipe(
+  retry({ count: 2, delay: 500 }),
+  catchError(() =&gt; of([]))
 );</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-teal"><code>finalize(fn)</code> — выполнится при любом исходе</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Срабатывает при успешном завершении (<code>complete</code>), при ошибке (<code>error</code>) и даже при ручной отписке (<code>unsubscribe</code>).
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">this.loading = true;
-this.http.get('/api/data').pipe(
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-teal"><code>finalize(fn)</code> — сработает при любом исходе</div>
+      <p class="text-sm text-[#3a372f] mb-3">
+        Выполняется при успехе, при ошибке и даже при отмене запроса через <code>unsubscribe</code> или <code>switchMap</code>.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">this.loading = true;
+this.http.get('/api/items').pipe(
   finalize(() =&gt; {
-    this.loading = false; // уберёт спиннер всегда
+    this.loading = false;
   })
 ).subscribe();</pre>
   </div>
@@ -1281,8 +945,8 @@ transition: fade-out
 ---
 
 <span class="comet-pill mt-4">РАЗДЕЛ 8 ИЗ 11</span>
-<h1 class="!text-[3.2rem] mt-2">Разновидности Subject и кеш</h1>
-<p class="comet-subtitle !text-[1.2rem]">Subject, BehaviorSubject, ReplaySubject, share и shareReplay</p>
+<h1 class="!text-[3.2rem] mt-2">Многоадресные потоки и кеш</h1>
+<p class="comet-subtitle !text-[1.2rem]">Холодные и горячие потоки, операторы share и shareReplay</p>
 
 <SectionStepper :total="11" :active="8" />
 
@@ -1290,37 +954,35 @@ transition: fade-out
 transition: slide-left
 ---
 
-<span class="comet-pill">SUBJECT И МНОГОАДРЕСНЫЕ ПОТОКИ</span>
-<h2>Три вида Subject: сколько значений они помнят</h2>
-<p class="comet-subtitle">Все три раздают события нескольким подписчикам одновременно, но по-разному встречают тех, кто подписался позже.</p>
+<span class="comet-pill">МНОГОАДРЕСНЫЕ ПОТОКИ И КЕШ</span>
+<h2>Холодный поток против общего (горячего)</h2>
+<p class="comet-subtitle">Почему три пайпа <code>| async</code> в шаблоне могут случайно отправить три одинаковых запроса на сервер.</p>
 
-<div class="comet-grid-3 my-auto">
-  <div class="comet-card">
-    <div class="title-blue"><code>Subject()</code></div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      <strong>Ничего не помнит.</strong> Не требует стартового значения. Новый подписчик получает только те события, которые произошли после его подписки.
-    </p>
-    <pre v-pre class="comet-card--code p-2 rounded text-[11px] m-0">const clicks$ =
-  new Subject&lt;void&gt;();
-// Для кнопок и команд</pre>
+<div class="comet-grid-2 my-auto">
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-orange">Холодный поток (по умолчанию в <code>HttpClient</code>)</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Каждый новый подписчик запускает выполнение заново. Если вывести <code>user$ | async</code> в шапке и в профиле, уйдёт <strong>2 сетевых запроса</strong>:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// Без кеша:
+user$ = this.http.get('/api/user');
+// Подписка 1 (шапка) → GET /api/user
+// Подписка 2 (меню)  → GET /api/user</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-teal"><code>BehaviorSubject(init)</code></div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      <strong>Помнит 1 последнее значение.</strong> Обязательно требует начальное значение и сразу отдаёт текущее состояние новому подписчику.
-    </p>
-    <pre v-pre class="comet-card--code p-2 rounded text-[11px] m-0">const theme$ =
-  new BehaviorSubject('dark');
-// Для состояния экрана</pre>
-  </div>
-  <div class="comet-card">
-    <div class="title-orange"><code>ReplaySubject(N)</code></div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      <strong>Помнит N последних значений.</strong> Начальное значение не нужно: проигрывает новому подписчику буфер из N прошлых событий по порядку.
-    </p>
-    <pre v-pre class="comet-card--code p-2 rounded text-[11px] m-0">const history$ =
-  new ReplaySubject(2);
-// Для истории действий</pre>
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-teal">Общий поток — один запуск на всех</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Под капотом ставится внутренний <code>Subject</code>: запрос к серверу выполняется <strong>один раз</strong>, а ответ раздаётся всем компонентам:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// С общим буфером:
+user$ = this.http.get('/api/user').pipe(
+  shareReplay({ bufferSize: 1, refCount: true })
+);
+// Подписка 1 и 2 → всего 1 запрос в сеть!</pre>
   </div>
 </div>
 
@@ -1328,30 +990,34 @@ transition: slide-left
 transition: slide-left
 ---
 
-<span class="comet-pill">SUBJECT И МНОГОАДРЕСНЫЕ ПОТОКИ</span>
-<h2><code>share()</code> и <code>shareReplay()</code> — один запрос на всех</h2>
-<p class="comet-subtitle">Как превратить холодный поток (где каждая подписка делает новый запрос) в общий поток для нескольких компонентов.</p>
+<span class="comet-pill">МНОГОАДРЕСНЫЕ ПОТОКИ И КЕШ</span>
+<h2><code>share()</code> и <code>shareReplay(1)</code> — в чём разница</h2>
+<p class="comet-subtitle">Оба объединяют подписчиков, но по-разному ведут себя с теми, кто подключился позже.</p>
 
 <div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-blue"><code>share()</code> — делит текущий живой поток</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Объединяет подписчиков, пока поток работает, но <strong>не запоминает</strong> прошлые значения. Если второй подписчик придёт после завершения запроса, запрос запустится заново.
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">// Подходит для живых потоков (WebSocket, таймер):
-const sharedTicks$ = interval(1000).pipe(
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-blue"><code>share()</code> — только пока поток жив</div>
+      <p class="text-sm text-[#3a372f] mb-3">
+        Делит поток между текущими подписчиками, но <strong>не хранит ответ в памяти</strong>. Когда все отписались или запрос завершился, следующий подписчик запустит запрос заново.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// Хорошо для живых сокетов и таймеров:
+const livePrices$ = this.ws.messages$.pipe(
   share()
 );</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-green"><code>shareReplay(1)</code> — общий запрос + память</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Запрос к серверу выполняется один раз, а полученный ответ сохраняется в буфере. Даже те компоненты, которые подпишутся позже, сразу возьмут готовый ответ из кеша.
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">config$ = this.http.get('/api/config').pipe(
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-green"><code>shareReplay(1)</code> — кеширует последний ответ</div>
+      <p class="text-sm text-[#3a372f] mb-3">
+        Запоминает последнее значение в буфере. Даже если второй компонент открылся через минуту после завершения HTTP-запроса, он мгновенно получит ответ из кеша.
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// Идеально для справочников и профиля:
+config$ = this.http.get('/api/config').pipe(
   shareReplay({ bufferSize: 1, refCount: true })
-);
-// 3 подписки в разное время = 1 запрос в сеть</pre>
+);</pre>
   </div>
 </div>
 
@@ -1368,7 +1034,7 @@ transition: fade-out
 
 <span class="comet-pill mt-4">РАЗДЕЛ 9 ИЗ 11</span>
 <h1 class="!text-[3.2rem] mt-2">Накопление состояния и эффекты</h1>
-<p class="comet-subtitle !text-[1.2rem]">Оператор scan, паттерн редюсера и асинхронные эффекты (Effects pattern)</p>
+<p class="comet-subtitle !text-[1.2rem]">Оператор scan, паттерн редюсера и асинхронные эффекты</p>
 
 <SectionStepper :total="11" :active="9" />
 
@@ -1377,51 +1043,21 @@ transition: slide-left
 ---
 
 <span class="comet-pill">СОСТОЯНИЕ И ЭФФЕКТЫ</span>
-<h2><code>scan()</code> — накопление состояния на каждом шаге</h2>
-<p class="comet-subtitle">Работает как <code>Array.reduce</code>, но выдаёт обновлённый результат после каждого нового события в потоке.</p>
+<h2><code>scan()</code> — накапливаем состояние на каждом шаге</h2>
+<p class="comet-subtitle">Работает как <code>Array.reduce</code>, но отдаёт обновлённый итог сразу после каждого клика пользователя:</p>
 
 <div class="comet-grid-2 my-auto items-center">
-  <MarbleStream
-    pipeline
-    :tracks="[
-      {
-        name: 'changes$',
-        items: [
-          { x: 16, label: '+1', color: 'teal' },
-          { x: 38, label: '+1', color: 'teal' },
-          { x: 60, label: '-1', color: 'orange' },
-          { x: 82, label: '+1', color: 'teal' }
-        ]
-      },
-      {
-        name: 'scan (с 0)',
-        completeAt: 90,
-        items: [
-          { x: 16, label: '1', color: 'green', detail: '0 + 1 = 1' },
-          { x: 38, label: '2', color: 'green', detail: '1 + 1 = 2' },
-          { x: 60, label: '1', color: 'green', detail: '2 - 1 = 1' },
-          { x: 82, label: '2', color: 'green', detail: '1 + 1 = 2' }
-        ]
-      }
-    ]"
-    :steps="[
-      { x: 16, text: 'Начальное значение (seed) равно 0. Приходит +1 → аккумулятор становится 0 + 1 = 1.' },
-      { x: 38, text: 'Приходит ещё +1 → прибавляем к прошлому состоянию: 1 + 1 = 2.' },
-      { x: 60, text: 'Приходит -1 → вычитаем из текущего состояния: 2 - 1 = 1.' },
-      { x: 82, text: 'Приходит +1 → снова получаем 2.' }
-    ]"
-  />
+  <RxMiniApp scenario="scan-cart" />
   <div class="flex flex-col gap-3">
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">const changes$ = from([1, 1, -1, 1]);
-const count$ = changes$.pipe(
-  scan((count, change) =&gt; count + change, 0)
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">totalPrice$ = cartActions$.pipe(
+  scan((sum, price) =&gt; sum + price, 0)
 );
-count$.subscribe(v =&gt; console.log('Счёт:', v));
-// Счёт: 1 → Счёт: 2 → Счёт: 1 → Счёт: 2</pre>
+// Клик +1200 → 1200
+// Клик +3500 → 4700</pre>
     <div class="comet-card">
-      <div class="title-teal !text-sm">Зачем это нужно в интерфейсе</div>
+      <div class="title-teal !text-sm">Зачем это в компонентах</div>
       <p class="text-xs text-[#3a372f] m-0">
-        С помощью <code>scan</code> поток разрозненных действий пользователя («добавил товар», «удалил товар») превращается в единый поток текущего состояния корзины или списка.
+        Позволяет собирать корзину покупок, бесконечную ленту постов при скролле или счётчик попыток без внешних мутабельных переменных.
       </p>
     </div>
   </div>
@@ -1432,36 +1068,39 @@ transition: slide-left
 ---
 
 <span class="comet-pill">СОСТОЯНИЕ И ЭФФЕКТЫ</span>
-<h2><code>scan()</code> как редюсер и паттерн эффектов</h2>
-<p class="comet-subtitle">Две половинки архитектуры управления состоянием (как в Redux и NgRx), написанные в несколько строк на RxJS.</p>
+<h2>Редюсер на <code>scan()</code> и паттерн эффектов</h2>
+<p class="comet-subtitle">На этих двух приёмах устроены стейт-менеджеры вроде NgRx.</p>
 
 <div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-teal">1. Редюсер на <code>scan</code>: события → состояние</div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      Чистая функция принимает прошлое состояние и объект действия (<code>action</code>), возвращая <strong>новый объект состояния</strong> без мутации старого:
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-[11px] m-0">const state$ = actions$.pipe(
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-teal">1. Редюсер: действия → состояние</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Принимает текущее состояние и объект действия (<code>action</code>), возвращая обновлённый массив или объект:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">state$ = actions$.pipe(
   scan((state, action) =&gt; {
     if (action.type === 'add') {
-      return [...state, action.todo];
+      return [...state, action.item];
     }
     if (action.type === 'clear') return [];
     return state;
   }, [] as string[])
 );</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-orange">2. Паттерн эффектов: события → запросы</div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      Слушает поток действий, отбирает нужный тип через <code>filter</code>, выполняет запрос к серверу и возвращает новое действие с результатом:
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-[11px] m-0">const saveEffect$ = actions$.pipe(
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-orange">2. Эффект: действие → запрос к API</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Ловит нужную команду через <code>filter</code>, обращается к серверу и возвращает событие об успешном сохранении:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">saveEffect$ = actions$.pipe(
   filter(a =&gt; a.type === 'save'),
-  // concatMap сохраняет строгий порядок запросов:
   concatMap(a =&gt;
-    api.save(a).pipe(
-      map(() =&gt; ({ type: 'saved', id: a.id }))
+    this.api.save(a.payload).pipe(
+      map(() =&gt; ({ type: 'saved' }))
     )
   )
 );</pre>
@@ -1491,17 +1130,17 @@ transition: slide-left
 
 <span class="comet-pill">RXJS В ANGULAR</span>
 <h2>Три главных источника потоков в компоненте</h2>
-<p class="comet-subtitle">Почти любая задача в Angular собирается из сетевых запросов, параметров маршрута и полей форм.</p>
+<p class="comet-subtitle">Почти любой экран в Angular собирается из сетевых запросов, параметров маршрута и полей форм.</p>
 
 <div class="comet-grid-3 my-auto">
   <div class="comet-card flex flex-col justify-between">
     <div>
       <div class="title-teal">1. Запросы <code>HttpClient</code></div>
-      <p class="text-xs text-[#3a372f]">
-        Возвращают холодный поток: запрос уходит при подписке, а при отписке браузер автоматически прерывает незавершённый сетевой вызов.
+      <p class="text-xs text-[#3a372f] mb-2">
+        Запрос стартует при подписке, а при отписке браузер сам отменяет незавершённый HTTP-вызов.
       </p>
     </div>
-    <pre v-pre class="comet-card--code p-2 rounded text-[11px] m-0">getUser(id: string) {
+    <pre v-pre class="comet-card--code p-2 rounded m-0">getUser(id: string) {
   return this.http.get&lt;User&gt;(
     `/api/users/${id}`
   );
@@ -1509,28 +1148,28 @@ transition: slide-left
   </div>
   <div class="comet-card flex flex-col justify-between">
     <div>
-      <div class="title-blue">2. Параметры <code>route.paramMap</code></div>
-      <p class="text-xs text-[#3a372f]">
-        При смене адреса страницы роутер присылает новый <code>id</code>. В связке со <code>switchMap</code> старый запрос товара сразу отменяется.
+      <div class="title-blue">2. Маршрут <code>route.paramMap</code></div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        При переходе между товарами роутер эмитит новый <code>id</code>, а <code>switchMap</code> запрашивает свежую карточку.
       </p>
     </div>
-    <pre v-pre class="comet-card--code p-2 rounded text-[11px] m-0">user$ = this.route.paramMap.pipe(
-  switchMap(params =&gt;
-    this.getUser(params.get('id')!)
+    <pre v-pre class="comet-card--code p-2 rounded m-0">item$ = this.route.paramMap.pipe(
+  switchMap(p =&gt;
+    this.getItem(p.get('id')!)
   )
 );</pre>
   </div>
   <div class="comet-card flex flex-col justify-between">
     <div>
-      <div class="title-orange">3. Поля форм <code>valueChanges</code></div>
-      <p class="text-xs text-[#3a372f]">
-        Каждое изменение поля превращается в поток: ждём паузу, убираем повторы и запрашиваем свежий список.
+      <div class="title-orange">3. Формы <code>valueChanges</code></div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Каждое изменение поля ввода проходит через паузу, фильтр дублей и запрашивает список с сервера.
       </p>
     </div>
-    <pre v-pre class="comet-card--code p-2 rounded text-[11px] m-0">books$ = this.search.valueChanges.pipe(
+    <pre v-pre class="comet-card--code p-2 rounded m-0">books$ = this.q.valueChanges.pipe(
   debounceTime(300),
   distinctUntilChanged(),
-  switchMap(q =&gt; this.api.find(q))
+  switchMap(q =&gt; this.find(q))
 );</pre>
   </div>
 </div>
@@ -1541,31 +1180,35 @@ transition: slide-left
 
 <span class="comet-pill">RXJS В ANGULAR</span>
 <h2>Как не забывать отписываться в Angular</h2>
-<p class="comet-subtitle">Два надёжных способа привязать жизнь потока к жизни компонента.</p>
+<p class="comet-subtitle">Два стандартных способа привязать жизнь потока к жизни компонента.</p>
 
 <div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-green">1. Для шаблона: <code>| async</code> или <code>toSignal()</code></div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Если данные нужны только для отрисовки на экране, вообще не вызывайте <code>subscribe()</code> вручную. Шаблон сам подпишется и сам отпишется при удалении компонента.
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">// Вариант с AsyncPipe в шаблоне:
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-green">1. В шаблоне: <code>| async</code> или <code>toSignal()</code></div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Если данные нужны для отрисовки, не вызывайте <code>subscribe()</code> руками. Angular сам подпишется и сам закроет подписку при удалении компонента:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// Через пайп в шаблоне:
 @if (users$ | async; as users) {
   &lt;app-list [items]="users" /&gt;
 }
-// Вариант с сигналом в классе компонента:
-users = toSignal(this.api.getUsers(), { initialValue: [] });</pre>
+// Или через сигнал в компоненте:
+users = toSignal(this.users$, { initialValue: [] });</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-teal">2. Для кода класса: <code>takeUntilDestroyed()</code></div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Если всё же нужен ручной <code>subscribe()</code>, добавьте <code>takeUntilDestroyed</code>. В конструкторе он работает без аргументов, а в <code>ngOnInit</code> нужно передать <code>this.destroyRef</code>.
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-xs m-0">private destroyRef = inject(DestroyRef);
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-teal">2. В коде класса: <code>takeUntilDestroyed()</code></div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Для ручного <code>subscribe()</code> добавьте <code>takeUntilDestroyed</code>. В конструкторе он вызывается пустым, а в <code>ngOnInit</code> принимает <code>this.destroyRef</code>:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">private destroyRef = inject(DestroyRef);
 ngOnInit() {
   this.player.track$.pipe(
     takeUntilDestroyed(this.destroyRef)
-  ).subscribe(track =&gt; this.onTrack(track));
+  ).subscribe(t =&gt; this.onTrack(t));
 }</pre>
   </div>
 </div>
@@ -1582,8 +1225,8 @@ transition: fade-out
 ---
 
 <span class="comet-pill mt-4">РАЗДЕЛ 11 ИЗ 11</span>
-<h1 class="!text-[3.2rem] mt-2">Практические проекты и тесты</h1>
-<p class="comet-subtitle !text-[1.2rem]">Marble-тестирование, создание собственных операторов и финальный оператор liveSearch</p>
+<h1 class="!text-[3.2rem] mt-2">Практические рецепты и тесты</h1>
+<p class="comet-subtitle !text-[1.2rem]">Готовые связки для форм и кнопок, свои операторы и финальный liveSearch</p>
 
 <SectionStepper :total="11" :active="11" />
 
@@ -1591,31 +1234,39 @@ transition: fade-out
 transition: slide-left
 ---
 
-<span class="comet-pill">ПРАКТИЧЕСКИЕ ПРОЕКТЫ</span>
+<span class="comet-pill">ПРАКТИЧЕСКИЕ РЕЦЕПТЫ</span>
 <h2>Готовые рецепты: автосохранение и защита кнопок</h2>
-<p class="comet-subtitle">Как собираются реальные сценарии интерфейса из нескольких базовых операторов.</p>
+<p class="comet-subtitle">Три частые задачи в рабочих проектах, которые решаются парой операторов.</p>
 
 <div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-teal">1. Автосохранение черновика (Autosave)</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Ждём паузу после набора текста, проверяем, что текст действительно изменился, и сохраняем черновик через <code>switchMap</code>:
-    </p>
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">draftText$.pipe(
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-teal">1. Автосохранение черновика формы</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Ждём паузу после набора текста, проверяем, что значение изменилось, и отправляем запрос сохранения:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">draftControl.valueChanges.pipe(
   debounceTime(400),
   distinctUntilChanged(),
   switchMap(text =&gt; this.api.saveDraft(text))
-)</pre>
+);</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-orange">2. Защита кнопки отправки и последовательность</div>
-    <p class="text-sm text-[#3a372f] mb-3">
-      Для кнопки отправки используем <code>exhaustMap</code> (игнорирует двойной клик), а когда второй запрос зависит от ответа первого — <code>concatMap</code>:
-    </p>
-    <pre v-pre class="comet-card--code p-3 rounded text-xs m-0">// 1) Защита от двойного клика:
-submitClick$.pipe(exhaustMap(() =&gt; this.api.login()));
-// 2) Запрос профиля сразу после получения userId:
-getUserId$().pipe(concatMap(id =&gt; this.api.getProfile(id)));</pre>
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-orange">2. Кнопка без дублей и запрос по цепочке</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        <code>exhaustMap</code> защищает от двойного клика по кнопке, а <code>concatMap</code> выполняет второй запрос после первого:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">// Защита кнопки оплаты от второго клика:
+payClick$.pipe(
+  exhaustMap(() =&gt; this.api.checkout())
+);
+// Загрузка профиля после входа:
+login$().pipe(
+  concatMap(u =&gt; this.api.getProfile(u.id))
+);</pre>
   </div>
 </div>
 
@@ -1623,38 +1274,44 @@ getUserId$().pipe(concatMap(id =&gt; this.api.getProfile(id)));</pre>
 transition: slide-left
 ---
 
-<span class="comet-pill">ПРАКТИЧЕСКИЕ ПРОЕКТЫ И ТЕСТЫ</span>
-<h2>Свои операторы и Marble-тестирование</h2>
-<p class="comet-subtitle">Любую повторяющуюся цепочку можно вынести в отдельную функцию-оператор и проверить в виртуальном времени.</p>
+<span class="comet-pill">ПРАКТИЧЕСКИЕ РЕЦЕПТЫ И ТЕСТЫ</span>
+<h2>Свои операторы и быстрые Marble-тесты</h2>
+<p class="comet-subtitle">Повторяющуюся цепочку легко вынести в функцию и протестировать без реального ожидания таймеров.</p>
 
 <div class="comet-grid-2 my-auto">
-  <div class="comet-card">
-    <div class="title-teal">Свой оператор — это обычная функция</div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      Функция принимает настройки и возвращает функцию <code>source$ => source$.pipe(...)</code>. Никакой магии — внутри те же стандартные операторы:
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-[11px] m-0">// Создаём свой оператор для логирования:
-function debugLabel&lt;T&gt;(label: string) {
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-teal">Свой оператор — это обычная функция</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        Принимает поток <code>source$</code> и возвращает <code>source$.pipe(...)</code>. Удобно для переиспользования в разных компонентах:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">function debugLog&lt;T&gt;(tag: string) {
   return (source$: Observable&lt;T&gt;) =&gt;
     source$.pipe(
-      tap(value =&gt; console.log(`${label}:`, value))
+      tap(v =&gt; console.log(`[${tag}]`, v))
     );
 }
-// Используем внутри обычного pipe():
-stream$.pipe(debugLabel('Ответ API'), map(x =&gt; x.data));</pre>
+// В коде:
+items$.pipe(debugLog('Каталог'));</pre>
   </div>
-  <div class="comet-card">
-    <div class="title-blue">Marble-тесты: проверка за миллисекунды</div>
-    <p class="text-xs text-[#3a372f] mb-2">
-      <code>TestScheduler</code> проверяет <code>map</code>, <code>filter</code> и таймеры по текстовой схеме (<code>-a-b|</code>), не дожидаясь реальных секунд:
-    </p>
-    <pre v-pre class="comet-card--code p-2.5 rounded text-[11px] m-0">scheduler.run(({ cold, expectObservable }) =&gt; {
-  const source$ = cold('-a-b-c|', { a: 1, b: 2, c: 3 });
-  const result$ = source$.pipe(
+  <div class="comet-card flex flex-col justify-between">
+    <div>
+      <div class="title-blue">Тестирование в виртуальном времени</div>
+      <p class="text-xs text-[#3a372f] mb-2">
+        <code>TestScheduler</code> проверяет цепочки по текстовой строке <code>-a-b|</code> за миллисекунды, не дожидаясь реальных секунд:
+      </p>
+    </div>
+    <pre v-pre class="comet-card--code p-2.5 rounded m-0">scheduler.run(({ cold, expectObservable }) =&gt; {
+  const in$ = cold('-a-b-c|', { a: 1, b: 2, c: 3 });
+  const out$ = in$.pipe(
     filter(x =&gt; x &gt; 1),
     map(x =&gt; x * 10)
   );
-  expectObservable(result$).toBe('---b-c|', { b: 20, c: 30 });
+  expectObservable(out$).toBe(
+    '---b-c|',
+    { b: 20, c: 30 }
+  );
 });</pre>
   </div>
 </div>
@@ -1665,30 +1322,38 @@ transition: slide-left
 
 <span class="comet-pill">ФИНАЛЬНЫЙ ПРОЕКТ КУРСА</span>
 <h2>Полный оператор <code>liveSearch</code> для продакшена</h2>
-<p class="comet-subtitle">Объединяем управление вводом, отмену устаревших запросов, повторную попытку и защиту от падения.</p>
+<p class="comet-subtitle">Собираем в одну функцию паузу при вводе, отмену устаревших запросов, повторную попытку и защиту от падения.</p>
 
-<div class="comet-grid-2 my-auto items-center">
-  <pre v-pre class="comet-card--code p-3.5 rounded text-xs m-0">function liveSearch&lt;T&gt;(searchApi: (q: string) =&gt; Observable&lt;T&gt;) {
+<div class="comet-grid-2 my-auto items-stretch">
+  <div class="comet-card comet-card--code flex flex-col justify-center !p-3">
+    <pre v-pre class="m-0">function liveSearch&lt;T&gt;(
+  searchFn: (q: string) =&gt; Observable&lt;T[]&gt;
+) {
   return (source$: Observable&lt;string&gt;) =&gt;
     source$.pipe(
-      debounceTime(300),        // 1. Ждём паузу в наборе
-      distinctUntilChanged(),   // 2. Отсекаем повтор того же слова
+      debounceTime(300),
+      distinctUntilChanged(),
       switchMap(query =&gt;
-        searchApi(query).pipe(  // 3. Внутренний запрос к API
-          retry(1),             // 4. Один повтор при случайном сбое
-          catchError(() =&gt; of('Fallback: ' + query))
+        searchFn(query).pipe(
+          retry(1),
+          catchError(() =&gt; of([]))
         )
       )
     );
 }</pre>
-  <div class="flex flex-col gap-3">
-    <div class="comet-card">
-      <div class="title-teal !text-sm">Почему это надёжно</div>
-      <ul class="text-xs space-y-2 pl-4 m-0 text-[#3a372f]">
-        <li><strong>Экономит запросы:</strong> быстрый набор отсекается через <code>debounceTime</code> и <code>distinctUntilChanged</code>.</li>
-        <li><strong>Нет гонки ответов:</strong> <code>switchMap</code> отменяет старый запрос, если пользователь продолжил печатать.</li>
-        <li><strong>Не ломается при сбое:</strong> <code>retry(1)</code> и <code>catchError</code> стоят <strong>внутри</strong> <code>switchMap</code>, поэтому ошибка одного запроса никогда не убьёт строку поиска.</li>
-      </ul>
+  </div>
+  <div class="grid grid-cols-1 gap-2">
+    <div class="comet-card !py-2 !px-3">
+      <div class="title-blue !text-xs !mb-0.5">1. <code>debounceTime(300)</code> + <code>distinctUntilChanged()</code></div>
+      <p class="text-xs m-0 text-[#3a372f]">Ждём паузу после ввода и не отправляем запрос повторно, если слово не изменилось.</p>
+    </div>
+    <div class="comet-card !py-2 !px-3">
+      <div class="title-teal !text-xs !mb-0.5">2. <code>switchMap(query => ...)</code></div>
+      <p class="text-xs m-0 text-[#3a372f]">Если пользователь допечатал букву, старый запрос тут же отменяется — на экране всегда актуальный ответ.</p>
+    </div>
+    <div class="comet-card !py-2 !px-3">
+      <div class="title-green !text-xs !mb-0.5">3. <code>retry(1)</code> + <code>catchError</code> внутри</div>
+      <p class="text-xs m-0 text-[#3a372f]">При случайном сбое сети пробуем ещё раз, а если сервер лежит — возвращаем <code>[]</code>, сохраняя поиск живым.</p>
     </div>
   </div>
 </div>
@@ -1705,7 +1370,7 @@ transition: slide-left
 
 <span class="comet-pill">ИТОГИ · ШПАРГАЛКА</span>
 <h2>Шпаргалка: какая задача — какой оператор</h2>
-<p class="comet-subtitle">Сформулируйте словами, что нужно сделать с потоком, — и выберите подходящий оператор.</p>
+<p class="comet-subtitle">Выберите задачу из списка или включите режим блиц-проверки.</p>
 
 <OperatorMatrix />
 
@@ -1717,11 +1382,11 @@ transition: fade-out
 <div class="flex items-center justify-between h-full gap-8">
   <div class="flex flex-col max-w-[62%]">
     <span class="comet-pill">ИТОГИ ЛЕКЦИИ</span>
-    <h1 class="!text-[3.3rem] !leading-[1.08] mt-2 mb-4">
+    <h1 class="!text-[3.3rem] !leading-[1.08] mt-3 !mb-6">
       Интерфейс — это<br />события во времени
     </h1>
-    <p class="comet-subtitle !text-[1.15rem] mb-6">
-      RxJS помогает спокойно описывать сложные цепочки событий: ждать паузу при вводе, вовремя отменять устаревшие запросы, накапливать состояние и не допускать утечек памяти.
+    <p class="comet-subtitle !text-[1.12rem] !mb-7 leading-relaxed">
+      С RxJS не нужно вручную следить за таймерами и флагами: вы просто собираете цепочку из нескольких операторов, а отмену старых запросов и очистку подписок берёт на себя поток.
     </p>
     <div class="grid grid-cols-2 gap-3 text-xs font-mono">
       <a href="https://rxjs.dev/" target="_blank" class="comet-card comet-card--dark no-underline hover:border-[#4f98a3]">
@@ -1735,7 +1400,7 @@ transition: fade-out
     </div>
   </div>
   <div class="flex flex-col items-center gap-4 pr-6">
-    <CometCat mood="success" :size="145" dark caption="Все 12 заданий и потоков настроены!" />
+    <CometCat mood="success" :size="145" dark caption="Все 12 квизов и потоков собраны!" />
     <div class="font-mono text-xs text-[#9f9d96] bg-[#201f1d] border border-[#3a372f] px-4 py-2 rounded-full">
       событие &nbsp;→&nbsp; pipe() &nbsp;→&nbsp; состояние экрана
     </div>
