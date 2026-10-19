@@ -27,6 +27,6 @@ TypeScript-интерфейсы не существуют в runtime — их н
 
 ## Запуск
 
-```
+```bash
 npm run serve:angular-service-abstraction
 ```
