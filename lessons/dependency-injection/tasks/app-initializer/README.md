@@ -21,6 +21,6 @@
 
 ## Запуск
 
-```
+```bash
 npm run serve:angular-app-initializer
 ```
