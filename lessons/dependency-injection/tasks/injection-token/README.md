@@ -6,7 +6,7 @@
 npm run serve:angular-injection-token
 ```
 
-### Documentation and Instruction
+### Документация и инструкция
 
 ---
 title: 🟠 InjectionToken
@@ -26,23 +26,23 @@ sidebar:
   order: 118
 ---
 
-## Information
+## Информация
 
-In this small application, we start with a `VideoComponent` containing a **1-second** timer. The development team decided to use a global constant to store the timer value: `DEFAULT_TIMER`. However, a few weeks later, the product team wants to add a new screen for phone calls called `PhoneComponent`, and we want to reuse the `TimerComponent`. However, the product team wants a timer of **2 seconds**. How can we achieve this?
+В этом небольшом приложении у нас есть `VideoComponent` с таймером на **1 секунду**. Команда разработки решила хранить значение таймера в глобальной константе `DEFAULT_TIMER`. Через несколько недель продуктовая команда захотела добавить новый экран для телефонных звонков — `PhoneComponent`, — и мы хотим переиспользовать в нём `TimerComponent`. Но для этого экрана продуктовой команде нужен таймер на **2 секунды**. Как этого добиться?
 
-## Statement
+## Задание
 
-Currently, the timer is still 1 second for the `PhoneComponent`. The goal of this challenge is to change the timer value to 2 seconds for the `PhoneComponent`.
+Сейчас у `PhoneComponent` таймер всё ещё 1 секунда. Цель задания — изменить значение таймера на 2 секунды для `PhoneComponent`.
 
-## Constraints
+## Ограничения
 
-The use of `@Input` is forbidden. This example is basic, and using `@Input` could be a good option, but in more complex applications, the component we need to update can be deeply nested, making the use of `@Input` a really bad design.
+Использовать `@Input` запрещено. Пример простой, и `@Input` здесь мог бы быть неплохим вариантом, но в более сложных приложениях компонент, который нужно настроить, может быть глубоко вложен, и тогда использование `@Input` — действительно плохой дизайн.
 
-## Hint
+## Подсказка
 
 <details>
-  <summary>Hint 1</summary>
+  <summary>Подсказка 1</summary>
 
-Looking at this [blog post](https://itnext.io/stop-being-scared-of-injectiontokens-ab22f72f0fe9) can be of great help.
+Очень поможет эта [статья](https://itnext.io/stop-being-scared-of-injectiontokens-ab22f72f0fe9).
 
 </details>
