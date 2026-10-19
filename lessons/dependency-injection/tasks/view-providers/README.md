@@ -26,6 +26,6 @@ projected content получает экземпляр ThemeService карточ�
 
 ## Запуск
 
-```
+```bash
 npm run serve:angular-view-providers
 ```
