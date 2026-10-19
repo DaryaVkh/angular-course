@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
-import { DEFAULT_TIMER } from './data';
+import { APP_TIMER } from './data';
 
 @Component({
   selector: 'timer',
@@ -10,5 +10,6 @@ import { DEFAULT_TIMER } from './data';
   `,
 })
 export class TimerComponent {
-  timer = toSignal(interval(DEFAULT_TIMER));
+  private readonly app_timer = inject(APP_TIMER)
+  timer = toSignal(interval(this.app_timer));
 }
