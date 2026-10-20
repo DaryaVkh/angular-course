@@ -31,7 +31,7 @@ export class CatalogComponent {
    * `category` из this.route.queryParamMap
    */
   protected readonly activeCategory = toSignal(
-    this.route.queryParamMap.pipe(map(() => null as ProductCategory | null)),
+    this.route.queryParamMap.pipe(map((params) => params.get('category') as ProductCategory | null)),
     { initialValue: null },
   );
 

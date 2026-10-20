@@ -11,5 +11,8 @@ export interface HasUnsavedChanges {
  * - Если изменений нет — разрешить переход без диалога.
  */
 export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = (component) => {
+  if (component.hasUnsavedChanges()) {
+    window.confirm('У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?')
+  }
   return true;
 };

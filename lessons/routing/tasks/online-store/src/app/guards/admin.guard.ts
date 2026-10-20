@@ -11,5 +11,5 @@ import { AuthService } from '../services/auth.service';
  */
 export const adminGuard: CanMatchFn = () => {
   const authService = inject(AuthService);
-  return true;
+  return authService.isAdmin() ? true : false;
 };
