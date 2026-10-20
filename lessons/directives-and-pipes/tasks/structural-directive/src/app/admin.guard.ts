@@ -1,10 +1,9 @@
 import { inject } from '@angular/core';
 import { CanMatchFn } from '@angular/router';
-import { map } from 'rxjs';
 import { UserStore } from './user.store';
 
 export const adminGuard: CanMatchFn = () => {
-  const userStore = inject(UserStore);
+  const user = inject(UserStore).currentUser;
 
-  return userStore.user$.pipe(map((user) => !!user?.isAdmin));
+  return !!user?.isAdmin;
 };

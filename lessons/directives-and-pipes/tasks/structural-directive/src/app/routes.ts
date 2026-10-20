@@ -1,4 +1,5 @@
 import { adminGuard } from './admin.guard';
+import { managerGuard } from './manager.guard';
 
 export const APP_ROUTES = [
   {
@@ -16,9 +17,14 @@ export const APP_ROUTES = [
   },
   {
     path: 'enter',
+    canMatch: [managerGuard],
     loadComponent: () =>
       import('./dashboard/manager.component').then(
         (m) => m.ManagerDashboardComponent,
       ),
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];

@@ -29,9 +29,10 @@ export class HasRoleDirective {
 
       const hasRole =
         user &&
-        (Array.isArray(roles) ? roles : [roles]).some((role) =>
-          user.roles.includes(role),
-        );
+        (user.isAdmin ||
+          (Array.isArray(roles) ? roles : [roles]).some((role) =>
+            user.roles.includes(role),
+          ));
 
       if (hasRole) {
         this.viewContainer.createEmbeddedView(this.templateRef);
