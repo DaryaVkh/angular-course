@@ -30,7 +30,7 @@ import { UserStore } from './user.store';
 
     <app-information />
 
-    <button app-button class="mt-10" routerLink="enter">
+    <button app-button class="mt-10" routerLink="enter" [disabled]="!canEnter()">
       Enter application
     </button>
   `,
@@ -58,5 +58,12 @@ export class LoginComponent {
   }
   everyone() {
     this.userStore.add(everyone);
+  }
+
+  canEnter(): boolean {
+    const user = this.userStore.currentUser;
+
+    return !!user &&
+      (user.isAdmin || user.roles.includes('MANAGER'));
   }
 }
