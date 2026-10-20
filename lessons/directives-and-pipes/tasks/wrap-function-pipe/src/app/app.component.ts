@@ -1,11 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'wrapFn',
+})
+export class WrapFnPipe implements PipeTransform {
+  transform<T extends unknown[], R>(fn: (...args: T) => R, ...args: T): R {
+    return fn(...args);
+  }
+}
 
 @Component({
   selector: 'app-root',
+  imports: [WrapFnPipe],
   template: `
     @for (person of persons; track person.name) {
-      {{ showName(person.name, $index) }}
-      {{ isAllowed(person.age, $first) }}
+      {{ showName | wrapFn: person.name : $index }}
+      {{ isAllowed | wrapFn: person.age : $first }}
     }
   `,
 })
