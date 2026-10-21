@@ -10,8 +10,13 @@ import { AuthService } from '../services/auth.service';
  *   в query parameter `returnUrl` (LoginComponent должен использовать его,
  *   чтобы вернуть пользователя туда, откуда он пришёл).
  */
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  return true;
+
+  if (authService.isAuthenticated()) return true;
+
+  return router.createUrlTree(['login'], {
+    queryParams: { returnUrl: router.url },
+  });
 };

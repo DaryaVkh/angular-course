@@ -16,7 +16,10 @@ export class OrderSuccessComponent {
    * TODO: сейчас orderId всегда '—'. Замените заглушку на реальное чтение
    * параметра маршрута `orderId` (см. route `order/:orderId`)
    */
-  protected readonly orderId = toSignal(this.route.paramMap.pipe(map(() => '—')), {
-    initialValue: '—',
-  });
+  protected readonly orderId = toSignal(
+    this.route.paramMap.pipe(map((data) => data.get('orderId'))),
+    {
+      initialValue: '—',
+    },
+  );
 }

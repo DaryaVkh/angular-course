@@ -10,6 +10,10 @@ export interface HasUnsavedChanges {
  *   window.confirm('...') и вернуть его результат.
  * - Если изменений нет — разрешить переход без диалога.
  */
-export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = (component) => {
-  return true;
+export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = (
+  component,
+) => {
+  if (!component.hasUnsavedChanges()) return true;
+
+  return window.confirm('Are you sure you want to delete this changes?');
 };

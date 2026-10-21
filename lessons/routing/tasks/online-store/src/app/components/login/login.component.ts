@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -32,7 +37,12 @@ export class LoginComponent {
         // this.route.snapshot.queryParamMap и, если он есть, перейдите по
         // нему вместо /catalog (важно: страница
         // логина не осталась в истории браузера).
-        this.router.navigate(['/catalog'], { replaceUrl: true });
+        this.router.navigate(
+          [this.route.snapshot.queryParams['returnUrl'] ?? '/catalog'],
+          {
+            replaceUrl: true,
+          },
+        );
       },
       error: () => {
         this.loading.set(false);
