@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { computed, Injectable, signal } from '@angular/core';
-import { of } from 'rxjs';
+import { defer, of } from 'rxjs';
 
 export type TopicType = 'food' | 'book' | 'sport';
 
@@ -46,11 +46,13 @@ export class LocalDBService {
   };
 
   deleteOneTopic = (id: number) => {
-    if (id === 6) {
-      return of(false);
-    }
+    return defer(() => {
+      if (id === 6) {
+        return of(false);
+      }
 
-    this.deleteOne(id);
-    return of(true);
+      this.deleteOne(id);
+      return of(true);
+    });
   };
 }
