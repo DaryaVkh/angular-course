@@ -1,19 +1,19 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
   input,
   numberAttribute,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CardComponent } from '../../shared/ui/card/card.component';
 import { BooksService } from '../books.service';
 
 @Component({
   selector: 'app-book-detail',
-  standalone: false,
   templateUrl: './book-detail.component.html',
   styleUrl: './book-detail.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CardComponent, RouterLink],
 })
 export class BookDetailComponent {
   private readonly booksService = inject(BooksService);
