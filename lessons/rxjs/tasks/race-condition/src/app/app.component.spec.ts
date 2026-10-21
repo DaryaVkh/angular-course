@@ -8,7 +8,7 @@ describe('AppComponent (race-condition)', () => {
   let dialogOpenSpy: jest.Mock;
 
   beforeEach(async () => {
-    dialogOpenSpy = jest.fn();
+    dialogOpenSpy = jest.fn(() => ({ afterClosed: jest.fn() }));
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
