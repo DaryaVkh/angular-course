@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PersonUtils } from './person.utils';
+import { PersonUtilsPipe } from './person-utils-pipe';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +12,14 @@ import { PersonUtils } from './person.utils';
         let index = $index;
         let isFirst = $first
       ) {
-        {{ showName(person.name, index) }}
-        {{ isAllowed(person.age, isFirst, activity.minimumAge) }}
+        {{ 'showName' | personUtils: person.name : index }}
+        {{
+          'isAllowed' | personUtils: person.age : isFirst : activity.minimumAge
+        }}
       }
     }
   `,
+  imports: [PersonUtilsPipe],
 })
 export class AppComponent {
   persons = [
@@ -30,8 +33,4 @@ export class AppComponent {
     { name: 'hiking', minimumAge: 25 },
     { name: 'dancing', minimumAge: 1 },
   ];
-
-  showName = PersonUtils.showName;
-
-  isAllowed = PersonUtils.isAllowed;
 }
