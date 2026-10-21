@@ -3,7 +3,7 @@ import { ThemeService } from './theme.service';
 
 @Component({
   selector: 'app-card',
-  providers: [ThemeService],
+  viewProviders: [ThemeService],
   template: `
     <div class="card" [style.border-color]="theme.color()">
       <div class="card-header" [style.background-color]="theme.color()">
