@@ -2,9 +2,8 @@ import { TableComponent } from '@angular-challenges/shared/ui';
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Directive } from '@angular/core';
 import { CurrencyPipe } from './currency.pipe';
-import { CurrencyService } from './currency.service';
 import { Product, products } from './product.model';
-import { SpecifiedCurrency } from './specified-currency';
+import { SpecifiedCurrencyDirective } from './specified-currency.directive';
 
 interface ProductContext {
   $implicit: Product;
@@ -23,7 +22,7 @@ export class ProductDirective {
 }
 
 @Component({
-  imports: [TableComponent, CurrencyPipe, AsyncPipe, ProductDirective, SpecifiedCurrency],
+  imports: [TableComponent, CurrencyPipe, AsyncPipe, ProductDirective, SpecifiedCurrencyDirective],
   selector: 'app-root',
   template: `
     <table [items]="products">
