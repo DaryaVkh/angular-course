@@ -1,8 +1,9 @@
 import { Component, contentChild, input, TemplateRef } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'table',
-  imports: [],
+  imports: [NgTemplateOutlet],
   template: `
     <thead>
       <ng-container *ngTemplateOutlet="headerTemplate()"></ng-container>
