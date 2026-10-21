@@ -5,7 +5,7 @@ import { CurrencyService } from './currency.service';
   selector: '[specifiedCurrency]',
   providers: [CurrencyService],
 })
-export class SpecifiedCurrency {
+export class SpecifiedCurrencyDirective {
   readonly specifiedCurrency = input('EUR');
   private readonly currencyService = inject(CurrencyService);
 
