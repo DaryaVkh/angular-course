@@ -5,7 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { exhaustMap, map, shareReplay, Subject, take } from 'rxjs';
+import { finalize, shareReplay, switchMap, take } from 'rxjs';
 import { TopicModalComponent } from './topic-dialog.component';
 import { TopicService } from './topic.service';
 
@@ -181,32 +181,31 @@ export class AppComponent implements OnInit {
   dialog = inject(MatDialog);
   topicService = inject(TopicService);
 
+  isDialogScheduled = false;
+
   topics$ = this.topicService
     .fakeGetHttpTopic()
     .pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
-  openTopicModal$ = new Subject<void>();
-
   ngOnInit() {
     this.topics$.subscribe();
-
-    this.openTopicModal$
-      .pipe(
-        exhaustMap(() =>
-          this.topics$.pipe(
-            take(1),
-            map((topics) =>
-              this.dialog
-                .open(TopicModalComponent, { data: { topics } })
-                .afterClosed(),
-            ),
-          )
-        ),
-      )
-      .subscribe();
   }
 
   openTopicModal() {
-    this.openTopicModal$.next();
+    if (this.isDialogScheduled) return;
+
+    this.isDialogScheduled = true;
+
+    this.topics$
+      .pipe(
+        take(1),
+        switchMap((topics) => {
+          return this.dialog
+            .open(TopicModalComponent, { data: { topics } })
+            .afterClosed();
+        }),
+        finalize(() => (this.isDialogScheduled = false)),
+      )
+      .subscribe();
   }
 }
