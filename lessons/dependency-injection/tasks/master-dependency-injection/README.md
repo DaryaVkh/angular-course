@@ -6,11 +6,11 @@
 npm run serve:angular-master-dependency-injection
 ```
 
-### Documentation and Instruction
+### Документация и инструкция
 
 ---
 title: 🔴 Master Dependency Injection
-description: Challenge 16 is about mastering how dependancy injection works
+description: Челлендж 16 посвящён глубокому пониманию того, как работает внедрение зависимостей
 author: thomas-laforge
 contributors:
   - tomalaforge
@@ -22,20 +22,19 @@ sidebar:
   order: 203
 ---
 
-## Information
+## Описание
 
-To successfully complete this challenge, you will need to have a good understanding of how [Dependency Injection](https://angular.dev/guide/di/dependency-injection) works inside Angular.
+Чтобы успешно выполнить этот челлендж, нужно хорошо понимать, как в Angular работает [внедрение зависимостей (Dependency Injection)](https://angular.dev/guide/di/dependency-injection).
 
-The goal is to provide the `CurrencyService` at the row level, so that each row displays the correct currency. Currently, the `CurrencyService` is only provided at the table level, which results in an error as the same currency is displayed for each row, despite each product having a different currency.
+Цель — предоставить `CurrencyService` на уровне строки, чтобы в каждой строке отображалась правильная валюта. Сейчас `CurrencyService` предоставлен только на уровне таблицы, и из-за этого возникает ошибка: во всех строках показывается одна и та же валюта, хотя у каждого товара она своя.
 
-One way to achieve this is by adding a second argument to the pipe, but this is not allowed for this challenge.
+Один из способов решить задачу — добавить в пайп второй аргумент, но в этом челлендже так делать нельзя.
 
-## Statement
+## Задание
 
-- Your task is to display the correct currency for each row.
+- Отобрази правильную валюту в каждой строке.
 
-## Constraints
+## Ограничения
 
-- You cannot modify the pipe.
-- You cannot wrap the row inside a component, as this will break the layout.
-
+- Пайп изменять нельзя.
+- Нельзя оборачивать строку в компонент, потому что это сломает вёрстку.
