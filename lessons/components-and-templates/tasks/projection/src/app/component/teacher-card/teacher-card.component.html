@@ -1,4 +1,12 @@
-<app-card
-  [list]="teachers()"
-  [type]="cardType"
-  customClass="bg-light-red"></app-card>
+<app-card class="bg-light-red" [list]="teachers()" (add)="addTeacher()">
+  <img
+    card-image
+    ngSrc="assets/img/teacher.png"
+    width="200"
+    height="200"
+    priority />
+  <h3 card-header>Учителя</h3>
+  <ng-template let-item>
+    <app-list-item [name]="item.firstName" (delete)="deleteTeacher(item.id)" />
+  </ng-template>
+</app-card>
