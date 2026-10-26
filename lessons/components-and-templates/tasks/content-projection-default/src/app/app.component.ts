@@ -18,13 +18,28 @@ let nextCardId = 3;
       <label class="flex flex-col gap-1">
         Наименование новой карточки
         <input
+          #nameInput
           placeholder="Наименование"
           class="border border-grey rounded-sm p-1" />
+        <button
+          type="button"
+          class="border border-grey rounded-sm p-1"
+          (click)="addCard(nameInput.value)">
+          Добавить
+        </button>
       </label>
     </div>
 
     @for (card of cards(); track card.id) {
-      <app-card [title]="card.title" [message]="card.message" />
+      <app-card (closed)="removeCard(card.id)">
+        <div card-title>{{ card.title }}</div>
+
+        @if (card.message) {
+          <div card-message>{{ card.message }}</div>
+        } @else {
+          <div card-message>Default message</div>
+        }
+      </app-card>
     }
 
     <section class="border-t border-grey pt-2 mt-2">

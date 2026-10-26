@@ -6,10 +6,15 @@ import {
   signal,
 } from '@angular/core';
 import { BooksService } from '../books.service';
+import { RouterLink } from '@angular/router';
+import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { HighlightDirective } from '../../shared/directives/highlight.directive';
+import { CardComponent } from '../../shared/ui/card/card.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-book-list',
-  standalone: false,
+  imports: [CardComponent, FormsModule, HighlightDirective, TruncatePipe, RouterLink],
   templateUrl: './book-list.component.html',
   styleUrl: './book-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

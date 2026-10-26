@@ -1,0 +1,13 @@
+.card {
+  background-color: var(--card-bg, transparent);
+}
+
+.flash {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.45);
+  transition: box-shadow 0.2s ease;
+}
+
+.card-header.has-header {
+  border-bottom: 1px solid #d1d5db;
+  padding-bottom: 0.5rem;
+}

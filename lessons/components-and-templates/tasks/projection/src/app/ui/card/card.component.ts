@@ -1,39 +1,51 @@
-import { NgIf, NgOptimizedImage } from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  inject,
+  ContentChild,
+  ElementRef,
   input,
+  output,
+  TemplateRef,
+  ViewChild
 } from '@angular/core';
-import { randStudent, randTeacher } from '../../data-access/fake-http.service';
-import { StudentStore } from '../../data-access/student.store';
-import { TeacherStore } from '../../data-access/teacher.store';
-import { CardType } from '../../model/card.model';
-import { ListItemComponent } from '../list-item/list-item.component';
+import { NgTemplateOutlet } from '@angular/common';
+import { CardRowContext } from '../../model/card.model';
+
+type CardItem = unknown;
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
-  imports: [ListItemComponent, NgOptimizedImage, NgIf],
+  imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CardComponent {
-  private teacherStore = inject(TeacherStore);
-  private studentStore = inject(StudentStore);
+export class CardComponent implements AfterViewInit {
+  readonly list = input<readonly CardItem[]>([]);
+  readonly addItem = output<void>();
 
-  readonly list = input<any[] | null>(null);
-  readonly type = input.required<CardType>();
-  readonly customClass = input('');
-
-  CardType = CardType;
-
-  addNewItem() {
-    const type = this.type();
-    if (type === CardType.TEACHER) {
-      this.teacherStore.addOne(randTeacher());
-    } else if (type === CardType.STUDENT) {
-      this.studentStore.addOne(randStudent());
-    }
+  protected onAddItem(): void {
+    this.addItem.emit();
   }
+
+  @ViewChild('addButton')
+  private addButton?: ElementRef<HTMLButtonElement>;
+
+  @ContentChild(TemplateRef)
+  protected rowTpl!: TemplateRef<CardRowContext<unknown>>;
+
+  ngAfterViewInit(): void {
+    const button = this.addButton?.nativeElement;
+    if (!button) {
+      return;
+    }
+    button.classList.add('flash');
+    setTimeout(() => {
+      button.classList.remove('flash');
+    }, 600);
+  }
+
+  @ContentChild('cardHeader')
+  protected cardHeader?: ElementRef<HTMLElement>;
 }
