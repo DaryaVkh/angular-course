@@ -6,8 +6,7 @@ import { GreetingService, CasualGreetingService } from './greeting.service';
   selector: 'app-casual-panel',
   imports: [FormsModule],
   providers: [
-    // TODO: предоставь CasualGreetingService как реализацию GreetingService
-    // { provide: GreetingService, useClass: ??? }
+    { provide: GreetingService, useClass: CasualGreetingService },
 
   ],
   template: `
