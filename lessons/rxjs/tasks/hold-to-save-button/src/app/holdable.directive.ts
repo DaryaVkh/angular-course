@@ -1,4 +1,17 @@
 import { Directive, ElementRef, inject, input, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  filter,
+  fromEvent,
+  interval,
+  map,
+  merge,
+  startWith,
+  switchMap,
+  takeUntil,
+  takeWhile,
+  tap,
+} from 'rxjs';
 
 @Directive({
   selector: '[appHoldable]',
@@ -15,11 +28,50 @@ export class HoldableDirective {
 
   private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  // TODO: Шаг 1 — Создайте потоки начала удержания (pointerdown / mousedown)
-  //               и отмены удержания (pointerup, pointerleave, pointercancel).
-  // TODO: Шаг 2 — По клику запускайте таймер (interval) через switchMap и
-  //               останавливайте его при событии отмены (takeUntil).
-  // TODO: Шаг 3 — Пересчитывайте прошедшее время в процент [0..100], эмитьте
-  //               его в holdProgress (при отмене сбрасывайте в 0), а при
-  //               достижении 100% вызывайте holdTimeEnd.emit().
+  constructor() {
+    const element = this.el.nativeElement;
+    const stepMs = 20;
+    const isHoldKey = (event: KeyboardEvent) =>
+      event.key === ' ' || event.key === 'Enter';
+
+    const start$ = merge(
+      fromEvent(element, 'pointerdown'),
+      fromEvent<KeyboardEvent>(element, 'keydown').pipe(
+        filter(isHoldKey),
+        tap((event) => event.preventDefault()),
+        filter((event) => !event.repeat),
+      ),
+    );
+    const cancel$ = merge(
+      fromEvent(element, 'pointerup'),
+      fromEvent(element, 'pointerleave'),
+      fromEvent(element, 'pointercancel'),
+      fromEvent(element, 'blur'),
+      fromEvent<KeyboardEvent>(element, 'keyup').pipe(
+        filter(isHoldKey),
+        tap((event) => event.preventDefault()),
+      ),
+    );
+
+    start$
+      .pipe(
+        switchMap(() => {
+          const duration = this.holdTime();
+
+          return interval(stepMs).pipe(
+            map((tick) => Math.min(100, (((tick + 1) * stepMs) / duration) * 100)),
+            startWith(0),
+            takeWhile((progress) => progress < 100, true),
+            takeUntil(cancel$.pipe(tap(() => this.holdProgress.emit(0)))),
+          );
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe((progress) => {
+        this.holdProgress.emit(progress);
+        if (progress === 100) {
+          this.holdTimeEnd.emit();
+        }
+      });
+  }
 }
