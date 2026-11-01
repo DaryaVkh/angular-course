@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,16 +7,25 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FakeHttpService } from '../../data-access/fake-http.service';
+import {
+  FakeHttpService,
+  randTeacher,
+} from '../../data-access/fake-http.service';
 import { TeacherStore } from '../../data-access/teacher.store';
-import { CardType } from '../../model/card.model';
+import { CardHeaderDirective } from '../../ui/card/card-header.directive';
 import { CardComponent } from '../../ui/card/card.component';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-teacher-card',
   templateUrl: './teacher-card.component.html',
   styleUrl: './teacher-card.component.scss',
-  imports: [CardComponent],
+  imports: [
+    CardComponent,
+    CardHeaderDirective,
+    ListItemComponent,
+    NgOptimizedImage,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeacherCardComponent implements OnInit {
@@ -24,11 +34,18 @@ export class TeacherCardComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   teachers = this.store.teachers;
-  cardType = CardType.TEACHER;
 
   ngOnInit(): void {
     this.http.fetchTeachers$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((t) => this.store.addAll(t));
+      .subscribe((items) => this.store.addAll(items));
+  }
+
+  addNewItem(): void {
+    this.store.addOne(randTeacher());
+  }
+
+  deleteItem(id: number): void {
+    this.store.deleteOne(id);
   }
 }

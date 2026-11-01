@@ -1,8 +1,9 @@
 import { Directive, input } from '@angular/core';
 
+const DEFAULT_HIGHLIGHT = '#fef3c7';
+
 @Directive({
   selector: '[appHighlight]',
-  standalone: false,
   host: {
     '[style.backgroundColor]': 'hovered ? appHighlight() : null',
     '(mouseenter)': 'hovered = true',
@@ -10,7 +11,9 @@ import { Directive, input } from '@angular/core';
   },
 })
 export class HighlightDirective {
-  readonly appHighlight = input('#fef3c7');
+  readonly appHighlight = input(DEFAULT_HIGHLIGHT, {
+    transform: (color: string) => color || DEFAULT_HIGHLIGHT,
+  });
 
   protected hovered = false;
 }

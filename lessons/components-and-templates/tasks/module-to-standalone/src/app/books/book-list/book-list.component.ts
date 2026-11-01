@@ -5,11 +5,22 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { HighlightDirective } from '../../shared/directives/highlight.directive';
+import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { CardComponent } from '../../shared/ui/card/card.component';
 import { BooksService } from '../books.service';
 
 @Component({
   selector: 'app-book-list',
-  standalone: false,
+  imports: [
+    FormsModule,
+    RouterLink,
+    CardComponent,
+    HighlightDirective,
+    TruncatePipe,
+  ],
   templateUrl: './book-list.component.html',
   styleUrl: './book-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
