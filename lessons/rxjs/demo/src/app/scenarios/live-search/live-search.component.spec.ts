@@ -71,13 +71,14 @@ describe('LiveSearchComponent', () => {
     expect(component.reaBooks()[0]?.title).toBe('a');
   }));
 
-  it('error из transport попадает в impBooks = []', () => {
-    // Императивный путь — без afterViewInit, сразу дёргаем обработчик.
+  it('error из transport попадает в impBooks = []', fakeAsync(() => {
+    // Императивный путь с честным debounce 300мс
     const err = new Error('boom');
     fakeTransport.search.mockReturnValue(throwError(() => err));
 
     component.onImpInput('fail');
+    tick(300);
 
     expect(component.impBooks()).toEqual([]);
-  });
+  }));
 });

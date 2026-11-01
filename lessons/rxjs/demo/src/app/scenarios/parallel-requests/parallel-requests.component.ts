@@ -29,26 +29,33 @@ export const PARALLEL_REQUESTS_META: ScenarioMeta = {
 
 const IDS = [1, 2, 3, 4] as const;
 
-const IMPERATIVE_CODE = `// Promise.all: каждый Observable вручную оборачиваем
-// в Promise. Ошибка любого — падает всё.
-run(): void {
-  const promises = IDS.map(
-    (id) =>
-      new Promise<ItemPayload>((resolve, reject) => {
-        this.transport.getItem(id).subscribe({
-          next: resolve,
-          error: reject,
-        });
-      }),
+const IMPERATIVE_CODE = `// Режим 1: Promise.all — барьер «все или ничего». Ошибка одного ломает всё.
+runAll(): void {
+  const promises = IDS.map((id) =>
+    new Promise<ItemPayload>((resolve, reject) => {
+      this.transport.getItem(id).subscribe({ next: resolve, error: reject });
+    }),
   );
-
-  Promise.all(promises)
-    .then((items) => this.items.set(items))
-    .catch((err) => this.error.set(err.message));
+  Promise.all(promises).then((items) => this.assets.set(items));
 }
 
-// Проблемы: нет «по мере готовности» — только «все сразу»,
-// обёртка Observable → Promise — ручная.`;
+// Режим 2: Ручное накопление по мере готовности (аналог mergeMap):
+runStreaming(): void {
+  this.assets.set([]);
+  let completed = 0;
+  IDS.forEach((id) => {
+    this.transport.getItem(id).subscribe({
+      next: (item) => this.assets.update((list) => [...list, item]),
+      error: (err) => console.error(err),
+      complete: () => {
+        completed++;
+        if (completed === IDS.length) this.loading.set(false);
+      },
+    });
+  });
+}
+// Проблемы: 20+ строк бойлерплейта, ручные счётчики завершения,
+// невозможность легко отменить все параллельные операции.`;
 
 const REACTIVE_CODE = `// forkJoin — дождаться всех и получить массив.
 forkJoin(IDS.map((id) => this.transport.getItem(id)))
@@ -104,15 +111,20 @@ function toAsset(item: ItemPayload): AssetView {
   imports: [CommonModule, SplitViewComponent],
   template: `
     <app-split-view
-      imperativeTitle="Императивно (Promise.all)"
+      imperativeTitle="Императивно (Promise.all / forEach)"
       reactiveTitle="Реактивно (forkJoin + mergeMap)"
       [imperativeCode]="imperativeCode"
       [reactiveCode]="reactiveCode"
     >
       <div slot="imperative" class="widget">
-        <button type="button" class="load-btn" (click)="impRun()">
-          Обновить котировки
-        </button>
+        <div class="load-btn-row">
+          <button type="button" class="load-btn" (click)="impRunAll()">
+            Promise.all — все сразу
+          </button>
+          <button type="button" class="load-btn" (click)="impRunStream()">
+            forEach — по готовности
+          </button>
+        </div>
         <div class="asset-grid">
           @for (i of [1, 2, 3, 4]; track i) {
             @if (impReady() >= i) {
@@ -273,9 +285,9 @@ export class ParallelRequestsComponent {
 
   /**
    * Императивно: Promise.all — оборачиваем каждый Observable в Promise через
-   * «firstValueFrom-эквивалент». Здесь показан явный «промис-стиль».
+   * «firstValueFrom-эквивалент». Барьер «все или ничего».
    */
-  protected impRun(): void {
+  protected impRunAll(): void {
     this.impAssets.set([]);
     this.impReady.set(0);
     this.log.push('imperative', 'event', 'Promise.all start');
@@ -283,9 +295,7 @@ export class ParallelRequestsComponent {
       return new Promise<ItemPayload>((resolve, reject) => {
         this.transport.getItem(id, { delayMs: 100 + id * 200 }).subscribe({
           next: (item) => {
-            this.impAssets.update((list) => [...list, toAsset(item)]);
-            this.impReady.update((n) => n + 1);
-            this.log.push('imperative', 'next', `#${item.id} ready`);
+            this.log.push('imperative', 'next', `#${item.id} получен промисом`);
             resolve(item);
           },
           error: (err: Error) => {
@@ -296,8 +306,41 @@ export class ParallelRequestsComponent {
       });
     });
     Promise.all(promises)
-      .then(() => this.log.push('imperative', 'success', 'Promise.all resolved'))
+      .then((items) => {
+        this.impAssets.set(items.map(toAsset));
+        this.impReady.set(items.length);
+        this.log.push('imperative', 'success', `Promise.all resolved: ${items.length} items`);
+      })
       .catch((err) => this.log.push('imperative', 'error', err.message));
+  }
+
+  /**
+   * Императивно по мере готовности: независимые подписки с ручным сбором результатов.
+   */
+  protected impRunStream(): void {
+    this.impAssets.set([]);
+    this.impReady.set(0);
+    this.log.push('imperative', 'event', 'императивный streaming start');
+
+    let completed = 0;
+    IDS.forEach((id) => {
+      this.transport.getItem(id, { delayMs: 100 + id * 200 }).subscribe({
+        next: (item) => {
+          this.impAssets.update((list) => [...list, toAsset(item)]);
+          this.impReady.update((n) => n + 1);
+          this.log.push('imperative', 'next', `#${item.id} готов`);
+        },
+        error: (err: Error) => {
+          this.log.push('imperative', 'error', err.message);
+        },
+        complete: () => {
+          completed++;
+          if (completed === IDS.length) {
+            this.log.push('imperative', 'success', 'все параллельные запросы завершены');
+          }
+        },
+      });
+    });
   }
 
   protected reaFork(): void {

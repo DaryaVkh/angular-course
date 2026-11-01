@@ -1,41 +1,66 @@
-# Master Dependancy Injection
+# Master Dependency Injection — Challenge
 
-### Как запускать
+## Проблема
+
+Приложение выводит таблицу товаров (`TableComponent` из `@angular-challenges/shared/ui`).
+Цены в ячейках форматирует `CurrencyPipe`: он внедряет `CurrencyService` и дописывает к цене символ валюты из сервиса.
+
+`CurrencyService` указан в `providers` у `AppComponent`, то есть на уровне всей таблицы:
+все строки получают один и тот же экземпляр с валютой по умолчанию `EUR`. Поэтому в каждой строке
+отображается `€`, хотя у каждого товара своя валюта (поле `currencyCode` в `product.model.ts`).
+
+## Задача
+
+Сделай так, чтобы каждая строка таблицы показывала цены в валюте своего товара:
+bike — `US$`, watch — `AU$`, computer — `£`, headset — `CAD` и т.д.
+
+Для этого `CurrencyService` нужно предоставить **на уровне строки**: у каждой строки должен быть
+свой экземпляр сервиса со своим кодом валюты.
+
+## Ограничения
+
+- Нельзя изменять `currency.pipe.ts` — в том числе добавлять пайпу второй аргумент с валютой.
+- Нельзя оборачивать строку в компонент — это сломает вёрстку таблицы.
+
+## Запуск
 
 ```bash
 npm run serve:angular-master-dependency-injection
 ```
 
-### Documentation and Instruction
+## Полезные материалы
 
----
-title: 🔴 Master Dependency Injection
-description: Challenge 16 is about mastering how dependancy injection works
-author: thomas-laforge
-contributors:
-  - tomalaforge
-  - tomer953
-  - kabrunko-dev
-challengeNumber: 16
-command: angular-master-dependency-injection
-sidebar:
-  order: 203
----
+- Лекция: [Иерархия инжекторов](../../lecture/basics.md#иерархия-инжекторов), [Переопределение сервиса на уровне компонента](../../lecture/advanced.md#переопределение-сервиса-на-уровне-компонента)
+- [Иерархический DI](https://angular.dev/guide/di/hierarchical-dependency-injection): [ElementInjector](https://angular.dev/guide/di/hierarchical-dependency-injection#elementinjector) и [правила поиска зависимости](https://angular.dev/guide/di/hierarchical-dependency-injection#resolution-rules)
+- [Провайдеры компонента или директивы](https://angular.dev/guide/di/defining-dependency-providers#component-or-directive-providers) — поле `providers` есть не только у `@Component`, но и у `@Directive`
+- [Атрибутные директивы](https://angular.dev/guide/directives/attribute-directives)
+- [Inputs](https://angular.dev/guide/components/inputs) — как передать данные в директиву через `input()`
+- [ComponentStore: обновление состояния (`setState`, `patchState`)](https://ngrx.io/guide/component-store/write) — `CurrencyService` построен на `ComponentStore` из NgRx
 
-## Information
+## Подсказки
 
-To successfully complete this challenge, you will need to have a good understanding of how [Dependency Injection](https://angular.dev/guide/di/dependency-injection) works inside Angular.
+<details>
+  <summary>Подсказка 1 — откуда пайп берёт сервис?</summary>
 
-The goal is to provide the `CurrencyService` at the row level, so that each row displays the correct currency. Currently, the `CurrencyService` is only provided at the table level, which results in an error as the same currency is displayed for each row, despite each product having a different currency.
+`inject()` внутри пайпа ищет зависимость начиная с элемента шаблона, на котором используется пайп,
+и дальше вверх по дереву `ElementInjector`-ов. Значит, если провайдер `CurrencyService` появится
+на элементе выше `<td>`, пайп возьмёт его, а не экземпляр из `AppComponent`.
 
-One way to achieve this is by adding a second argument to the pipe, but this is not allowed for this challenge.
+</details>
 
-## Statement
+<details>
+  <summary>Подсказка 2 — как добавить провайдер на &lt;tr&gt;, не создавая компонент?</summary>
 
-- Your task is to display the correct currency for each row.
+У `@Directive` тоже есть поле `providers`. Создай атрибутную директиву, повесь её на `<tr>`
+и укажи в ней `providers: [CurrencyService]` — у каждой строки появится свой экземпляр сервиса.
 
-## Constraints
+</details>
 
-- You cannot modify the pipe.
-- You cannot wrap the row inside a component, as this will break the layout.
+<details>
+  <summary>Подсказка 3 — как передать сервису нужную валюту?</summary>
 
+Передай в директиву `product.currencyCode` через `input()`, внедри в директиве её собственный
+`CurrencyService` и запиши код валюты в состояние стора через `patchState`.
+Учти, что значение input-а ещё недоступно в конструкторе — используй `ngOnInit` или `effect`.
+
+</details>

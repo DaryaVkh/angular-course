@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 
 export type TopicType = 'food' | 'book' | 'sport';
 
-interface Info {
+export interface Info {
   id: number;
   topic: TopicType;
 }
@@ -30,9 +30,13 @@ const initialState: DBState = {
 
 @Injectable({ providedIn: 'root' })
 export class LocalDBService {
-  private state = signal(initialState);
+  private state = signal<DBState>(initialState);
 
   infos = computed(() => this.state().infos);
+
+  reset = () => {
+    this.state.set({ infos: [...initialState.infos] });
+  };
 
   searchByType = (type: TopicType) =>
     this.infos().filter((i) => i.topic === type);

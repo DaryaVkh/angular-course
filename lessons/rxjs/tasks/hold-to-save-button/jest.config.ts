@@ -1,9 +1,10 @@
 /* eslint-disable */
 export default {
   displayName: 'rxjs-hold-to-save-button',
-  preset: '../../../jest.preset.js',
+  testEnvironment: 'jest-preset-angular/environments/jest-jsdom-env',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../coverage/apps/rxjs/49-hold-to-save-button',
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  coverageDirectory: '../../../../coverage/apps/rxjs/49-hold-to-save-button',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
@@ -13,7 +14,9 @@ export default {
       },
     ],
   },
-  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(.*\\.mjs$|@angular/common/locales/.*\\.js$))',
+  ],
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',
     'jest-preset-angular/build/serializers/ng-snapshot',

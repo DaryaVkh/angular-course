@@ -25,22 +25,37 @@ export const FORM_SUBMIT_META: ScenarioMeta = {
   summary: 'Защита от двойного клика «Сохранить»: пока запрос идёт — игнорируем повторы.',
 };
 
-const IMPERATIVE_CODE = `// Ручной флаг busy: блокируем кнопку на время запроса.
-// Не забываем сбросить его и в next, и в error!
-protected busy = signal(false);
+const IMPERATIVE_CODE = `// Императивная фильтрация кликов без disabled кнопки:
+// Кнопка остаётся кликабельной (rage-click / double-click),
+// но повторные нажатия отсекаются вручную через флаг isSubmitting.
+private isSubmitting = false;
 
 submit(): void {
-  if (this.busy()) return;
+  this.clickCount.update((n) => n + 1);
+
+  if (this.isSubmitting) {
+    this.log('клик проигнорирован (isSubmitting === true)');
+    return;
+  }
+
+  this.isSubmitting = true;
   this.busy.set(true);
 
-  this.transport.saveForm(this.form.value).subscribe({
-    next: () => this.busy.set(false),
-    error: () => this.busy.set(false),
+  this.transport.saveForm(this.payload).subscribe({
+    next: () => {
+      this.isSubmitting = false;
+      this.busy.set(false);
+      this.savedCount.update((n) => n + 1);
+    },
+    error: () => {
+      this.isSubmitting = false;
+      this.busy.set(false);
+    },
   });
 }
 
-// Проблемы: состояние busy — ручное, легко забыть
-// сбросить в одной из веток.`;
+// Проблемы: мутабельный флаг, риск забыть сброс в error-ветке,
+// ручная синхронизация счётчиков и состояния загрузки.`;
 
 const REACTIVE_CODE = `// exhaustMap: пока запрос идёт, новые клики
 // просто отбрасываются. Никакого флага busy.
@@ -72,7 +87,7 @@ onSubmit(): void {
   imports: [CommonModule, SplitViewComponent],
   template: `
     <app-split-view
-      imperativeTitle="Императивно (disabled кнопки)"
+      imperativeTitle="Императивно (ручной флаг busy)"
       reactiveTitle="Реактивно (exhaustMap)"
       [imperativeCode]="imperativeCode"
       [reactiveCode]="reactiveCode"
@@ -95,7 +110,6 @@ onSubmit(): void {
         <button
           type="button"
           class="checkout-btn"
-          [disabled]="impBusy()"
           (click)="impSubmit()"
         >
           @if (impBusy()) {
@@ -230,17 +244,23 @@ export class FormSubmitComponent {
   }
 
   protected impSubmit(): void {
-    if (this.impBusy()) return; // имитация disabled — в шаблоне кнопка и так disabled
-    this.impBusy.set(true);
     this.impCount.update((n) => n + 1);
-    this.log.push('imperative', 'event', 'click (busy)');
+
+    if (this.impBusy()) {
+      this.log.push('imperative', 'info', 'клик проигнорирован: запрос уже в обработке (exhaust вручную)');
+      return;
+    }
+
+    this.impBusy.set(true);
+    this.log.push('imperative', 'event', 'click → отправка заказа');
 
     this.transport
       .saveForm({ name: 'demo' }, { delayMs: 800, failRate: 0.2 })
       .subscribe({
-        next: () => {
+        next: (res) => {
           this.impOk.update((n) => n + 1);
           this.impBusy.set(false);
+          this.log.push('imperative', 'success', `saved @${res.savedAt}`);
         },
         error: (err: Error) => {
           this.impBusy.set(false);

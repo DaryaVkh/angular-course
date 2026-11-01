@@ -41,4 +41,21 @@ describe('FormSubmitComponent', () => {
     component.reaClick$.next();
     expect(fakeTransport.saveForm).toHaveBeenCalledTimes(2);
   });
+
+  it('impSubmit игнорирует повторные вызовы до завершения текущего запроса', () => {
+    component.impSubmit();
+    component.impSubmit();
+    component.impSubmit();
+
+    expect(component.impCount()).toBe(3);
+    expect(fakeTransport.saveForm).toHaveBeenCalledTimes(1);
+
+    save$.next({ savedAt: 1, accepted: true });
+    save$.complete();
+
+    expect(component.impOk()).toBe(1);
+
+    component.impSubmit();
+    expect(fakeTransport.saveForm).toHaveBeenCalledTimes(2);
+  });
 });
