@@ -4,25 +4,28 @@ import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { TopicType } from './topic.service';
 
 export interface TopicDialogData {
-  topics: TopicType[];
+  topics: TopicType[] | undefined;
 }
 
 @Component({
   template: `
     <h1 mat-dialog-title>Темы интересов</h1>
     <div mat-dialog-content>
-      @if (!data.topics?.length) {
-        <p class="empty-hint">
-          Список пуст! Диалог открылся раньше, чем завершился HTTP-запрос.
-        </p>
+      @if (data.topics; as topics) {
+        <ul class="topic-list">
+          @for (topic of topics; track $index) {
+            <li class="topic-item">
+              {{ topic }}
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="topic-list" role="status" aria-label="Загрузка тем">
+          @for (row of [1, 2, 3]; track row) {
+            <div class="topic-skeleton" aria-hidden="true"></div>
+          }
+        </div>
       }
-      <ul class="topic-list">
-        @for (topic of data.topics; track $index) {
-          <li class="topic-item">
-            {{ topic }}
-          </li>
-        }
-      </ul>
     </div>
     <div mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Close</button>
@@ -30,14 +33,10 @@ export interface TopicDialogData {
   `,
   styles: [
     `
-      .empty-hint {
-        padding: 12px;
+      .topic-skeleton {
+        height: 40px;
         border-radius: 8px;
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #b91c1c;
-        font-size: 14px;
-        margin: 0 0 8px;
+        background: #e2e8f0;
       }
       .topic-list {
         list-style: none;
