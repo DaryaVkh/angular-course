@@ -1,4 +1,17 @@
 import { Directive, ElementRef, inject, input, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  filter,
+  fromEvent,
+  interval,
+  map,
+  merge,
+  startWith,
+  switchMap,
+  take,
+  takeUntil,
+  takeWhile,
+} from 'rxjs';
 
 @Directive({
   selector: '[appHoldable]',
@@ -15,11 +28,59 @@ export class HoldableDirective {
 
   private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  // TODO: Шаг 1 — Создайте потоки начала удержания (pointerdown / mousedown)
-  //               и отмены удержания (pointerup, pointerleave, pointercancel).
-  // TODO: Шаг 2 — По клику запускайте таймер (interval) через switchMap и
-  //               останавливайте его при событии отмены (takeUntil).
-  // TODO: Шаг 3 — Пересчитывайте прошедшее время в процент [0..100], эмитьте
-  //               его в holdProgress (при отмене сбрасывайте в 0), а при
-  //               достижении 100% вызывайте holdTimeEnd.emit().
+  private readonly stepMs = 20;
+  private readonly cooldownMs = 200;
+  private progress = 0;
+
+  private readonly start$ = fromEvent(this.el.nativeElement, 'pointerdown');
+  private readonly cancel$ = merge(
+    fromEvent(this.el.nativeElement, 'pointerup'),
+    fromEvent(this.el.nativeElement, 'pointerleave'),
+    fromEvent(this.el.nativeElement, 'pointercancel'),
+  );
+
+  constructor() {
+    this.start$
+      .pipe(
+        switchMap(() =>
+          merge(this.hold$(), this.cooldown$()).pipe(startWith(0)),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((percent) => {
+        this.progress = percent;
+        this.holdProgress.emit(percent);
+        if (percent === 100) {
+          this.holdTimeEnd.emit();
+        }
+      });
+  }
+
+  private hold$() {
+    return interval(this.stepMs).pipe(
+      map((tick) => {
+        const elapsed = (tick + 1) * this.stepMs;
+        return Math.min(100, (elapsed / this.holdTime()) * 100);
+      }),
+      takeWhile((percent) => percent < 100, true),
+      takeUntil(this.cancel$),
+    );
+  }
+
+  private cooldown$() {
+    return this.cancel$.pipe(
+      take(1),
+      filter(() => this.progress < 100),
+      switchMap(() => {
+        const from = this.progress;
+        return interval(this.stepMs).pipe(
+          map((tick) => {
+            const elapsed = (tick + 1) * this.stepMs;
+            return Math.max(0, from - (elapsed / this.cooldownMs) * 100);
+          }),
+          takeWhile((percent) => percent > 0, true),
+        );
+      }),
+    );
+  }
 }
