@@ -2,10 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { take } from 'rxjs';
+import { shareReplay, take } from 'rxjs';
 import { TopicModalComponent } from './topic-dialog.component';
 import { TopicService, TopicType } from './topic.service';
 
@@ -170,24 +169,27 @@ import { TopicService, TopicType } from './topic.service';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'rxjs-race-condition';
   dialog = inject(MatDialog);
   topicService = inject(TopicService);
-  topics: TopicType[] = [];
 
-  ngOnInit(): void {
-    this.topicService
-      .fakeGetHttpTopic()
+  readonly topics$ = this.topicService
+    .fakeGetHttpTopic()
+    .pipe(
+      shareReplay({ bufferSize: 1, refCount: false }),
+  );
+
+  openTopicModal(): void {
+    this.topics$
       .pipe(take(1))
-      .subscribe((topics) => (this.topics = topics));
+      .subscribe((topics) => this.openTopicDialog(topics)
+    );
   }
 
-  openTopicModal() {
+  private openTopicDialog(topics: TopicType[]): void {
     this.dialog.open(TopicModalComponent, {
-      data: {
-        topics: this.topics,
-      },
+      data: { topics }
     });
   }
 }
