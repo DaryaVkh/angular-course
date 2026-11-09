@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Subject, catchError, concatMap, map, of } from 'rxjs';
+import { Subject, catchError, concatMap, filter, map, of } from 'rxjs';
 
 @Component({
   imports: [CommonModule, FormsModule],
@@ -92,6 +92,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.submit$
       .pipe(
+        filter(() => !!this.input.trim()),
         map(() => this.input),
         concatMap((value) =>
           this.http
@@ -99,7 +100,11 @@ export class AppComponent implements OnInit {
             .pipe(
               catchError((error) => {
                 console.log(error);
-                return of(error);
+                return of({
+                  error: true,
+                  status: error.status,
+                  message: 'Ресурс не найден',
+                });
               }),
             ),
         ),
