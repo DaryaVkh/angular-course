@@ -24,7 +24,16 @@ let nextCardId = 3;
     </div>
 
     @for (card of cards(); track card.id) {
-      <app-card [title]="card.title" [message]="card.message" />
+      <app-card (closed)="removeCard(card.id)">
+        <div card-title>{{ card.title }}</div>
+        <div card-message>
+          @if (card.message) {
+            {{ card.message }}
+          } @else {
+            Default message
+          }
+        </div>
+      </app-card>
     }
 
     <section class="border-t border-grey pt-2 mt-2">
