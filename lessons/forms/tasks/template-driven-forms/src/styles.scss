@@ -2,9 +2,8 @@ body {
   margin: 0;
   background: #f4f5f2;
   color: #202a24;
-  font:
-    1rem/1.5 system-ui,
-    sans-serif;
+  font: 1rem/1.5 system-ui,
+  sans-serif;
 }
 
 main {
@@ -62,4 +61,8 @@ button[type='submit'] {
 
 button:disabled {
   opacity: 0.6;
+}
+
+.error {
+  color: #a94442;
 }
