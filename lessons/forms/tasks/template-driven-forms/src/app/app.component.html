@@ -2,39 +2,70 @@
   <h1>Запись на мастер-класс</h1>
   <p>Оставьте контакты и выберите занятие.</p>
 
-  <form (submit)="submit($event)" (reset)="submitted = false">
-    <fieldset>
+  <form #registerForm=ngForm (ngSubmit)="submit(registerForm)" (reset)="submitted = false">
+    <fieldset ngModelGroup="contacts">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" name="name" />
+      <input id="name" name="name" [(ngModel)]="model.contacts.name" required minlength="2" #nameField=ngModel/>
+
+      @if (nameField.invalid && (nameField.dirty || nameField.touched)) {
+        <p class="error">Введите корректное имя</p>
+      }
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        name="email" />
+        name="email"
+        [(ngModel)]="model.contacts.email"
+        required
+        email
+        #emailField="ngModel"
+      />
+
+
+      @if (emailField.invalid && (emailField.dirty || emailField.touched)) {
+        <p class="error">Введите корректный email</p>
+      }
     </fieldset>
 
     <label for="workshop">Мастер-класс</label>
-    <select id="workshop" name="workshop">
+    <select id="workshop" name="workshop" [(ngModel)]="model.workshop" required minlength="1" #workshopField=ngModel>
       <option value="">Выберите занятие</option>
       <option value="pottery">Керамика</option>
       <option value="watercolor">Акварель</option>
       <option value="printmaking">Линогравюра</option>
     </select>
 
+    @if (workshopField.invalid && (workshopField.dirty || workshopField.touched)) {
+      <p class="error">Выберите тип мастер класса</p>
+    }
+
     <label class="checkbox">
-      <input type="checkbox" name="termsAccepted" />
+      <input type="checkbox" name="termsAccepted" [(ngModel)]="model.termsAccepted" required/>
       Подтверждаю запись
     </label>
 
     <div class="actions">
-      <button>Записаться</button>
-      <button>Очистить</button>
+      <button type="submit" [disabled]="registerForm.invalid">Записаться</button>
+      <button type="reset" (click)="registerForm.reset()">Очистить</button>
     </div>
   </form>
 
   @if (submitted) {
     <p role="status">Заявка принята.</p>
+    <dl>
+      <dt>Имя</dt>
+      <dd>{{ this.registration!.contacts.name }}</dd>
+
+      <dt>Email</dt>
+      <dd>{{ this.registration!.contacts.email }}</dd>
+
+      <dt>Тип мастер-класса</dt>
+      <dd>{{ this.registration!.workshop }}</dd>
+
+      <dt>Подтверждение</dt>
+      <dd>{{ this.registration!.termsAccepted ? 'Есть' : 'Нет' }}</dd>
+    </dl>
   }
 </main>
