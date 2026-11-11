@@ -26,8 +26,11 @@ import { HoldableDirective } from './holdable.directive';
           </h1>
           <p class="text-sm text-slate-600">
             Нажмите и удерживайте кнопку в течение
-            <strong>{{ holdDuration }} мс</strong>. Если отпустить кнопку или
-            увести курсор раньше времени — прогресс сбросится в <code>0%</code>.
+            <strong>{{ holdDuration }} мс</strong>
+            . Если отпустить кнопку или увести курсор раньше времени — прогресс
+            сбросится в
+            <code>0%</code>
+            .
           </p>
         </header>
 
@@ -42,9 +45,12 @@ import { HoldableDirective } from './holdable.directive';
           </button>
 
           <div class="w-full">
-            <div class="mb-1 flex justify-between text-xs font-medium text-slate-500">
+            <div
+              class="mb-1 flex justify-between text-xs font-medium text-slate-500">
               <span>Прогресс удержания</span>
-              <span data-testid="progress-label">{{ progress() | number: '1.0-0' }}%</span>
+              <span data-testid="progress-label">
+                {{ progress() | number: '1.0-0' }}%
+              </span>
             </div>
             <progress [value]="progress()" [max]="100"></progress>
           </div>
@@ -59,8 +65,8 @@ import { HoldableDirective } from './holdable.directive';
           [class.bg-slate-50]="savedCount() === 0"
           [class.text-slate-600]="savedCount() === 0">
           @if (savedCount() > 0) {
-            <strong>Save it!</strong> Действие успешно подтверждено (всего:
-            {{ savedCount() }}).
+            <strong>Save it!</strong>
+            Действие успешно подтверждено (всего: {{ savedCount() }}).
           } @else {
             Статус: ожидание полного удержания кнопки...
           }
