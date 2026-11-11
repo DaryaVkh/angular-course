@@ -1,4 +1,15 @@
 import { Directive, ElementRef, inject, input, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  fromEvent,
+  interval,
+  map,
+  merge,
+  switchMap,
+  takeUntil,
+  takeWhile,
+  tap,
+} from 'rxjs';
 
 @Directive({
   selector: '[appHoldable]',
@@ -15,11 +26,40 @@ export class HoldableDirective {
 
   private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  // TODO: Шаг 1 — Создайте потоки начала удержания (pointerdown / mousedown)
-  //               и отмены удержания (pointerup, pointerleave, pointercancel).
-  // TODO: Шаг 2 — По клику запускайте таймер (interval) через switchMap и
-  //               останавливайте его при событии отмены (takeUntil).
-  // TODO: Шаг 3 — Пересчитывайте прошедшее время в процент [0..100], эмитьте
-  //               его в holdProgress (при отмене сбрасывайте в 0), а при
-  //               достижении 100% вызывайте holdTimeEnd.emit().
+  constructor() {
+    const element = this.el.nativeElement;
+    const stepMs = 20;
+
+    const start$ = fromEvent(element, 'pointerdown');
+    const cancel$ = merge(
+      fromEvent(element, 'pointerup'),
+      fromEvent(element, 'pointerleave'),
+      fromEvent(element, 'pointercancel'),
+    );
+
+    start$
+      .pipe(
+        switchMap(() =>
+          interval(stepMs).pipe(
+            map((tick) =>
+              Math.min(100, (((tick + 1) * stepMs) / this.holdTime()) * 100),
+            ),
+            takeWhile((percent) => percent < 100, true),
+            takeUntil(cancel$),
+            tap((percent) => {
+              this.holdProgress.emit(percent);
+              if (percent === 100) {
+                this.holdTimeEnd.emit();
+              }
+            }),
+          ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe();
+
+    cancel$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.holdProgress.emit(0));
+  }
 }
