@@ -1460,74 +1460,6 @@
         }
       }
     },
-    "forms-avoid-losing-form-data": {
-      "projectType": "application",
-      "root": "lessons/forms/tasks/avoid-losing-form-data",
-      "sourceRoot": "lessons/forms/tasks/avoid-losing-form-data/src",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "outputPath": "dist/lessons/forms/tasks/avoid-losing-form-data",
-            "index": "lessons/forms/tasks/avoid-losing-form-data/src/index.html",
-            "browser": "lessons/forms/tasks/avoid-losing-form-data/src/main.ts",
-            "polyfills": ["zone.js"],
-            "tsConfig": "lessons/forms/tasks/avoid-losing-form-data/tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "lessons/forms/tasks/avoid-losing-form-data/src/favicon.ico",
-              "lessons/forms/tasks/avoid-losing-form-data/src/assets"
-            ],
-            "styles": [
-              "lessons/forms/tasks/avoid-losing-form-data/src/styles.scss",
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
-            ],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "forms-avoid-losing-form-data:build:production"
-            },
-            "development": {
-              "buildTarget": "forms-avoid-losing-form-data:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "forms-avoid-losing-form-data:build"
-          }
-        }
-      }
-    },
     "forms-control-value-accessor": {
       "projectType": "application",
       "root": "lessons/forms/tasks/control-value-accessor",
@@ -1602,6 +1534,140 @@
               "ci": true,
               "coverage": true
             }
+          }
+        }
+      }
+    },
+    "forms-template-driven-forms": {
+      "projectType": "application",
+      "root": "lessons/forms/tasks/template-driven-forms",
+      "sourceRoot": "lessons/forms/tasks/template-driven-forms/src",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/lessons/forms/tasks/template-driven-forms",
+            "index": "lessons/forms/tasks/template-driven-forms/src/index.html",
+            "browser": "lessons/forms/tasks/template-driven-forms/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "lessons/forms/tasks/template-driven-forms/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "lessons/forms/tasks/template-driven-forms/src/favicon.ico",
+              "lessons/forms/tasks/template-driven-forms/src/assets"
+            ],
+            "styles": [
+              "lessons/forms/tasks/template-driven-forms/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "forms-template-driven-forms:build:production"
+            },
+            "development": {
+              "buildTarget": "forms-template-driven-forms:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "forms-template-driven-forms:build"
+          }
+        }
+      }
+    },
+    "forms-reactive-forms": {
+      "projectType": "application",
+      "root": "lessons/forms/tasks/reactive-forms",
+      "sourceRoot": "lessons/forms/tasks/reactive-forms/src",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/lessons/forms/tasks/reactive-forms",
+            "index": "lessons/forms/tasks/reactive-forms/src/index.html",
+            "browser": "lessons/forms/tasks/reactive-forms/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "lessons/forms/tasks/reactive-forms/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "lessons/forms/tasks/reactive-forms/src/favicon.ico",
+              "lessons/forms/tasks/reactive-forms/src/assets"
+            ],
+            "styles": [
+              "lessons/forms/tasks/reactive-forms/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "forms-reactive-forms:build:production"
+            },
+            "development": {
+              "buildTarget": "forms-reactive-forms:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "forms-reactive-forms:build"
           }
         }
       }
