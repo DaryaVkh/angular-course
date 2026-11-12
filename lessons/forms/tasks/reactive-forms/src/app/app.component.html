@@ -2,21 +2,67 @@
   <h1>Бронирование экскурсии</h1>
   <p>Выберите экскурсию и укажите контакты организатора группы.</p>
 
-  <form>
-    <fieldset>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset formGroupName="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" />
+      <input id="name" formControlName="name" />
+
+      @if (nameControl.invalid && nameControl.touched) {
+        @if (nameControl.hasError('required')) {
+          <p style="margin: 0; color: red;">Введите имя</p>
+        }
+
+        @if (nameControl.hasError('minlength')) {
+          <p style="margin: 0; color: red;">Минимальная длина имени — 2 символа</p>
+        }
+      }
 
       <label for="email">Электронная почта</label>
-      <input
-        id="email"
-        type="email" />
+      <input id="email" type="email" formControlName="email" />
+
+      @if (emailControl.pending) {
+        <p>Проверяем доступность email...</p>
+      }
+      @if (emailControl.invalid && emailControl.touched) {
+        @if (emailControl.hasError('required')) {
+          <p style="margin: 0; color: red;">Введите email</p>
+        }
+
+        @if (emailControl.hasError('email')) {
+          <p style="margin: 0; color: red;">Неверный формат email</p>
+        }
+
+        @if (emailControl.hasError('emailTaken')) {
+          <p style="margin: 0; color: red;">На этот email уже оформлено бронирование</p>
+        }
+      }
     </fieldset>
 
+    <div formArrayName="participants" style="display: flex; gap: 4px; flex-direction: column;">
+      @for (participant of participantsControl.controls; track $index) {
+      <div>
+        <div style="display: flex; gap: 4px;">
+          <input [formControlName]="$index" placeholder="Участник {{ $index + 1 }}" style="flex-grow: 1">
+          <button type="button" (click)="removeParticipant($index)">✕</button>
+        </div>
+        @if (participant.invalid && participant.touched) {
+          @if (participant.hasError('required')) {
+            <p style="margin: 0; color: red;">Введите имя участника</p>
+          }
+
+          @if (participant.hasError('minlength')) {
+            <p style="margin: 0; color: red;">Минимальная длина имени — 2 символа</p>
+          }
+        }
+      </div>
+      }
+    </div>
+    <button type="button" (click)="addParticipant()">+ Добавить участника</button>
+
     <label for="tour">Экскурсия</label>
-    <select id="tour">
+    <select id="tour" formControlName="tour">
       @if (tours$ | async; as tours) {
         <option value="">Выберите экскурсию</option>
         @for (tour of tours; track tour.id) {
@@ -25,12 +71,29 @@
           </option>
         }
       } @else {
-        <option value="">Загрузка экскурсий…</option>
+        <option value="">Загрузка экскурсий...</option>
       }
     </select>
+    @if (form.controls.tour.invalid && form.controls.tour.touched) {
+      <p style="margin: 0; color: red;">Выберите экскурсию</p>
+    }
+
+    @if (getSelectedTour(); as selectedTour) {
+      <p style="margin: 0;">
+        Выбрано мест: {{ participantsControl.length + 1 }}.
+        Доступно: {{ selectedTour.seats }}.
+      </p>
+    }
+
+    @if (form.getError('notEnoughSeats'); as seatsError) {
+      <p class="error" role="alert" style="color: red; margin: 0;">
+        Недостаточно мест! Для группы нужно {{ seatsError.required }},
+        доступно {{ seatsError.available }}.
+      </p>
+    }
 
     <div class="actions">
-      <button type="submit" [disabled]="saving()">
+      <button type="submit" [disabled]="form.invalid || form.pending || saving()">
         {{ saving() ? 'Бронируем…' : 'Забронировать' }}
       </button>
     </div>
