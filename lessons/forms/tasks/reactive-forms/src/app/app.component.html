@@ -2,21 +2,29 @@
   <h1>Бронирование экскурсии</h1>
   <p>Выберите экскурсию и укажите контакты организатора группы.</p>
 
-  <form>
-    <fieldset>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset formGroupName="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" />
+      <input id="name" formControlName="name" />
 
       <label for="email">Электронная почта</label>
-      <input
-        id="email"
-        type="email" />
+      <input id="email" type="email" formControlName="email" />
     </fieldset>
 
+    <div formArrayName="participants">
+      @for (name of participants.controls; track $index) {
+      <div>
+        <input [formControlName]="$index" placeholder="Участник {{ $index + 1 }}" />
+        <button type="button" (click)="removeParticipant($index)">✕</button>
+      </div>
+      }
+    </div>
+    <button type="button" (click)="addParticipant()">+ Добавить участника</button>
+
     <label for="tour">Экскурсия</label>
-    <select id="tour">
+    <select id="tour" formControlName="tour">
       @if (tours$ | async; as tours) {
         <option value="">Выберите экскурсию</option>
         @for (tour of tours; track tour.id) {
@@ -28,6 +36,20 @@
         <option value="">Загрузка экскурсий…</option>
       }
     </select>
+
+    @if (getSelectedTour(); as selectedTour) {
+      <p style="margin: 0;">
+        Необходимо мест: {{ participants.length + 1 }}.
+        Доступно: {{ selectedTour.seats }}.
+      </p>
+    }
+
+    @if (form.getError('notEnoughSeats'); as seatsError) {
+      <p class="error" role="alert" style="color: red; margin: 0;">
+        Недостаточно мест! Для группы нужно {{ seatsError.required }},
+        доступно {{ seatsError.available }}.
+      </p>
+    }
 
     <div class="actions">
       <button type="submit" [disabled]="saving()">
