@@ -7,8 +7,12 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { finalize, tap } from 'rxjs';
+import {
+  AbstractControl, AsyncValidatorFn, FormBuilder,
+  FormControl, ReactiveFormsModule, ValidationErrors,
+  ValidatorFn, Validators
+} from '@angular/forms';
+import { catchError, finalize, map, Observable, of, tap } from 'rxjs';
 import { BookingReceipt, BookingService, Tour } from './booking.service';
 
 @Component({
@@ -25,6 +29,7 @@ export class AppComponent {
   protected tours$ = this.bookingService.getTours().pipe(
     tap(tours => {
       this.tours = tours;
+      this.form.updateValueAndValidity();
     })
   );
   protected tours: Tour[] = [];
@@ -65,6 +70,17 @@ export class AppComponent {
     return null;
   };
 
+  private validateEmailAsync(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return this.bookingService.isEmailAvailable(control.value).pipe(
+        map(isAvailable => {
+          return isAvailable ? null : { emailTaken: true };
+        }),
+        catchError(() => of(null))
+      );
+    };
+  }
+
   form = this.formBuilder.group({
     contact: this.formBuilder.group({
       name: [
@@ -73,8 +89,11 @@ export class AppComponent {
       ],
       email: [
         '',
-        [Validators.required, Validators.email]
-      ],
+        {
+          validators: [Validators.required, Validators.email],
+          asyncValidators: [this.validateEmailAsync()],
+          updateOn: 'blur',
+        },],
     }),
     participants: this.formBuilder.array<FormControl<string>>([]),
     tour: [
@@ -96,15 +115,27 @@ export class AppComponent {
     );
   }
 
-  get participants() {
+  get participantsControl() {
     return this.form.controls.participants;
   }
 
   addParticipant() {
-    this.participants.push(this.formBuilder.control('', [Validators.required, Validators.minLength(2)]));
+    this.participantsControl
+      .push(this.formBuilder.control(
+        '',
+        [Validators.required, Validators.minLength(2)]
+      ));
   }
 
   removeParticipant(index: number) {
-    this.participants.removeAt(index);
+    this.participantsControl.removeAt(index);
+  }
+
+  get nameControl() {
+    return this.form.controls.contact.controls.name;
+  }
+
+  get emailControl() {
+    return this.form.controls.contact.controls.email;
   }
 }

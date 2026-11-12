@@ -9,15 +9,53 @@
       <label for="name">Имя</label>
       <input id="name" formControlName="name" />
 
+      @if (nameControl.invalid && nameControl.touched) {
+        @if (nameControl.hasError('required')) {
+          <p style="margin: 0; color: red;">Введите имя</p>
+        }
+
+        @if (nameControl.hasError('minlength')) {
+          <p style="margin: 0; color: red;">Минимальная длина имени — 2 символа</p>
+        }
+      }
+
       <label for="email">Электронная почта</label>
       <input id="email" type="email" formControlName="email" />
+
+      @if (emailControl.pending) {
+        <p>Проверяем доступность email...</p>
+      }
+      @if (emailControl.invalid && emailControl.touched) {
+        @if (emailControl.hasError('required')) {
+          <p style="margin: 0; color: red;">Введите email</p>
+        }
+
+        @if (emailControl.hasError('email')) {
+          <p style="margin: 0; color: red;">Неверный формат email</p>
+        }
+
+        @if (emailControl.hasError('emailTaken')) {
+          <p style="margin: 0; color: red;">На этот email уже оформлено бронирование</p>
+        }
+      }
     </fieldset>
 
-    <div formArrayName="participants">
-      @for (name of participants.controls; track $index) {
+    <div formArrayName="participants" style="display: flex; gap: 4px; flex-direction: column;">
+      @for (participant of participantsControl.controls; track $index) {
       <div>
-        <input [formControlName]="$index" placeholder="Участник {{ $index + 1 }}" />
-        <button type="button" (click)="removeParticipant($index)">✕</button>
+        <div style="display: flex; gap: 4px;">
+          <input [formControlName]="$index" placeholder="Участник {{ $index + 1 }}" style="flex-grow: 1">
+          <button type="button" (click)="removeParticipant($index)">✕</button>
+        </div>
+        @if (participant.invalid && participant.touched) {
+          @if (participant.hasError('required')) {
+            <p style="margin: 0; color: red;">Введите имя участника</p>
+          }
+
+          @if (participant.hasError('minlength')) {
+            <p style="margin: 0; color: red;">Минимум 2 символа</p>
+          }
+        }
       </div>
       }
     </div>
@@ -36,10 +74,13 @@
         <option value="">Загрузка экскурсий…</option>
       }
     </select>
+    @if (form.controls.tour.invalid && form.controls.tour.touched) {
+      <p style="margin: 0; color: red;">Выберите экскурсию</p>
+    }
 
     @if (getSelectedTour(); as selectedTour) {
       <p style="margin: 0;">
-        Необходимо мест: {{ participants.length + 1 }}.
+        Необходимо мест: {{ participantsControl.length + 1 }}.
         Доступно: {{ selectedTour.seats }}.
       </p>
     }
@@ -52,7 +93,7 @@
     }
 
     <div class="actions">
-      <button type="submit" [disabled]="saving()">
+      <button type="submit" [disabled]="form.invalid || form.pending || saving()">
         {{ saving() ? 'Бронируем…' : 'Забронировать' }}
       </button>
     </div>
