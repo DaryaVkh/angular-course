@@ -53,7 +53,7 @@
           }
 
           @if (participant.hasError('minlength')) {
-            <p style="margin: 0; color: red;">Минимум 2 символа</p>
+            <p style="margin: 0; color: red;">Минимальная длина имени — 2 символа</p>
           }
         }
       </div>
@@ -71,7 +71,7 @@
           </option>
         }
       } @else {
-        <option value="">Загрузка экскурсий…</option>
+        <option value="">Загрузка экскурсий...</option>
       }
     </select>
     @if (form.controls.tour.invalid && form.controls.tour.touched) {
@@ -80,7 +80,7 @@
 
     @if (getSelectedTour(); as selectedTour) {
       <p style="margin: 0;">
-        Необходимо мест: {{ participantsControl.length + 1 }}.
+        Выбрано мест: {{ participantsControl.length + 1 }}.
         Доступно: {{ selectedTour.seats }}.
       </p>
     }
