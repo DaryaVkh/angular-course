@@ -2,39 +2,68 @@
   <h1>Запись на мастер-класс</h1>
   <p>Оставьте контакты и выберите занятие.</p>
 
-  <form (submit)="submit($event)" (reset)="submitted = false">
-    <fieldset>
+  <form #form="ngForm" (ngSubmit)="submit(form)">
+    <fieldset ngModelGroup="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" name="name" />
+      <input id="name" name="name" [(ngModel)]="user.contact.name" #name="ngModel" required minlength="2" />
+
+      @if (name.invalid && name.touched) {
+        @if (name.errors?.['required']) {
+          <p style="margin: 0; color: red;">Введите имя</p>
+        } @if (name.errors?.['minlength']) {
+          <p style="margin: 0; color: red;">Минимальная длина имени — 2 символа</p>
+        }
+      }
 
       <label for="email">Электронная почта</label>
-      <input
-        id="email"
-        name="email" />
+      <input id="email" name="email" [(ngModel)]="user.contact.email" #email="ngModel" required email />
+
+      @if (email.invalid && email.touched) {
+        @if (email.errors?.['required']) {
+          <p style="margin: 0; color: red;">Введите email</p>
+        } @if (email.errors?.['email']) {
+          <p style="margin: 0; color: red;">Неверный формат email</p>
+        }
+      }
     </fieldset>
 
     <label for="workshop">Мастер-класс</label>
-    <select id="workshop" name="workshop">
-      <option value="">Выберите занятие</option>
-      <option value="pottery">Керамика</option>
-      <option value="watercolor">Акварель</option>
-      <option value="printmaking">Линогравюра</option>
+    <select id="workshop" name="workshop" [(ngModel)]="user.workshop" #workshop="ngModel" required>
+      @for (w of workshops; track w.value) {
+        <option [value]="w.value">{{ w.label }}</option>
+      }
     </select>
 
+    @if (workshop.invalid && workshop.touched) {
+      @if (workshop.errors?.['required']) {
+        <p style="margin: 0; color: red;">Выберите мастер-класс из списка</p>
+      }
+    }
+
     <label class="checkbox">
-      <input type="checkbox" name="termsAccepted" />
+      <input type="checkbox" name="termsAccepted" [(ngModel)]="user.termsAccepted" #termsAccepted="ngModel" required />
       Подтверждаю запись
     </label>
 
+    @if (termsAccepted.invalid && termsAccepted.touched) {
+      @if (termsAccepted.errors?.['required']) {
+        <p style="margin: 0; color: red;">Это поле обязательное</p>
+      }
+    }
+
     <div class="actions">
-      <button>Записаться</button>
-      <button>Очистить</button>
+      <button type="submit" [disabled]="form.invalid">Записаться</button>
+      <button type="button" (click)="resetForm(form)">
+        Очистить
+      </button>
     </div>
   </form>
 
   @if (submitted) {
     <p role="status">Заявка принята.</p>
+    <p>Ваше имя: {{ user.contact.name }}</p>
+    <p>Выбранный мастер-класс: {{ selectedWorkshopLabel() }}</p>
   }
 </main>

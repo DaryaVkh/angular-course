@@ -4,16 +4,37 @@
   (ngSubmit)="submitForm()">
   <legend class="feedback-form-title">Tell us what you think</legend>
   <input
+    name="name"
     class="feedback-form-control"
     [formControl]="feedbackForm.controls.name"
     placeholder="Name"
     type="text" />
+  @if (feedbackForm.controls.name.invalid && feedbackForm.controls.name.touched) {
+    @if (feedbackForm.controls.name.hasError('required')) {
+      <p style="margin-bottom: 8px; color: red;">Введите имя</p>
+    }
+  }
+
   <input
+    name="email"
     class="feedback-form-control"
     [formControl]="feedbackForm.controls.email"
     placeholder="Email"
     type="email" />
-  <app-rating-control (ratingUpdated)="rating = $event"></app-rating-control>
+  @if (feedbackForm.controls.email.invalid && feedbackForm.controls.email.touched) {
+    @if (feedbackForm.controls.email.hasError('required')) {
+      <p style="margin-bottom: 8px; color: red;">Введите email</p>
+    }
+    @if (feedbackForm.controls.email.hasError('email')) {
+      <p style="margin-bottom: 8px; color: red;">Неверный формат email</p>
+    }
+  }
+
+  <app-rating-control [formControl]="feedbackForm.controls.rating"/>
+  @if (feedbackForm.controls.rating.invalid && feedbackForm.controls.rating.touched) {
+    <p style="margin: 0; color: red;">Выберите оценку</p>
+  }
+
   <textarea
     class="feedback-form-control"
     [formControl]="feedbackForm.controls.comment"
@@ -21,9 +42,7 @@
   <button
     class="feedback-form-submit"
     type="submit"
-    [disabled]="
-      !feedbackForm.touched || rating === null || feedbackForm.invalid
-    ">
+    [disabled]="feedbackForm.invalid">
     Submit
   </button>
 </form>

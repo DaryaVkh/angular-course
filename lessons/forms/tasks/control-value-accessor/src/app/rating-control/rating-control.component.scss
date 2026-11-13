@@ -24,3 +24,9 @@
 .star-active {
   fill: #ffd055 !important;
 }
+
+.star.disabled {
+  fill: rgb(240, 240, 240);
+  cursor: not-allowed;
+}
+
