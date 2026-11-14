@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Subject, concatMap, map } from 'rxjs';
+import { Subject, catchError, concatMap, filter, map, of } from 'rxjs';
 
 @Component({
   imports: [CommonModule, FormsModule],
@@ -93,8 +93,19 @@ export class AppComponent implements OnInit {
     this.submit$
       .pipe(
         map(() => this.input),
+        filter((value) => value.trim().length > 0),
         concatMap((value) =>
-          this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`),
+          this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`).pipe(
+            catchError((error: HttpErrorResponse) => {
+              console.log(error);
+              return of({
+                error: true,
+                status: error.status,
+                message:
+                  error.status === 404 ? 'Ресурс не найден' : error.message,
+              });
+            }),
+          ),
         ),
         takeUntilDestroyed(this.destroyRef),
       )

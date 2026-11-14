@@ -1,28 +1,33 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { TopicType } from './topic.service';
 
 export interface TopicDialogData {
-  topics: TopicType[];
+  topics$: Observable<TopicType[]>;
 }
 
 @Component({
   template: `
     <h1 mat-dialog-title>Темы интересов</h1>
     <div mat-dialog-content>
-      @if (!data.topics?.length) {
-        <p class="empty-hint">
-          Список пуст! Диалог открылся раньше, чем завершился HTTP-запрос.
-        </p>
+      @if (topics(); as topics) {
+        <ul class="topic-list">
+          @for (topic of topics; track $index) {
+            <li class="topic-item">
+              {{ topic }}
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="topic-list" data-testid="topics-skeleton">
+          @for (item of skeletonItems; track $index) {
+            <div class="topic-item skeleton-item"></div>
+          }
+        </div>
       }
-      <ul class="topic-list">
-        @for (topic of data.topics; track $index) {
-          <li class="topic-item">
-            {{ topic }}
-          </li>
-        }
-      </ul>
     </div>
     <div mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Close</button>
@@ -30,15 +35,6 @@ export interface TopicDialogData {
   `,
   styles: [
     `
-      .empty-hint {
-        padding: 12px;
-        border-radius: 8px;
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #b91c1c;
-        font-size: 14px;
-        margin: 0 0 8px;
-      }
       .topic-list {
         list-style: none;
         padding: 0;
@@ -54,6 +50,16 @@ export interface TopicDialogData {
         color: #312e81;
         font-weight: 600;
       }
+      .skeleton-item {
+        height: 20px;
+        background: #e2e8f0;
+        animation: skeleton-pulse 1.2s ease-in-out infinite;
+      }
+      @keyframes skeleton-pulse {
+        50% {
+          opacity: 0.5;
+        }
+      }
     `,
   ],
   imports: [MatDialogModule, MatButtonModule],
@@ -61,4 +67,6 @@ export interface TopicDialogData {
 })
 export class TopicModalComponent {
   data = inject<TopicDialogData>(MAT_DIALOG_DATA);
+  topics = toSignal(this.data.topics$);
+  readonly skeletonItems = [1, 2, 3];
 }
