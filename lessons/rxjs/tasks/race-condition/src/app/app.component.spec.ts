@@ -1,5 +1,6 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { TopicModalComponent } from './topic-dialog.component';
 import { TopicService } from './topic.service';
@@ -8,7 +9,7 @@ describe('AppComponent (race-condition)', () => {
   let dialogOpenSpy: jest.Mock;
 
   beforeEach(async () => {
-    dialogOpenSpy = jest.fn();
+    dialogOpenSpy = jest.fn(() => ({ afterClosed: () => of(null) }));
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],

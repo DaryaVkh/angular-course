@@ -1,13 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   OnInit,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { take } from 'rxjs';
+import { finalize, shareReplay, switchMap, take } from 'rxjs';
 import { TopicModalComponent } from './topic-dialog.component';
-import { TopicService, TopicType } from './topic.service';
+import { TopicService } from './topic.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +20,9 @@ import { TopicService, TopicType } from './topic.service';
           <span class="badge">Задача 1 · Race Condition</span>
           <h1>Выбор тем подписки</h1>
           <p class="subtitle">
-            Справочник тем загружается с сервера <strong>1000 мс</strong>.
-            Если нажать кнопку сразу после открытия страницы, диалог откроется
+            Справочник тем загружается с сервера
+            <strong>1000 мс</strong>
+            . Если нажать кнопку сразу после открытия страницы, диалог откроется
             раньше, чем придут данные.
           </p>
         </header>
@@ -31,7 +34,11 @@ import { TopicService, TopicType } from './topic.service';
               class="metric-value"
               [class.status-loading]="topicService.isLoading()"
               [class.status-ready]="!topicService.isLoading()">
-              {{ topicService.isLoading() ? 'Загрузка (1000 мс)...' : 'Ожидание / Готово' }}
+              {{
+                topicService.isLoading()
+                  ? 'Загрузка (1000 мс)...'
+                  : 'Ожидание / Готово'
+              }}
             </span>
           </div>
 
@@ -53,9 +60,10 @@ import { TopicService, TopicType } from './topic.service';
         </div>
 
         <footer class="hint-box">
-          <strong>Как проверить баг:</strong> обновите страницу (F5) и в первую
-          же секунду нажмите <code>Open Topic</code> — список внутри модального
-          окна окажется пустым.
+          <strong>Как проверить баг:</strong>
+          обновите страницу (F5) и в первую же секунду нажмите
+          <code>Open Topic</code>
+          — список внутри модального окна окажется пустым.
         </footer>
       </section>
     </main>
@@ -171,23 +179,38 @@ import { TopicService, TopicType } from './topic.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
+  readonly destroyRef = inject(DestroyRef);
+
   title = 'rxjs-race-condition';
   dialog = inject(MatDialog);
   topicService = inject(TopicService);
-  topics: TopicType[] = [];
 
-  ngOnInit(): void {
-    this.topicService
-      .fakeGetHttpTopic()
-      .pipe(take(1))
-      .subscribe((topics) => (this.topics = topics));
+  isDialogScheduled = false;
+
+  topics$ = this.topicService
+    .fakeGetHttpTopic()
+    .pipe(shareReplay({ bufferSize: 1, refCount: true }), takeUntilDestroyed());
+
+  ngOnInit() {
+    this.topics$.subscribe();
   }
 
   openTopicModal() {
-    this.dialog.open(TopicModalComponent, {
-      data: {
-        topics: this.topics,
-      },
-    });
+    if (this.isDialogScheduled) return;
+
+    this.isDialogScheduled = true;
+
+    this.topics$
+      .pipe(
+        take(1),
+        switchMap((topics) => {
+          return this.dialog
+            .open(TopicModalComponent, { data: { topics } })
+            .afterClosed();
+        }),
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => (this.isDialogScheduled = false)),
+      )
+      .subscribe();
   }
 }
