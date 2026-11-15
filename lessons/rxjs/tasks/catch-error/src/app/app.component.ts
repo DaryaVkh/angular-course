@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Subject, concatMap, map } from 'rxjs';
+import { catchError, concatMap, filter, map, of, Subject } from 'rxjs';
 
 @Component({
   imports: [CommonModule, FormsModule],
@@ -29,9 +29,12 @@ import { Subject, concatMap, map } from 'rxjs';
           <h1>Песочница API-запросов</h1>
           <p class="subtitle">
             Введите название ресурса JSONPlaceholder и нажмите
-            <strong>Fetch</strong>. Попробуйте отправить несуществующий ресурс
-            (например, <code>foo</code>), а затем снова запросить
-            <code>posts</code>.
+            <strong>Fetch</strong>
+            . Попробуйте отправить несуществующий ресурс (например,
+            <code>foo</code>
+            ), а затем снова запросить
+            <code>posts</code>
+            .
           </p>
         </header>
 
@@ -59,9 +62,10 @@ import { Subject, concatMap, map } from 'rxjs';
 
         <div class="response-section">
           <div class="response-header">
-            <span>Ответ (`response`):</span>
+            <span>Ответ {{ response }}:</span>
             <span class="request-counter">
-              Обработано ответов: <strong>{{ handledCount }}</strong>
+              Обработано ответов:
+              <strong>{{ handledCount }}</strong>
             </span>
           </div>
           <pre class="response" data-testid="response-output">{{
@@ -71,7 +75,7 @@ import { Subject, concatMap, map } from 'rxjs';
       </section>
     </main>
   `,
-  styleUrls: ['./app.component.css'],
+  styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
   submit$ = new Subject<void>();
@@ -89,12 +93,26 @@ export class AppComponent implements OnInit {
     this.input = value;
   }
 
+  formatError(error: HttpErrorResponse) {
+    return {
+      error: true,
+      status: error.status,
+      message: error.status === 404 ? 'Ресурс не найден' : 'Ошибка запроса',
+    };
+  }
+
   ngOnInit() {
     this.submit$
       .pipe(
         map(() => this.input),
+        filter((input) => input.length > 0),
         concatMap((value) =>
-          this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`),
+          this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`).pipe(
+            catchError((err) => {
+              console.error(err);
+              return of(this.formatError(err));
+            }),
+          ),
         ),
         takeUntilDestroyed(this.destroyRef),
       )
