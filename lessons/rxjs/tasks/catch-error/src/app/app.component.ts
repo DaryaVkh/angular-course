@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Subject, concatMap, map } from 'rxjs';
+import { Subject, concatMap, map, catchError, of, filter } from 'rxjs';
 
 @Component({
   imports: [CommonModule, FormsModule],
@@ -59,7 +59,7 @@ import { Subject, concatMap, map } from 'rxjs';
 
         <div class="response-section">
           <div class="response-header">
-            <span>Ответ (`response`):</span>
+            <span>Ответ (<code>response</code>):</span>
             <span class="request-counter">
               Обработано ответов: <strong>{{ handledCount }}</strong>
             </span>
@@ -92,9 +92,21 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.submit$
       .pipe(
-        map(() => this.input),
+        map(() => this.input.trim()),
+        filter((value) => value.length > 0),
         concatMap((value) =>
-          this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`),
+          this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`).pipe(
+            catchError((err: HttpErrorResponse) => {
+              console.error(err);
+              return of({
+                error: true,
+                status: err.status,
+                message: err.status === 404
+                  ? 'Ресурс не найден'
+                  : 'Ошибка загрузки',
+              });
+            }),
+          ),
         ),
         takeUntilDestroyed(this.destroyRef),
       )
