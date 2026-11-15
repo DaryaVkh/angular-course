@@ -2,21 +2,44 @@
   <h1>Бронирование экскурсии</h1>
   <p>Выберите экскурсию и укажите контакты организатора группы.</p>
 
-  <form>
-    <fieldset>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset formGroupName="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" />
+      <input id="name" formControlName="name" />
+      @if (name.invalid && name.touched) {
+        <p>Введите имя: минимум два символа</p>
+      }
 
       <label for="email">Электронная почта</label>
-      <input
-        id="email"
-        type="email" />
+      <input id="email" type="email" formControlName="email" />
+      @if (email.pending) {
+        <p>Проверяем почту…</p>
+      } @else if (email.errors?.['emailTaken']) {
+        <p>На этот адрес уже есть бронь</p>
+      } @else if (email.invalid && email.touched) {
+        <p>Введите корректный email</p>
+      }
     </fieldset>
 
+    <div formArrayName="guests">
+      @for (guest of guests.controls; track $index) {
+        <div>
+          <input
+            [formControlName]="$index"
+            placeholder="Участник {{ $index + 1 }}" />
+          <button type="button" (click)="removeGuest($index)">✕</button>
+        </div>
+        @if (guest.invalid && guest.touched) {
+          <p>Введите имя: минимум два символа</p>
+        }
+      }
+    </div>
+    <button type="button" (click)="addGuest()">+ Добавить участника</button>
+
     <label for="tour">Экскурсия</label>
-    <select id="tour">
+    <select id="tour" formControlName="tourId">
       @if (tours$ | async; as tours) {
         <option value="">Выберите экскурсию</option>
         @for (tour of tours; track tour.id) {
@@ -28,9 +51,20 @@
         <option value="">Загрузка экскурсий…</option>
       }
     </select>
+    @if (tourId.invalid && tourId.touched) {
+      <p>Выберите экскурсию</p>
+    }
+    @if (availableSeats !== undefined) {
+      <p>Нужно мест: {{ requiredSeats }}, доступно: {{ availableSeats }}</p>
+    }
+    @if (form.errors?.['notEnoughSeats']) {
+      <p>Недостаточно мест</p>
+    }
 
     <div class="actions">
-      <button type="submit" [disabled]="saving()">
+      <button
+        type="submit"
+        [disabled]="form.invalid || form.pending || saving()">
         {{ saving() ? 'Бронируем…' : 'Забронировать' }}
       </button>
     </div>
