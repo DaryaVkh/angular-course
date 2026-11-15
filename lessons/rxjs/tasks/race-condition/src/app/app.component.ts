@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   OnInit,
 } from '@angular/core';
@@ -8,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { finalize, shareReplay, switchMap, take } from 'rxjs';
 import { TopicModalComponent } from './topic-dialog.component';
 import { TopicService } from './topic.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
@@ -177,6 +179,8 @@ import { TopicService } from './topic.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
+  readonly destroyRef = inject(DestroyRef);
+
   title = 'rxjs-race-condition';
   dialog = inject(MatDialog);
   topicService = inject(TopicService);
@@ -185,7 +189,7 @@ export class AppComponent implements OnInit {
 
   topics$ = this.topicService
     .fakeGetHttpTopic()
-    .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    .pipe(shareReplay({ bufferSize: 1, refCount: true }), takeUntilDestroyed());
 
   ngOnInit() {
     this.topics$.subscribe();
@@ -204,6 +208,7 @@ export class AppComponent implements OnInit {
             .open(TopicModalComponent, { data: { topics } })
             .afterClosed();
         }),
+        takeUntilDestroyed(this.destroyRef),
         finalize(() => (this.isDialogScheduled = false)),
       )
       .subscribe();
