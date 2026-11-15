@@ -1,4 +1,5 @@
 import {
+  DestroyRef,
   Directive,
   ElementRef,
   inject,
@@ -6,6 +7,7 @@ import {
   OnInit,
   output,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   finalize,
   fromEvent,
@@ -32,6 +34,8 @@ export class HoldableDirective implements OnInit {
   readonly holdTimeEnd = output<void>();
 
   private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   start$ = merge(
     fromEvent(this.el.nativeElement, 'pointerdown'),
@@ -62,6 +66,7 @@ export class HoldableDirective implements OnInit {
             finalize(() => this.holdProgress.emit(0)),
           ),
         ),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }
