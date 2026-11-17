@@ -1,20 +1,17 @@
 <div
   class="flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4"
-  [class]="customClass()">
+  [class]="customClass()" [class.has-header]="hasHeader">
+  <ng-content select="[card-header]"></ng-content>
   <ng-content></ng-content>
-  
+
   <button
     class="rounded-sm border border-blue-500 bg-blue-300 p-2"
-    (click)="addItem.emit()"
+    #addButton (click)="addItem.emit()"
   >
     Add
   </button>
   
-  @for (item of list(); track item.id) {
-    <app-list-item 
-      [id]="item.id" 
-      [name]="item.name" 
-      (deleteItem)="deleteItem.emit($event)"
-    />
+  @for (item of list(); track item; let i = $index) {
+    <ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: item, index: i }"></ng-container>
   }
 </div>

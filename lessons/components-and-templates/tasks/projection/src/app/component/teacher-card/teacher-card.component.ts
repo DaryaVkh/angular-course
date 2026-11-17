@@ -6,17 +6,18 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgOptimizedImage } from '@angular/common';
 import { FakeHttpService } from '../../data-access/fake-http.service';
 import { TeacherStore } from '../../data-access/teacher.store';
 import { randTeacher } from '../../data-access/fake-http.service';
 import { CardComponent } from '../../ui/card/card.component';
-import { NgOptimizedImage } from '@angular/common';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-teacher-card',
   templateUrl: './teacher-card.component.html',
   styleUrl: './teacher-card.component.scss',
-  imports: [CardComponent, NgOptimizedImage],
+  imports: [CardComponent, NgOptimizedImage, ListItemComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeacherCardComponent implements OnInit {
