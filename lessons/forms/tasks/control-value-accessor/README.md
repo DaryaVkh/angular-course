@@ -6,19 +6,6 @@
 npm run serve:forms-control-value-accessor
 ```
 
-## Документация
----
-title: 🟠 Control Value Accessor
-description: Испытание 41 про создание пользовательское поле формы которое использует интерфейс ControlValueAccessor.
-author: stanislav-gavrilov
-contributors:
-  - stillst
-challengeNumber: 41
-command: forms-control-value-accessor
-sidebar:
-  order: 1
----
-
 ## Информация
 
 Цель этого испытания создать пользовательское поле формы, которое использует API формы Angular через `ControlValueAccessor`. Документацию можно посмотреть [здесь](https://angular.dev/api/forms/ControlValueAccessor). Этот интерфейс критически важен для создания пользовательских элементов управления формами, которые могут беспрепятственно взаимодействовать с API форм Angular.

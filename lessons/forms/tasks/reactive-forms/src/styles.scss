@@ -1,0 +1,65 @@
+body {
+  margin: 0;
+  background: #f4f5f2;
+  color: #202a24;
+  font:
+    1rem/1.5 system-ui,
+    sans-serif;
+}
+
+main {
+  box-sizing: border-box;
+  max-width: 38rem;
+  margin: 2rem auto;
+  padding: clamp(1rem, 5vw, 2rem);
+  background: #fff;
+  border: 1px solid #cdd5ce;
+  border-radius: 1rem;
+}
+
+h1 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+form,
+fieldset {
+  display: grid;
+  gap: 0.75rem;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid #cdd5ce;
+  border-radius: 0.5rem;
+}
+
+input:not([type='checkbox']),
+select,
+button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #748176;
+  border-radius: 0.4rem;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+}
+
+.checkbox,
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+button[type='submit'] {
+  background: #28563d;
+  color: #fff;
+}
+
+button:disabled {
+  opacity: 0.6;
+}
