@@ -1,6 +1,13 @@
 import { TableComponent } from '@angular-challenges/shared/ui';
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Directive } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core';
 import { CurrencyPipe } from './currency.pipe';
 import { CurrencyService } from './currency.service';
 import { Product, products } from './product.model';
@@ -21,8 +28,27 @@ export class ProductDirective {
   }
 }
 
+@Directive({
+  selector: '[appCurrencyCode]',
+  providers: [CurrencyService],
+})
+export class CurrencyCodeDirective implements OnInit {
+  currencyCode = input.required<string>({ alias: 'appCurrencyCode' });
+  currencyService = inject(CurrencyService);
+
+  ngOnInit() {
+    this.currencyService.patchState({ code: this.currencyCode() });
+  }
+}
+
 @Component({
-  imports: [TableComponent, CurrencyPipe, AsyncPipe, ProductDirective],
+  imports: [
+    TableComponent,
+    CurrencyPipe,
+    AsyncPipe,
+    ProductDirective,
+    CurrencyCodeDirective,
+  ],
   providers: [CurrencyService],
   selector: 'app-root',
   template: `
@@ -37,7 +63,7 @@ export class ProductDirective {
         </tr>
       </ng-template>
       <ng-template #body product let-product>
-        <tr>
+        <tr [appCurrencyCode]="product.currencyCode">
           <td>{{ product.name }}</td>
           <td>{{ product.priceA | currency | async }}</td>
           <td>{{ product.priceB | currency | async }}</td>

@@ -5,11 +5,7 @@ import { GreetingService, CasualGreetingService } from './greeting.service';
 @Component({
   selector: 'app-casual-panel',
   imports: [FormsModule],
-  providers: [
-    // TODO: предоставь CasualGreetingService как реализацию GreetingService
-    // { provide: GreetingService, useClass: ??? }
-
-  ],
+  providers: [{ provide: GreetingService, useClass: CasualGreetingService }],
   template: `
     <div class="panel casual">
       <h2>Casual context</h2>

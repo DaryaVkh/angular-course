@@ -5,10 +5,7 @@ import { GreetingService, FormalGreetingService } from './greeting.service';
 @Component({
   selector: 'app-formal-panel',
   imports: [FormsModule],
-  providers: [
-    // TODO: предоставь FormalGreetingService как реализацию GreetingService
-    // { provide: GreetingService, useClass: ??? }
-  ],
+  providers: [{ provide: GreetingService, useClass: FormalGreetingService }],
   template: `
     <div class="panel formal">
       <h2>Formal context</h2>
