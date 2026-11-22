@@ -5,9 +5,9 @@ import {
   OnInit,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { take } from 'rxjs';
+import { shareReplay, take } from 'rxjs';
 import { TopicModalComponent } from './topic-dialog.component';
-import { TopicService, TopicType } from './topic.service';
+import { TopicService } from './topic.service';
 
 @Component({
   selector: 'app-root',
@@ -174,20 +174,21 @@ export class AppComponent implements OnInit {
   title = 'rxjs-race-condition';
   dialog = inject(MatDialog);
   topicService = inject(TopicService);
-  topics: TopicType[] = [];
+  readonly topics$ = this.topicService
+    .fakeGetHttpTopic()
+    .pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   ngOnInit(): void {
-    this.topicService
-      .fakeGetHttpTopic()
-      .pipe(take(1))
-      .subscribe((topics) => (this.topics = topics));
+    this.topics$.subscribe();
   }
 
   openTopicModal() {
-    this.dialog.open(TopicModalComponent, {
-      data: {
-        topics: this.topics,
-      },
+    this.topics$.pipe(take(1)).subscribe((topics) => {
+      this.dialog.open(TopicModalComponent, {
+        data: {
+          topics,
+        },
+      });
     });
   }
 }
