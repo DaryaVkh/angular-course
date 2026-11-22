@@ -92,8 +92,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.submit$
       .pipe(
-        map(() => this.input),
-        filter((value) => value.trim() !== ''),
+        map(() => this.input.trim()),
         concatMap((value) =>
           this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`).pipe(
             catchError((error: HttpErrorResponse) => {
