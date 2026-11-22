@@ -14,18 +14,41 @@ let nextCardId = 3;
   imports: [CardComponent],
   selector: 'app-root',
   template: `
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 mb-6">
       <label class="flex flex-col gap-1">
         Наименование новой карточки
         <input
+          #newCardInput
           placeholder="Наименование"
-          class="border border-grey rounded-sm p-1" />
+          class="border border-grey rounded-sm p-1"
+          (keydown.enter)="addCard(newCardInput.value); newCardInput.value = ''" 
+        />
       </label>
+      <button 
+        class="bg-blue-600 text-white p-2 rounded-sm hover:bg-blue-700"
+        (click)="addCard(newCardInput.value); newCardInput.value = ''"
+      >
+        Добавить карточку
+      </button>
     </div>
 
-    @for (card of cards(); track card.id) {
-      <app-card [title]="card.title" [message]="card.message" />
-    }
+    <div class="flex flex-wrap gap-4">
+      @for (card of cards(); track card.id) {
+        <app-card (closed)="removeCard(card.id)">
+          
+          <div title class="font-semibold text-lg">
+            {{ card.title }}
+          </div>
+          
+          @if (card.message) {
+            <div message class="text-sm text-gray-600">
+              {{ card.message }}
+            </div>
+          }
+          
+        </app-card>
+      }
+    </div>
 
     <section class="border-t border-grey pt-2 mt-2">
       <h3 class="font-semibold">Event log</h3>

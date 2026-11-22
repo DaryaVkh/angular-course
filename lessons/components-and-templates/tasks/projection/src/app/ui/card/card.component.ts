@@ -1,39 +1,43 @@
-import { NgIf, NgOptimizedImage } from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  inject,
+  ContentChild,
+  ElementRef,
+  TemplateRef,
+  ViewChild,
   input,
+  output,
 } from '@angular/core';
-import { randStudent, randTeacher } from '../../data-access/fake-http.service';
-import { StudentStore } from '../../data-access/student.store';
-import { TeacherStore } from '../../data-access/teacher.store';
-import { CardType } from '../../model/card.model';
-import { ListItemComponent } from '../list-item/list-item.component';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
-  imports: [ListItemComponent, NgOptimizedImage, NgIf],
+  imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CardComponent {
-  private teacherStore = inject(TeacherStore);
-  private studentStore = inject(StudentStore);
-
-  readonly list = input<any[] | null>(null);
-  readonly type = input.required<CardType>();
+export class CardComponent implements AfterViewInit {
+  readonly list = input<any | null>(null);
   readonly customClass = input('');
-
-  CardType = CardType;
-
-  addNewItem() {
-    const type = this.type();
-    if (type === CardType.TEACHER) {
-      this.teacherStore.addOne(randTeacher());
-    } else if (type === CardType.STUDENT) {
-      this.studentStore.addOne(randStudent());
-    }
+  
+  readonly addItem = output<void>();
+  readonly deleteItem = output<number>();
+  
+  @ViewChild('addButton', { static: true }) addButtonRef!: ElementRef<HTMLButtonElement>;
+  @ContentChild('cardHeader') headerRef!: ElementRef<HTMLElement>;
+  @ContentChild(TemplateRef) rowTpl!: TemplateRef<any>;
+  
+  ngAfterViewInit(): void {
+    const button = this.addButtonRef.nativeElement;
+    button.classList.add('flash');
+    setTimeout(() => {
+      button.classList.remove('flash');
+    }, 600);
+  }
+  
+  get hasHeader(): boolean {
+    return !!this.headerRef;
   }
 }
