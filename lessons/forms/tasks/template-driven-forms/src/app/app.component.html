@@ -15,7 +15,9 @@
         email
         #emailField="ngModel"
       />
-      @if (emailField.invalid && emailField.touched) {
+      @if (emailField.touched && emailField.hasError('required')) {
+        <p class="error">Введите электронную почту</p>
+      } @else if (emailField.touched && emailField.hasError('email')) {
         <p class="error">Введите корректный email</p>
       }
 
@@ -29,8 +31,10 @@
         #nameField="ngModel"
       />
 
-      @if (nameField.invalid && nameField.touched) {
-        <p class="error">Имя должно быть длины 2 или больше</p>
+      @if (nameField.touched && nameField.hasError('required')) {
+        <p class="error">Введите имя</p>
+      } @else if (nameField.touched && nameField.hasError('minlength')) {
+        <p class="error">Имя должно содержать минимум два символа</p>
       }
 
     </fieldset>
@@ -49,7 +53,7 @@
       <option value="printmaking">Линогравюра</option>
     </select>
 
-    @if (workshopModel.invalid && workshopModel.touched) {
+    @if (workshopModel.touched && workshopModel.hasError('required')) {
       <p class="error">Необходимо выбрать мастер-класс</p>
     }
 
@@ -64,8 +68,8 @@
       Подтверждаю запись
     </label>
 
-    @if (termsAccepted.invalid && termsAccepted.touched) {
-      <p class="error">Необходимо подтвердить запись </p>
+    @if (termsAccepted.touched && termsAccepted.hasError('required')) {
+      <p class="error">Необходимо подтвердить запись</p>
     }
 
     <div class="actions">
