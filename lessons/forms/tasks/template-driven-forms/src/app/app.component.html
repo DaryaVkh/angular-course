@@ -1,0 +1,40 @@
+<main>
+  <h1>Запись на мастер-класс</h1>
+  <p>Оставьте контакты и выберите занятие.</p>
+
+  <form (submit)="submit($event)" (reset)="submitted = false">
+    <fieldset>
+      <legend>Контакты</legend>
+
+      <label for="name">Имя</label>
+      <input id="name" name="name" />
+
+      <label for="email">Электронная почта</label>
+      <input
+        id="email"
+        name="email" />
+    </fieldset>
+
+    <label for="workshop">Мастер-класс</label>
+    <select id="workshop" name="workshop">
+      <option value="">Выберите занятие</option>
+      <option value="pottery">Керамика</option>
+      <option value="watercolor">Акварель</option>
+      <option value="printmaking">Линогравюра</option>
+    </select>
+
+    <label class="checkbox">
+      <input type="checkbox" name="termsAccepted" />
+      Подтверждаю запись
+    </label>
+
+    <div class="actions">
+      <button>Записаться</button>
+      <button>Очистить</button>
+    </div>
+  </form>
+
+  @if (submitted) {
+    <p role="status">Заявка принята.</p>
+  }
+</main>
