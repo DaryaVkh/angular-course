@@ -2,39 +2,86 @@
   <h1>Запись на мастер-класс</h1>
   <p>Оставьте контакты и выберите занятие.</p>
 
-  <form (submit)="submit($event)" (reset)="submitted = false">
-    <fieldset>
+  <form #form="ngForm" (ngSubmit)="submit(form)">
+    <fieldset ngModelGroup="contact">
       <legend>Контакты</legend>
-
-      <label for="name">Имя</label>
-      <input id="name" name="name" />
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        name="email" />
+        name="email"
+        [(ngModel)]="model.email"
+        required
+        email
+        #emailField="ngModel"
+      />
+      @if (emailField.touched && emailField.hasError('required')) {
+        <p class="error">Введите электронную почту</p>
+      } @else if (emailField.touched && emailField.hasError('email')) {
+        <p class="error">Введите корректный email</p>
+      }
+
+      <label for="name">Имя</label>
+      <input
+        id="name"
+        name="name"
+        [(ngModel)]="model.name"
+        required
+        minlength="2"
+        #nameField="ngModel"
+      />
+
+      @if (nameField.touched && nameField.hasError('required')) {
+        <p class="error">Введите имя</p>
+      } @else if (nameField.touched && nameField.hasError('minlength')) {
+        <p class="error">Имя должно содержать минимум два символа</p>
+      }
+
     </fieldset>
 
     <label for="workshop">Мастер-класс</label>
-    <select id="workshop" name="workshop">
+    <select
+      id="workshop"
+      name="workshop"
+      [(ngModel)]="model.workshop"
+      required
+      #workshopModel="ngModel"
+    >
       <option value="">Выберите занятие</option>
       <option value="pottery">Керамика</option>
       <option value="watercolor">Акварель</option>
       <option value="printmaking">Линогравюра</option>
     </select>
 
+    @if (workshopModel.touched && workshopModel.hasError('required')) {
+      <p class="error">Необходимо выбрать мастер-класс</p>
+    }
+
     <label class="checkbox">
-      <input type="checkbox" name="termsAccepted" />
+      <input
+        type="checkbox"
+        name="termsAccepted"
+        [(ngModel)]="model.termsAccepted"
+        required
+        #termsAccepted="ngModel"
+      />
       Подтверждаю запись
     </label>
 
+    @if (termsAccepted.touched && termsAccepted.hasError('required')) {
+      <p class="error">Необходимо подтвердить запись</p>
+    }
+
     <div class="actions">
-      <button>Записаться</button>
-      <button>Очистить</button>
+      <button type="submit" [disabled]="form.invalid">Записаться</button>
+      <button type="button" (click)="resetForm(form)">Очистить</button>
     </div>
   </form>
 
   @if (submitted) {
-    <p role="status">Заявка принята.</p>
+    <p role="status">
+      {{ application.contact.name }}, вы записаны на мастер-класс
+      "{{ workshopTitles[application.workshop] }}".
+    </p>
   }
 </main>
