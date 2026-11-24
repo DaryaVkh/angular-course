@@ -46,4 +46,30 @@ describe('LoadingDataErrorComponent', () => {
 
     expect(component.reaState().kind).toBe('error');
   }));
+
+  it('imperative: успех после retry переводит в state.data', fakeAsync(() => {
+    let attempts = 0;
+    fakeTransport.getItem.mockReturnValue(
+      defer(() => {
+        attempts += 1;
+        return attempts < 3
+          ? throwError(() => new Error(`e${attempts}`))
+          : of({ id: 7, name: 'OK', tag: 'hot' });
+      }),
+    );
+
+    component.impLoad();
+    tick(1000);
+
+    expect(component.impState().kind).toBe('data');
+  }));
+
+  it('imperative: исчерпание retry переводит в state.error', fakeAsync(() => {
+    fakeTransport.getItem.mockReturnValue(throwError(() => new Error('imp boom')));
+
+    component.impLoad();
+    tick(1000);
+
+    expect(component.impState().kind).toBe('error');
+  }));
 });

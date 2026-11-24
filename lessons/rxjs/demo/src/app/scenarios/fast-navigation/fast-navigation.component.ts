@@ -3,11 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  OnDestroy,
   inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, finalize, switchMap } from 'rxjs';
+import { Subject, Subscription, finalize, switchMap } from 'rxjs';
 
 import { EventLogService } from '../../core/event-log.service';
 import { ItemPayload, TRANSPORT } from '../../core/transport';
@@ -29,22 +30,31 @@ export const FAST_NAVIGATION_META: ScenarioMeta = {
 
 const IDS = [1, 2, 3, 4, 5, 6] as const;
 
-const IMPERATIVE_CODE = `// Ручной счётчик seq: помним, какая навигация последняя.
-private impSeq = 0;
+const IMPERATIVE_CODE = `// Императивный аналог switchMap:
+// При каждом переходе отменяем активную подписку / AbortController
+private impSub: Subscription | null = null;
 
 goTo(id: number): void {
-  const mySeq = ++this.impSeq;
+  // 1. Ручная отмена прошлого запроса
+  if (this.impSub) {
+    this.impSub.unsubscribe();
+    this.log('отмена предыдущего запроса');
+  }
 
-  this.transport.getItem(id).subscribe((item) => {
-    if (mySeq !== this.impSeq) {
-      return; // пользователь уже ушёл на другую «страницу»
-    }
-    this.item.set(item);
+  this.loading.set(true);
+
+  // 2. Старт нового запроса
+  this.impSub = this.transport.getItem(id).subscribe({
+    next: (item) => {
+      this.item.set(item);
+      this.loading.set(false);
+    },
+    error: () => this.loading.set(false),
   });
 }
 
-// Проблемы: запрос не отменяется (грузится зря),
-// актуальность отслеживаем вручную.`;
+// Проблемы: нужно вручную хранить подписку, помнить про отмену
+// при каждом действии и не забыть ngOnDestroy.`;
 
 const REACTIVE_CODE = `// switchMap: новая навигация отписывает предыдущий
 // внутренний Observable — старый запрос отменяется.
@@ -245,7 +255,7 @@ function toProduct(item: ItemPayload): ProductView {
     `,
   ],
 })
-export class FastNavigationComponent {
+export class FastNavigationComponent implements OnDestroy {
   protected readonly imperativeCode = IMPERATIVE_CODE;
   protected readonly reactiveCode = REACTIVE_CODE;
 
@@ -262,8 +272,8 @@ export class FastNavigationComponent {
 
   protected readonly toProduct = toProduct;
 
-  // Императивный seq.
-  private impSeq = 0;
+  // Императивная ссылка на подписку для отмены (эквивалент AbortController)
+  private impSub: Subscription | null = null;
 
   // neverCompletes = true заставляет «висящий» запрос никогда не эмитить —
   // если бы не было отмены, UI застрял бы на первом ответе.
@@ -287,20 +297,30 @@ export class FastNavigationComponent {
   }
 
   protected impGoTo(id: number): void {
-    const mySeq = ++this.impSeq;
-    this.log.push('imperative', 'event', `imp navigate → ${id} (#${mySeq})`);
+    if (this.impSub) {
+      this.impSub.unsubscribe();
+      this.log.push('imperative', 'cancelled', 'отмена предыдущего запроса (ручной unsubscribe)');
+    }
+
+    this.log.push('imperative', 'event', `imp navigate → ${id}`);
     this.impLoading.set(true);
 
-    this.transport
+    this.impSub = this.transport
       .getItem(id, { neverCompletes: true, delayMs: 1500 })
-      .subscribe((item) => {
-        if (mySeq !== this.impSeq) {
-          this.log.push('imperative', 'cancelled', `ответ #${mySeq} устарел`);
-          return;
-        }
-        this.log.push('imperative', 'next', `#${item.id} ${item.name}`);
-        this.impItem.set(item);
-        this.impLoading.set(false);
+      .subscribe({
+        next: (item) => {
+          this.log.push('imperative', 'next', `#${item.id} ${item.name}`);
+          this.impItem.set(item);
+          this.impLoading.set(false);
+        },
+        error: (err: Error) => {
+          this.log.push('imperative', 'error', err.message);
+          this.impLoading.set(false);
+        },
       });
+  }
+
+  ngOnDestroy(): void {
+    this.impSub?.unsubscribe();
   }
 }

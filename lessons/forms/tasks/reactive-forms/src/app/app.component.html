@@ -1,0 +1,49 @@
+<main>
+  <h1>Бронирование экскурсии</h1>
+  <p>Выберите экскурсию и укажите контакты организатора группы.</p>
+
+  <form>
+    <fieldset>
+      <legend>Контакты</legend>
+
+      <label for="name">Имя</label>
+      <input id="name" />
+
+      <label for="email">Электронная почта</label>
+      <input
+        id="email"
+        type="email" />
+    </fieldset>
+
+    <label for="tour">Экскурсия</label>
+    <select id="tour">
+      @if (tours$ | async; as tours) {
+        <option value="">Выберите экскурсию</option>
+        @for (tour of tours; track tour.id) {
+          <option [value]="tour.id" [disabled]="tour.seats === 0">
+            {{ tour.title }} (мест: {{ tour.seats }})
+          </option>
+        }
+      } @else {
+        <option value="">Загрузка экскурсий…</option>
+      }
+    </select>
+
+    <div class="actions">
+      <button type="submit" [disabled]="saving()">
+        {{ saving() ? 'Бронируем…' : 'Забронировать' }}
+      </button>
+    </div>
+  </form>
+
+  @if (receipt) {
+    <p role="status">
+      Бронь {{ receipt.reference }}. {{ receipt.tourTitle }}, мест:
+      {{ receipt.seats }}.
+    </p>
+  }
+
+  @if (errorMessage) {
+    <p role="alert">{{ errorMessage }}</p>
+  }
+</main>
