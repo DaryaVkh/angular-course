@@ -2,21 +2,29 @@
   <h1>Бронирование экскурсии</h1>
   <p>Выберите экскурсию и укажите контакты организатора группы.</p>
 
-  <form>
-    <fieldset>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset [disabled]="saving()">
+    <fieldset formGroupName="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" />
-
+      <input id="name" formControlName="name" />
+      @if (!form.controls.contact.controls.name.untouched && form.controls.contact.controls.name.invalid) {
+        <p>Введите имя, пожалуйста.</p>
+      }
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        type="email" />
+        type="email"
+        formControlName="email" />
+      @if (email.pending) { <p>Проверяем почту</p> }
+      @if (!email.untouched && email.invalid) {
+        <p>{{ email.hasError('emailTaken') ? 'На эту почту уже есть бронь, используйте, пожалуйста, другую.' : 'Введите корректный адрес почты.' }}</p>
+      }
     </fieldset>
 
     <label for="tour">Экскурсия</label>
-    <select id="tour">
+    <select id="tour" formControlName="tourId">
       @if (tours$ | async; as tours) {
         <option value="">Выберите экскурсию</option>
         @for (tour of tours; track tour.id) {
@@ -28,12 +36,41 @@
         <option value="">Загрузка экскурсий…</option>
       }
     </select>
-
+    @if (!form.controls.tourId.untouched && form.controls.tourId.invalid) {
+      <p>Выберите экскурсию, пожалуйста.</p>
+    }
+    @if (form.controls.tourId.value) {
+      <p>Нужно мест: {{ guests.length + 1 }}. Доступно: {{ availableSeats }}.</p>
+    }
+    @if (form.hasError('notEnoughSeats')) {
+      <p>На выбранной экскурсии недостаточно мест для группы.</p>
+    }
+    <fieldset formArrayName="guests">
+      <legend>Дополнительные участники</legend>
+      @for (guest of guests.controls; track guest) {
+        <div>
+          <label>
+            Участник {{ $index + 1 }}
+            <input [formControlName]="$index" />
+          </label>
+          @if (!guest.untouched && guest.invalid) {
+            <p>Введите имя: минимум два символа.</p>
+          }
+          <button type="button" (click)="removeGuest($index)">
+            Удалить
+          </button>
+        </div>
+      }
+      <button type="button" (click)="addGuest()">
+        Добавить участника
+      </button>
+    </fieldset>
     <div class="actions">
-      <button type="submit" [disabled]="saving()">
+      <button type="submit" [disabled]="form.invalid || form.pending || saving()">
         {{ saving() ? 'Бронируем…' : 'Забронировать' }}
       </button>
     </div>
+    </fieldset>
   </form>
 
   @if (receipt) {

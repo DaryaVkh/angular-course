@@ -2,39 +2,74 @@
   <h1>Запись на мастер-класс</h1>
   <p>Оставьте контакты и выберите занятие.</p>
 
-  <form (submit)="submit($event)" (reset)="submitted = false">
-    <fieldset>
+  <form #form="ngForm" (ngSubmit)="submit(form)">
+    <fieldset ngModelGroup="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" name="name" />
+      <input
+        id="name"
+        name="name"
+        [ngModel]="''"
+        #name="ngModel"
+        minlength="2"
+        required />
+      @if (name.touched && name.invalid) {
+        <p>Введите имя: минимум два символа.</p>
+      }
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        name="email" />
+        name="email"
+        type="email"
+        [ngModel]="''"
+        #email="ngModel"
+        email
+        required />
+      @if (email.touched && email.invalid) {
+        <p>Введите корректную почту.</p>
+      }
     </fieldset>
 
     <label for="workshop">Мастер-класс</label>
-    <select id="workshop" name="workshop">
+    <select
+      id="workshop"
+      name="workshop"
+      [ngModel]="''"
+      #workshop="ngModel"
+      required>
       <option value="">Выберите занятие</option>
       <option value="pottery">Керамика</option>
       <option value="watercolor">Акварель</option>
       <option value="printmaking">Линогравюра</option>
     </select>
+    @if (workshop.touched && workshop.invalid) {
+      <p>Выберите мастер-класс, пожалуйста.</p>
+    }
 
     <label class="checkbox">
-      <input type="checkbox" name="termsAccepted" />
+      <input
+        type="checkbox"
+        name="termsAccepted"
+        [ngModel]="false"
+        #terms="ngModel"
+        required />
       Подтверждаю запись
     </label>
+    @if (terms.touched && terms.invalid) {
+      <p>Подтвердите, пожалуйста, запись.</p>
+    }
 
     <div class="actions">
-      <button>Записаться</button>
-      <button>Очистить</button>
+      <button type="submit" [disabled]="form.invalid">Записаться</button>
+      <button type="button" (click)="clear(form)">Очистить</button>
     </div>
   </form>
 
   @if (submitted) {
-    <p role="status">Заявка принята.</p>
+    <p role="status">
+      Поздравляю! Вы,{{ submitted.contact.name }}, записаны на мастер-класс: {{ workshopNames[submitted.workshop] }}.
+    </p>
   }
 </main>
