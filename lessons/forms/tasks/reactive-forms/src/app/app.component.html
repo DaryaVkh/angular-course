@@ -2,21 +2,62 @@
   <h1>Бронирование экскурсии</h1>
   <p>Выберите экскурсию и укажите контакты организатора группы.</p>
 
-  <form>
-    <fieldset>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <fieldset formGroupName="contacts">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" />
+      <input formControlName="name" id="name" />
+      @if (name.touched && name.hasError('required')) {
+        <p role="alert" style="color: red;">Введите имя</p>
+      }
+      @if (name.touched && name.hasError('minlength')) {
+        <p role="alert" style="color: red;">Имя должно содержать минимум 2 символа</p>
+      }
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        type="email" />
+        type="email"
+        formControlName="email"
+      />
+      @if (email.touched && email.hasError('required')) {
+        <p role="alert" style="color: red;">Введите электронную почту</p>
+      }
+      @if (email.touched && email.hasError('email')) {
+        <p role="alert" style="color: red;">Введите корректный адрес электронной почты</p>
+      }
+      @if (email.touched && email.hasError('emailTaken')) {
+        <p role="alert" style="color: red;">На эту почту уже оформлено бронирование</p>
+      }
+    </fieldset>
+    <fieldset>
+      <legend>Дополнительные участники</legend>
+      <div formArrayName="participants" class="participants">
+        @for (participant of participants.controls; track participant; let i = $index) {
+          <div>
+            <label [for]="'participant-' + i">Имя участника {{ i + 1 }}</label>
+            <input
+              [id]="'participant-' + i"
+              [formControlName]="i"
+            />
+            <button type="button" (click)="removeParticipant(i)">✕</button>
+            @if (participant.touched && participant.hasError('required')) {
+              <p role="alert" style="color: red;">Введите имя участника</p>
+            }
+            @if (participant.touched && participant.hasError('minlength')) {
+              <p role="alert" style="color: red;">Имя должно содержать минимум 2 символа</p>
+            }
+          </div>
+        }
+      </div>
+      <button type="button" (click)="addParticipant()">
+        + Добавить участника
+      </button>
     </fieldset>
 
     <label for="tour">Экскурсия</label>
-    <select id="tour">
+    <select id="tour" formControlName="tour">
       @if (tours$ | async; as tours) {
         <option value="">Выберите экскурсию</option>
         @for (tour of tours; track tour.id) {
@@ -28,9 +69,18 @@
         <option value="">Загрузка экскурсий…</option>
       }
     </select>
+    @if (selectedTour) {
+      <p style="font-weight: 600;">
+        Нужно мест: {{ requiredSeats }}; доступно:
+        {{ selectedTour.seats }}.
+      </p>
+    }
+    @if (form.hasError('insufficientSeats')) {
+      <p role="alert" style="color: red;">На выбранной экскурсии недостаточно мест</p>
+    }
 
     <div class="actions">
-      <button type="submit" [disabled]="saving()">
+      <button type="submit" [disabled]="saving() || form.invalid">
         {{ saving() ? 'Бронируем…' : 'Забронировать' }}
       </button>
     </div>
@@ -44,6 +94,6 @@
   }
 
   @if (errorMessage) {
-    <p role="alert">{{ errorMessage }}</p>
+    <p role="alert" style="color: red;">{{ errorMessage }}</p>
   }
 </main>
