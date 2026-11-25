@@ -2,24 +2,46 @@
   <h1>Бронирование экскурсии</h1>
   <p>Выберите экскурсию и укажите контакты организатора группы.</p>
 
-  <form>
-    <fieldset>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset formGroupName="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" />
+      <input id="name" formControlName="name"/>
+
+      @if (name.invalid && name.touched) {
+        @if (name.hasError('required')) {
+          <span class="error">Введите имя</span>
+        }
+      }
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        type="email" />
+        type="email"
+        formControlName="email"
+      />
+
+      @if (email.invalid && email.touched) {
+        @if (email.hasError('required')) {
+          <span class="error">Введите email</span>
+        } @else if (email.hasError('email')) {
+          <span class="error">Email некорректный</span>
+        } @else if (email.hasError('emailTaken')) {
+          <span class="error">Email уже занят</span>
+        }
+      }
+
+      @if (email.pending) {
+        <span class="loading">Идет проверка...</span>
+      }
     </fieldset>
 
-    <label for="tour">Экскурсия</label>
-    <select id="tour">
-      @if (tours$ | async; as tours) {
+    <label for="tour">Экскурсия {{ tour() ? `${guests.length + 1}/${tour()!.seats}` : '' }}</label>
+    <select id="tour" formControlName="tourId">
+      @if (tours()) {
         <option value="">Выберите экскурсию</option>
-        @for (tour of tours; track tour.id) {
+        @for (tour of tours(); track tour.id) {
           <option [value]="tour.id" [disabled]="tour.seats === 0">
             {{ tour.title }} (мест: {{ tour.seats }})
           </option>
@@ -29,11 +51,46 @@
       }
     </select>
 
+    @if (form.controls.tourId.invalid && form.controls.tourId.touched) {
+      @if (form.controls.tourId.hasError('required')) {
+        <span class="error">Выберите экскурсию</span>
+      }
+    }
+
+    <fieldset formArrayName="guests">
+      @for (guest of guests.controls; track guest; let i = $index) {
+        <label for="guest-{{i}}">Гость {{ i + 1 }}:</label>
+        <div class="guest-input">
+          <input id="guest-{{i}}" type="text" [formControlName]="i"/>
+          <button (click)="removeGuest(i)" type="button">🗑️</button>
+        </div>
+
+        @if (guest.invalid && guest.touched) {
+          @if (guest.hasError('required')) {
+            <span class="error">Заполните имя гостя</span>
+          } @else if (guest.hasError('minlength')) {
+            <span class="error">Имя должно содержать минимум {{ guest.getError('minlength').requiredLength }}
+              символа</span>
+          }
+        }
+      }
+
+      <button (click)="this.addGuest()" type="button" [disabled]="saving()">
+        Добавить гостя
+      </button>
+    </fieldset>
+
     <div class="actions">
-      <button type="submit" [disabled]="saving()">
+      <button type="submit" [disabled]="saving() || this.form.invalid || this.form.pending">
         {{ saving() ? 'Бронируем…' : 'Забронировать' }}
       </button>
     </div>
+
+    @if (form.invalid && (form.dirty || form.touched)) {
+      @if (form.hasError('guestsLimit')) {
+        <span class="error">Превышено количество мест в туре</span>
+      }
+    }
   </form>
 
   @if (receipt) {
