@@ -2,21 +2,55 @@
   <h1>Бронирование экскурсии</h1>
   <p>Выберите экскурсию и укажите контакты организатора группы.</p>
 
-  <form>
-    <fieldset>
+  @let contact = form.controls.contact.controls;
+  @let guests = form.controls.guests;
+  @let tourId = form.controls.tourId;
+  @let formStatus = form.statusChanges | async;
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset formGroupName="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" />
+      <input id="name" formControlName="name" />
+      @if (contact.name.touched && contact.name.invalid) {
+        <p role="alert">Введите имя!</p>
+      }
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        type="email" />
+        type="email"
+        formControlName="email" />
+      @if (contact.email.pending) {
+        <p role="status">Проверяем почту…</p>
+      }
+      @if (contact.email.touched && contact.email.invalid) {
+        @if (contact.email.hasError('emailTaken')) {
+          <p role="alert">На эту почту уже оформлено бронирование!</p>
+        } @else {
+          <p role="alert">Введите корректную электронную почту!</p>
+        }
+      }
+    </fieldset>
+
+    <fieldset formArrayName="guests">
+      <legend>Дополнительные участники</legend>
+      @for (guest of guests.controls; track guest) {
+        <label [for]="'guest-' + $index">Имя участника {{ $index + 1 }}</label>
+        <input [id]="'guest-' + $index" [formControlName]="$index" />
+        @if (guest.touched && guest.invalid) {
+          <p role="alert">Введите имя участника!</p>
+        }
+        <button type="button" (click)="removeGuest($index)">
+          Удалить участника
+        </button>
+      }
+      <button type="button" (click)="addGuest()">Добавить участника</button>
     </fieldset>
 
     <label for="tour">Экскурсия</label>
-    <select id="tour">
+    <select id="tour" formControlName="tourId">
       @if (tours$ | async; as tours) {
         <option value="">Выберите экскурсию</option>
         @for (tour of tours; track tour.id) {
@@ -28,9 +62,18 @@
         <option value="">Загрузка экскурсий…</option>
       }
     </select>
+    @if (tourId.touched && tourId.invalid) {
+      <p role="alert">Выберите экскурсию!</p>
+    }
+    @if (tourId.value) {
+      <p>Нужно мест: {{ guests.length + 1 }}, доступно: {{ availableSeats }}.</p>
+    }
+    @if (form.hasError('insufficientSeats')) {
+      <p role="alert">На выбранной экскурсии недостаточно мест для группы!</p>
+    }
 
     <div class="actions">
-      <button type="submit" [disabled]="saving()">
+      <button type="submit" [disabled]="formStatus !== 'VALID' || saving()">
         {{ saving() ? 'Бронируем…' : 'Забронировать' }}
       </button>
     </div>
