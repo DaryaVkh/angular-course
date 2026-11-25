@@ -1,1 +1,15 @@
-TODO City
+<app-card [list]="cities()" (add)="addNewItem()">
+  <img
+    card-image
+    ngSrc="assets/img/city.png"
+    width="200"
+    height="200"
+    priority />
+
+  <ng-template let-item let-i="index">
+    <app-list-item
+      [name]="item.name"
+      [id]="item.id"
+      (delete)="deleteItem($event)" />
+  </ng-template>
+</app-card>

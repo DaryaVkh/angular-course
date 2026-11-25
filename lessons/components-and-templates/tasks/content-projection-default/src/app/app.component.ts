@@ -18,20 +18,32 @@ let nextCardId = 3;
       <label class="flex flex-col gap-1">
         Наименование новой карточки
         <input
+          #titleInput
           placeholder="Наименование"
-          class="border border-grey rounded-sm p-1" />
+          class="border-grey rounded-sm border p-1"
+          (keydown.enter)="addCard(titleInput.value); titleInput.value = ''" />
       </label>
+      <button
+        class="border-grey rounded-sm border p-1"
+        (click)="addCard(titleInput.value); titleInput.value = ''">
+        Добавить
+      </button>
     </div>
 
     @for (card of cards(); track card.id) {
-      <app-card [title]="card.title" [message]="card.message" />
+      <app-card (closed)="removeCard(card.id)">
+        <div card-title>{{ card.title }}</div>
+        @if (card.message) {
+          <div card-message>{{ card.message }}</div>
+        }
+      </app-card>
     }
 
-    <section class="border-t border-grey pt-2 mt-2">
+    <section class="border-grey mt-2 border-t pt-2">
       <h3 class="font-semibold">Event log</h3>
       <p class="text-sm text-gray-500">
-        Сюда будут попадать записи из EventLogService — заполните их из хуков жизненного цикла
-        и ngOnChanges в CardComponent.
+        Сюда будут попадать записи из EventLogService — заполните их из хуков
+        жизненного цикла и ngOnChanges в CardComponent.
       </p>
       <ul class="text-sm text-gray-600">
         @for (entry of eventLog.entries(); track entry) {

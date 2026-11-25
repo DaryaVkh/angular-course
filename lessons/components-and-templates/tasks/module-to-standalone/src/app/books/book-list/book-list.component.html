@@ -12,9 +12,7 @@
       [subtitle]="book.year.toString()"
       appHighlight>
       <p>{{ book.description | truncate: 50 }}</p>
-      <a [routerLink]="[book.id]" class="text-blue-600 underline">
-        Подробнее
-      </a>
+      <a [routerLink]="[book.id]" class="text-blue-600 underline">Подробнее</a>
     </app-card>
   } @empty {
     <p class="text-gray-500">Ничего не найдено</p>
