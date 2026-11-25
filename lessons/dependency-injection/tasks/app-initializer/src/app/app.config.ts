@@ -5,6 +5,11 @@ import { ConfigService } from './config.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // TODO: добавь APP_INITIALIZER чтобы ConfigService.load() вызвался до старта приложения
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (cfg: ConfigService) => () => cfg.load(),
+      deps: [ConfigService],
+      multi: true,
+    }
   ],
 };

@@ -6,8 +6,7 @@ import { GreetingService, FormalGreetingService } from './greeting.service';
   selector: 'app-formal-panel',
   imports: [FormsModule],
   providers: [
-    // TODO: предоставь FormalGreetingService как реализацию GreetingService
-    // { provide: GreetingService, useClass: ??? }
+    { provide: GreetingService, useClass: FormalGreetingService }
   ],
   template: `
     <div class="panel formal">
