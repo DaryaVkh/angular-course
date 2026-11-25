@@ -2,39 +2,75 @@
   <h1>Запись на мастер-класс</h1>
   <p>Оставьте контакты и выберите занятие.</p>
 
-  <form (submit)="submit($event)" (reset)="submitted = false">
-    <fieldset>
+  <form #form="ngForm" (ngSubmit)="submit(form)">
+    <fieldset ngModelGroup="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" name="name" />
+      <input
+        id="name"
+        name="name"
+        ngModel
+        required
+        minlength="2"
+        #nameField="ngModel" />
+      @if (nameField.touched && nameField.invalid) {
+        <p role="alert">Введите имя!</p>
+      }
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        name="email" />
+        name="email"
+        type="email"
+        ngModel
+        required
+        email
+        #emailField="ngModel" />
+      @if (emailField.touched && emailField.invalid) {
+        <p role="alert">Введите корректную электронную почту!</p>
+      }
     </fieldset>
 
     <label for="workshop">Мастер-класс</label>
-    <select id="workshop" name="workshop">
+    <select
+      id="workshop"
+      name="workshop"
+      ngModel
+      required
+      #workshopField="ngModel">
       <option value="">Выберите занятие</option>
-      <option value="pottery">Керамика</option>
-      <option value="watercolor">Акварель</option>
-      <option value="printmaking">Линогравюра</option>
+      <option value="pottery">{{ workshopTitles['pottery'] }}</option>
+      <option value="watercolor">{{ workshopTitles['watercolor'] }}</option>
+      <option value="printmaking">{{ workshopTitles['printmaking'] }}</option>
     </select>
+    @if (workshopField.touched && workshopField.invalid) {
+      <p role="alert">Выберите мастер-класс!</p>
+    }
 
     <label class="checkbox">
-      <input type="checkbox" name="termsAccepted" />
+      <input
+        type="checkbox"
+        name="termsAccepted"
+        [ngModel]="false"
+        required
+        #termsField="ngModel" />
       Подтверждаю запись
     </label>
+    @if (termsField.touched && termsField.invalid) {
+      <p role="alert">Подтвердите запись!</p>
+    }
 
     <div class="actions">
-      <button>Записаться</button>
-      <button>Очистить</button>
+      <button type="submit" [disabled]="form.invalid">Записаться</button>
+      <button type="button" (click)="reset(form)">Очистить</button>
     </div>
   </form>
 
-  @if (submitted) {
-    <p role="status">Заявка принята.</p>
+  @if (registration) {
+    <p role="status">
+      {{ registration.contact.name }}, заявка на мастер-класс
+      «{{ workshopTitles[registration.workshop] }}» принята! Ура!
+    </p>
   }
 </main>
