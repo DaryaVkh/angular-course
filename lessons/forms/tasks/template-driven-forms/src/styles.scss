@@ -47,6 +47,12 @@ button {
   font: inherit;
 }
 
+.error {
+  margin: 0;
+  color: #b3261e;
+  font-size: 0.875rem;
+}
+
 .checkbox,
 .actions {
   display: flex;

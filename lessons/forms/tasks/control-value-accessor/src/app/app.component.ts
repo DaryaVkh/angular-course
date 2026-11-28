@@ -9,7 +9,7 @@ import { FeedbackFormComponent } from './feedback-form/feedback-form.component';
   `,
 })
 export class AppComponent {
-  apiCall(event: Record<string, string | null>): void {
+  apiCall(event: Record<string, string | number | null>): void {
     console.log(event);
   }
 }
