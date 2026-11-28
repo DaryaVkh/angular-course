@@ -2,35 +2,97 @@
   <h1>Бронирование экскурсии</h1>
   <p>Выберите экскурсию и укажите контакты организатора группы.</p>
 
-  <form>
-    <fieldset>
+  <form
+    [formGroup]="form"
+    (ngSubmit)="submit()">
+    <fieldset formGroupName="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" />
+      <input
+        id="name"
+        formControlName="name" />
+      @if (name.invalid && name.touched) {
+        <p class="error">Укажите имя (минимум 2 символа)</p>
+      }
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        type="email" />
+        type="email"
+        formControlName="email" />
+      @if (email.pending) {
+        <p class="hint">Проверяем почту…</p>
+      }
+      @if (email.touched && email.hasError('emailTaken')) {
+        <p class="error">На эту почту уже есть бронирование</p>
+      }
+      @if (
+        email.touched &&
+        email.invalid &&
+        !email.pending &&
+        !email.hasError('emailTaken')
+      ) {
+        <p class="error">Укажите корректную электронную почту</p>
+      }
     </fieldset>
 
     <label for="tour">Экскурсия</label>
-    <select id="tour">
-      @if (tours$ | async; as tours) {
-        <option value="">Выберите экскурсию</option>
-        @for (tour of tours; track tour.id) {
-          <option [value]="tour.id" [disabled]="tour.seats === 0">
-            {{ tour.title }} (мест: {{ tour.seats }})
-          </option>
-        }
-      } @else {
-        <option value="">Загрузка экскурсий…</option>
+    <select
+      id="tour"
+      formControlName="tourId">
+      <option value="">Выберите экскурсию</option>
+      @for (tour of tours(); track tour.id) {
+        <option
+          [value]="tour.id"
+          [disabled]="tour.seats === 0">
+          {{ tour.title }} (мест: {{ tour.seats }})
+        </option>
       }
     </select>
 
+    <p class="hint">
+      Мест нужно: {{ seatsNeeded }}, доступно:
+      {{ tourId.value ? availableSeats : '—' }}
+    </p>
+
+    @if (form.hasError('notEnoughSeats')) {
+      <p class="error">На выбранной экскурсии не хватает мест</p>
+    }
+    @if (tourId.invalid && tourId.touched) {
+      <p class="error">Выберите экскурсию</p>
+    }
+
+    <fieldset formArrayName="guests">
+      <legend>Дополнительные участники</legend>
+
+      @for (guest of guests.controls; track $index) {
+        <div class="guest">
+          <input
+            [formControlName]="$index"
+            [placeholder]="'Участник ' + ($index + 1)" />
+          <button
+            type="button"
+            (click)="removeGuest($index)">
+            Удалить
+          </button>
+        </div>
+        @if (guest.invalid && guest.touched) {
+          <p class="error">Имя участника: минимум 2 символа</p>
+        }
+      }
+
+      <button
+        type="button"
+        (click)="addGuest()">
+        Добавить участника
+      </button>
+    </fieldset>
+
     <div class="actions">
-      <button type="submit" [disabled]="saving()">
+      <button
+        type="submit"
+        [disabled]="form.invalid || form.pending || saving()">
         {{ saving() ? 'Бронируем…' : 'Забронировать' }}
       </button>
     </div>

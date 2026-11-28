@@ -47,6 +47,27 @@ button {
   font: inherit;
 }
 
+.error {
+  margin: 0;
+  color: #b3261e;
+  font-size: 0.875rem;
+}
+
+.hint {
+  margin: 0;
+  color: #4f5f54;
+  font-size: 0.875rem;
+}
+
+.guest {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.guest input {
+  flex: 1;
+}
+
 .checkbox,
 .actions {
   display: flex;
