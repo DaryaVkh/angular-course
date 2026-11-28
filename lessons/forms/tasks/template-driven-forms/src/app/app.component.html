@@ -2,39 +2,85 @@
   <h1>Запись на мастер-класс</h1>
   <p>Оставьте контакты и выберите занятие.</p>
 
-  <form (submit)="submit($event)" (reset)="submitted = false">
-    <fieldset>
+  <form
+    #form="ngForm"
+    (ngSubmit)="submit(form)">
+    <fieldset ngModelGroup="contact">
       <legend>Контакты</legend>
 
       <label for="name">Имя</label>
-      <input id="name" name="name" />
+      <input
+        id="name"
+        name="name"
+        [(ngModel)]="model.contact.name"
+        required
+        minlength="2"
+        #nameField="ngModel" />
+      @if (nameField.invalid && nameField.touched) {
+        <p class="error">Имя должно содержать минимум 2 символа</p>
+      }
 
       <label for="email">Электронная почта</label>
       <input
         id="email"
-        name="email" />
+        name="email"
+        type="email"
+        [(ngModel)]="model.contact.email"
+        required
+        email
+        #emailField="ngModel" />
+      @if (emailField.invalid && emailField.touched) {
+        <p class="error">Укажите корректную электронную почту</p>
+      }
     </fieldset>
 
     <label for="workshop">Мастер-класс</label>
-    <select id="workshop" name="workshop">
+    <select
+      id="workshop"
+      name="workshop"
+      [(ngModel)]="model.workshop"
+      required
+      #workshopField="ngModel">
       <option value="">Выберите занятие</option>
-      <option value="pottery">Керамика</option>
-      <option value="watercolor">Акварель</option>
-      <option value="printmaking">Линогравюра</option>
+      @for (workshop of workshops; track workshop.id) {
+        <option [value]="workshop.id">{{ workshop.title }}</option>
+      }
     </select>
+    @if (workshopField.invalid && workshopField.touched) {
+      <p class="error">Выберите мастер-класс</p>
+    }
 
     <label class="checkbox">
-      <input type="checkbox" name="termsAccepted" />
+      <input
+        type="checkbox"
+        name="termsAccepted"
+        [(ngModel)]="model.termsAccepted"
+        required
+        #termsField="ngModel" />
       Подтверждаю запись
     </label>
+    @if (termsField.invalid && termsField.touched) {
+      <p class="error">Подтвердите запись</p>
+    }
 
     <div class="actions">
-      <button>Записаться</button>
-      <button>Очистить</button>
+      <button
+        type="submit"
+        [disabled]="form.invalid">
+        Записаться
+      </button>
+      <button
+        type="button"
+        (click)="reset(form)">
+        Очистить
+      </button>
     </div>
   </form>
 
-  @if (submitted) {
-    <p role="status">Заявка принята.</p>
+  @if (application) {
+    <p role="status">
+      {{ application.contact.name }}, вы записаны на мастер-класс
+      «{{ workshopTitle(application.workshop) }}».
+    </p>
   }
 </main>
